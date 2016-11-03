@@ -44,8 +44,8 @@ def check_line(line):
 		fout.write("    return_dict = \"\" \n")
 		fout.write("    try: \n")
 		fout.write("        return_dict = petrarch2.do_coding(dict)\n")
-		fout.write("    except: \n")
-		fout.write("        fout_report.write(text +\"~\"+ parsed +\"~ "+ eventcode + "~ Petrarch Runtime Error \\n \" )\n")
+		fout.write("    except Exception as e: \n")
+		fout.write("        fout_report.write(text +\"~\"+ parsed +\"~ "+ eventcode + "~ Petrarch Runtime Error \"+ str(e) +\"\\n \" )\n")
 		#fout.write("#    print(return_dict)\n")
 
 		functionname = "test"+str(tfuncnum)
@@ -120,35 +120,40 @@ def check_line(line):
 		
 	elif eventcode_tag != -1:
 		print("Event Code Found")
-		#Find sourcecode
-		sourcecode_tag = line.find("sourcecode=\"")
-		line = line[sourcecode_tag+12:]
-		pos = line.find("\"")
-		sourcecode = line[:pos]
-		line = line[pos+1:]
-		print("sourcecode="+sourcecode)
-		#print(line)
-		#Find targetcode
-		targetcode_tag = line.find("targetcode=\"")
-		line = line[targetcode_tag+12:]
-		pos = line.find("\"")
-		targetcode = line[:pos]
-		line = line[pos+1:]
-		print("targetcode="+targetcode)
-		#print(line)
-		#Find eventcode
-		eventcode_tag = line.find("eventcode=\"")
-		line = line[eventcode_tag+11:]
-		pos = line.find("\"")
-		ecode = line[:pos]
-		line = line[pos+1:]
-		print("eventcode="+ecode)
-		#print(line)
-		if eventcode == "":
-			eventcode = "(u'"+sourcecode+"', u'"+targetcode+"', u'"+ecode+"')"
+		#Check if noevent sentence
+		noevent_tag = line.find("noevents = ")
+		if noevent_tag != -1:
+		    eventcode = "No Event"
 		else:
-			eventcode = eventcode + ",(u'"+sourcecode+"', u'"+targetcode+"', u'"+ecode+"')"
-		print(eventcode)
+		    #Find sourcecode
+		    sourcecode_tag = line.find("sourcecode=")
+		    line = line[sourcecode_tag+12:]
+		    pos = line.find("\"")
+		    sourcecode = line[:pos]
+		    line = line[pos+1:]
+		    print("sourcecode="+sourcecode)
+		    #print(line)
+		    #Find targetcode
+		    targetcode_tag = line.find("targetcode=")
+		    line = line[targetcode_tag+12:]
+		    pos = line.find("\"")
+		    targetcode = line[:pos]
+		    line = line[pos+1:]
+		    print("targetcode="+targetcode)
+		    #print(line)
+		    #Find eventcode
+		    eventcode_tag = line.find("eventcode=")
+		    line = line[eventcode_tag+11:]
+		    pos = line.find("\"")
+		    ecode = line[:pos]
+		    line = line[pos+1:]
+		    print("eventcode="+ecode)
+		    #print(line)
+		    if eventcode == "":
+			    eventcode = "(u'"+sourcecode+"', u'"+targetcode+"', u'"+ecode+"')"
+		    else:
+			    eventcode = eventcode + ",(u'"+sourcecode+"', u'"+targetcode+"', u'"+ecode+"')"
+		    print(eventcode)
 	
 	if parse_tag_start != -1:
 		parseflag = 1
