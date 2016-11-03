@@ -12,4 +12,4 @@ Output of test_script.py :
 The test suite generates report in "~" separated Text File, which can be inported in Excel. It reports the Text,  Parse Tree, Expected Output as per Petrarch and the Output from Petrarch2
 
 Limitations of Test Suite :
-Currently the test suite does  not support scenarios where expected result is "noevent" and scenarios to validate errors.
+Currently the test suite does  not support scenarios to validate errors.
