@@ -1,4 +1,62 @@
 <Validation>
+<!--
+##########################################################################################
+#
+#                               PETRARCH UNIT TEST RECORDS
+#                 To run: python PETR.coder.py -v PETR.UnitTest.records.txt
+#                            Version compatibility: 0.5.0b1
+#                            Last Update: 1 Sept 2014
+#
+#   These are the unit test records which should all correctly following any changes
+#   in the program. Really. All of them. If the program is working correctly, the
+#   output will terminate at FINAL-RECORD: "ALL OF THE UNIT TESTS WERE CODED CORRECTLY.
+#   then "Exiting: <Stop> record "
+#
+#   These are a combination of tests of specific features, mostly with stylized sentences,
+#   and assorted cases that broke earlier versions of the program for idiosyncratic reasons.  
+#   The sentence IDs in this file may or may not correspond to those in other validation
+#   files. Sorry.
+#
+#   This was originally based on the TABARI validation suite, and some of the records 
+#   probably don't provide much additional testing of PETRARCH. In addition, quite a   
+#   few of those TABARI cases did not transfer over because they relied on the simple 
+#   pattern matching of the TABARI shallow parse, sometimes with nonsense words that 
+#   did not parse plausibly. There is less syntactic variation in these cases than there 
+#   could be - good unit tests are hard to do! - and additional contributions would be
+#   helpful. 
+#
+#   Tree indentations were formatted using the program "unittest.my.pretty.py" (in the 
+#   "utilities" branch of https://github.com/openeventdata), which is used to reduce the
+#   vertical size of the tree, collapsing some of the structures in a fully indented tree.   
+#   That program can be modified and the file re-run if you find these aesthetic choices  
+#   to be problematic.
+#
+##########################################################################################
+-->
+
+<Environment>
+    <Verbfile>PETR.Validate.verbs.txt</Verbfile>
+    <Actorfile>PETR.Validate.actors.txt</Actorfile>
+    <Agentfile>PETR.Validate.agents.txt</Agentfile>
+    <Discardfile>PETR.Validate.discards.txt</Discardfile>
+    <Errorfile>Errors.unit-test.txt</Errorfile>
+    <Include>valid DEMO ACTOR VERB AGENT COMPOUND PARSING PATTERN DATE MODIFY SYNSET ERROR</Include>
+    <Pause>Stop</Pause>
+    <Config option="stop_on_error" value="True"></Config>
+</Environment>		
+
+<Sentences>
+
+<!--
+##########################################################################################
+#
+#                                    BASIC TESTS
+#
+##########################################################################################
+-->
+
+
+<!--Stop></Stop-->
 
 <Sentence date="19950101" id="DEMO-00" category="DEMO" sentence="true">
 <!-- Simple coding: this is the `first light'/"Hello World!" record -->
@@ -1027,7 +1085,44 @@ fiercest foe.
 </Sentence>
 
 
-
+<Sentence date="19950112" id="DEMO-24" category="DEMO" sentence="true">
+<!-- Check on failed match of multi-word closed verb phrase -->
+<!-- Null-coded source in second event is "injury toll" -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Eriador's death and injury total has risen in the dispute with Osgiliath, the state's 
+fiercest foe. 
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP  
+    (NP  
+      (NP (NNP Eriador) (POS 's)
+      )  (NN death)
+    ) (CC and) (NP (NN injury) (NN total)
+    )
+  )  
+  (VP 
+    (VBZ has) 
+    (VP 
+      (VBN risen)  
+      (PP (IN in)  (NP 
+          (NP (DT the) (NN dispute)
+          )  
+          (PP (IN with)  (NP 
+              (NP (NN Osgiliath)
+              )  (, ,) (NP  
+                (NP (DT the) (NN state) (POS 's)
+                ) (JJS fiercest) (NN foe)  
+          ) ) )
+      ) )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
 
 <Sentence date="19950102" id="DEMO-25" category="DEMO" sentence="true">
 <!-- Test of % (compounds) in a pattern.  Should match -->
@@ -4704,7 +4799,88 @@ said on Saturday.
 -->
 
 
-
+<Sentence date = "20080801" id ="AFP080801M008-2" category="PARSING"  sentence="true">
+<!-- 140227: Causes a parsing error involving unbalanced (); it does not generate any -->
+<!-- but is a parse-from-hell and great for debugging -->
+<!-- Last update: 21 April 2014 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+An investigation determined that the amount of radioactivity that seeped from a 
+valve was less than half a microcurie, or less than what one would find in a 
+50-pound bag of lawn fertilizer, a senior illiterate university professor said. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (DT An) (NN investigation)
+    ) 
+    (VP 
+      (VBD determined) 
+      (SBAR 
+        (IN that) (S 
+          (NP 
+            (NP (DT the) (NN amount)
+            ) 
+            (PP (IN of) (NP 
+                (NP (NN radioactivity)
+                ) 
+                (SBAR 
+                  (WHNP 
+                    (WDT that)
+                  ) (S 
+                    (VP 
+                      (VBD seeped) 
+                      (PP (IN from) (NP (DT a) (NN valve)
+                    ) ) )
+                ) )
+              )
+            )
+          ) 
+          (VP 
+            (VBD was) (NP 
+              (NP 
+                (NP 
+                  (QP 
+                    (JJR less) (IN than) (PDT half)
+                  )
+                ) (NP (DT a) (NN microcurie)
+                )
+              ) (, ,) (NP 
+                (NP 
+                  (QP 
+                    (CC or) (JJR less)
+                  )
+                ) 
+                (PP (IN than) 
+                  (SBAR 
+                    (WHNP 
+                      (WP what)
+                    ) (S 
+                      (NP 
+                        (PRP one)
+                      ) 
+                      (VP 
+                        (MD would) 
+                        (VP 
+                          (VB find) 
+                          (PP (IN in) (NP 
+                              (NP (DT a) (JJ 50-pound) (NN bag)
+                              ) 
+                              (PP (IN of) (NP (NN lawn) (NN fertilizer)
+                            ) ) )
+                        ) )
+                        ) ) )
+              ) )
+        ) ) )
+    ) )
+  ) (, ,) (NP (DT a) (JJ senior) (JJ illiterate) (NN university) (NN professor)
+  ) 
+  (VP 
+    (VBD said)
+  ) (. .)
+) )
+</Parse>
+</Sentence>
 
 <Sentence date = "20080804" id ="AFP0808020593-1a" category="PARSING" sentence="true">
 <!-- This is the original version with the parse provided by GigaWord. See next record: -->
@@ -4867,6 +5043,327 @@ where she faces trial for her actions, a US attorney said.
 </Parse>
 </Sentence>
 
+<Sentence date="19990101" id="TABDEBUG-19" category="PARSING" sentence="true">
+<!--  Caused the writeParse routines to crash in earlier versions -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+On improvement of primary health and Gondor's health centres, he said
+government proposed to take up the issue with the World Bank in a phased manner
+with priority being assigned to states with low health indices. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (PP (IN On)  (NP  
+      (NP  
+        (NP (NN improvement)
+        )  
+        (PP (IN of)  (NP 
+            (JJ primary) (NN health)
+        ) )
+      )  (CC and)  (NP  
+        (NP (NNP Gondor) (POS 's)
+        )  (NN health) (NNS centres)
+    ) )
+  )  (, ,)  (NP 
+    (PRP he)
+  )  
+  (VP 
+    (VBD said)  
+    (SBAR  
+      (S  
+        (NP (NN government)
+        )  
+        (VP 
+          (VBD proposed)  (S  
+            (VP 
+              (TO to)  
+              (VP 
+                (VB take)  (PRT 
+                  (RP up)
+                )  (NP (DT the) (NN issue)
+                )  
+                (PP (IN with)  (NP  
+                    (NP (DT the) (NNP World) (NNP Bank)
+                    )  
+                    (PP (IN in)  (NP  
+                        (NP (DT a) (JJ phased) (NN manner)
+                        )  
+                        (PP (IN with)  (NP  
+                            (NP (NN priority)
+                            )  
+                            (VP 
+                              (VBG being)  
+                              (VP 
+                                (VBN assigned)  
+                                (PP 
+                                  (TO to)  (NP  
+                                    (NP (NNS states)
+                                    )  
+                                    (PP (IN with)  (NP 
+                                        (JJ low) (NN health) (NNS indices)
+                                  ) ) )
+                              ) )
+                              ) ) )
+                    ) )
+              ) ) )
+          ) )
+          ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080804" id ="AFP0808011903-3" category="PARSING" sentence="true">
+<!--  "2000 and 2004" should not be marked as a compound -->
+<!-- Last update: 14.05.10 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+South Korea's women have grabbed gold in the team's section since then, while 
+their male counterparts are on the verge of completing a hat-trick, having 
+triumphed in 2000 and 2004. 
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NP (NNP South) (NNP Korea) (POS 's)) (NNS women)) 
+(VP (AUXP have) 
+(VP (VBN grabbed) 
+(NP (NN gold)) 
+(PP (IN in) 
+(NP (NP (DT the) (NN team) (POS 's)) (NN section))) 
+(PP (IN since) 
+(NP (RB then))) (, ,) (SBAR (IN while) (S 
+(NP (PRP$ their) (NN male) (NNS counterparts)) 
+(VP (VBP are) 
+(PP (IN on) 
+(NP (NP (DT the) (NN verge)) 
+(PP (IN of) (S 
+(VP (VBG completing) 
+(NP (DT a) (NN hat-trick))))))) (, ,) (S 
+(VP (AUXG having) 
+(VP (VBD triumphed) 
+(PP (IN in) 
+(NP (CD 2000) (CC and) (CD 2004))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080801" id ="AFP0808010343-2" category="PARSING" sentence="true">
+<!--  Make sure ", one" is not mistaken for a (NE marker -->
+<!-- Last update: 14.05.10 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+An explosion sent a wall of flame through the school dormitory just as the 
+girls, aged from eight to 16, were getting up for morning prayers, one of the 
+girls said. 
+</Text>
+<Parse>
+(ROOT (S (S 
+(NP (DT An) (NN explosion)) 
+(VP (VBD sent) 
+(NP (NP (DT a) (NN wall)) 
+(PP (IN of) 
+(NP (NN flame)))) 
+(PP (IN through) 
+(NP (DT the) (NN school) (NN dormitory))) (SBAR (RB just) (IN as) (S 
+(NP (NP (DT the) (NNS girls)) (, ,) 
+(VP (VBN aged) 
+(PP (IN from) 
+(NP (QP (CD eight) (TO to) (CD 16))))) (, ,)) 
+(VP (AUXD were) 
+(VP (VBG getting) (PRT (RP up)) 
+(PP (IN for) 
+(NP (NN morning) (NNS prayers))))))))) (, ,) 
+(NP (NP (CD one)) 
+(PP (IN of) 
+(NP (DT the) (NNS girls)))) 
+(VP (VBD said)) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080801" id ="AFP0808010092-5" category="PARSING" sentence="true">
+<!--  (POS ') construction (vs the usual (POS 's)) -->
+<!-- Last update: 14.05.10 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Grahame Russell, who lost his son Philip when one of the four suicide bombers 
+detonated a device on a bus in central London, said:`` A lot of families' 
+ideas were included in the design; it's very different. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (NNP Grahame) (NNP Russell)) (, ,) (SBAR (WHNP (WP who)) (S 
+(VP (VBD lost) 
+(NP (PRP$ his) (NN son)) 
+(NP (NNP Philip)) (SBAR (WHADVP (WRB when)) (S 
+(NP (NP (CD one)) 
+(PP (IN of) 
+(NP (DT the) (CD four) (NN suicide) (NNS bombers)))) 
+(VP (VBD detonated) 
+(NP (DT a) (NN device)) 
+(PP (IN on) 
+(NP (DT a) (NN bus))) 
+(PP (IN in) 
+(NP (JJ central) (NNP London))))))))) (, ,)) 
+(VP (VBD said) (: :) (`` ``) (S (S 
+(NP (NP (DT A) (NN lot)) 
+(PP (IN of) 
+(NP (NP (NNS families) (POS ')) (NNS ideas)))) 
+(VP (AUXD were) 
+(VP (VBN included) 
+(PP (IN in) 
+(NP (DT the) (NN design)))))) (: ;) (S 
+(NP (PRP it)) 
+(VP (VBZ 's) (ADJP (RB very) (JJ different)))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080801" id ="AFP0808010569-6" category="PARSING" sentence="true">
+<!-- verb MANAGED is in an odd place; caused an earlier bounds error -->
+<!-- Last update: 14.05.12 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+The park is to be jointly managed by the government and local communities, with 
+assistance from Birdlife International and the Australian state of New South 
+Wales. 
+</Text>
+<Parse>
+( (S 
+(NP (DT The) (NN park)) 
+(VP (VBZ is) (S 
+(VP (TO to) 
+(VP (AUXB be) 
+(VP (ADVP (RB jointly)) (VBN managed) 
+(PP (IN by) 
+(NP (NP (DT the) (NN government)) (CC and) 
+(NP (JJ local) (NNS communities)))) (, ,) 
+(PP (IN with) 
+(NP (NP (NN assistance)) 
+(PP (IN from) 
+(NP (NP (NNP Birdlife) (NNP International)) (CC and) 
+(NP (NP (DT the) (JJ Australian) (NN state)) 
+(PP (IN of) 
+(NP (NNP New) (NNP South) (NNP Wales))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080801" id ="AFP0808010625-6" category="PARSING" sentence="true">
+<!-- Just another quirky crash-causer: odd structure and punctuation -->
+<!-- Last update: 14.05.12 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+China's coal mines are among the most dangerous in the world, with safety 
+standards often ignored in the quest for profits and the drive to meet demand 
+for coal-- the source of about 70 percent of China's energy. 
+</Text>
+<Parse>
+( (S 
+(NP (NP (NNP China) (POS 's)) (NN coal) (NNS mines)) 
+(VP (VBP are) 
+(PP (IN among) 
+(NP (NP (DT the) (ADJP (RBS most) (JJ dangerous))) 
+(PP (IN in) 
+(NP (DT the) (NN world))))) (, ,) 
+(PP (IN with) 
+(NP (NP (NN safety) (NNS standards)) 
+(VP (ADVP (RB often)) (VBN ignored) 
+(PP (IN in) 
+(NP (NP 
+(NP (DT the) (NN quest)) 
+(PP (IN for) 
+(NP (NNS profits)))) (CC and) 
+(NP (NP (DT the) (NN drive) (S 
+(VP (TO to) 
+(VP (VB meet) 
+(NP (NP (NN demand)) 
+(PP (IN for) 
+(NP (NN coal)))))))) (: --) 
+(NP (NP (DT the) (NN source)) 
+(PP (IN of) 
+(NP (NP (QP (IN about) (CD 70)) (NN percent)) 
+(PP (IN of) 
+(NP (NP (NNP China) (POS 's)) (NN energy))))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20090101" category="PARSING" sentence="true" id ="AFP0909010096-4">
+<!-- Sentence from hell in terms of nesting compounds -->
+<!-- Last update: 14.05.12 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+They issued a joint statement calling for a continued expansion of the 
+International Monetary Fund's reserves and a shake-up of countries' 
+representation and voting rights on that and other Bretton Woods institutions. 
+</Text>
+<Parse>
+( (S 
+(NP (PRP They)) 
+(VP (VBD issued) 
+(NP (NP (DT a) (JJ joint) (NN statement)) 
+(VP (VBG calling) 
+(PP (IN for) 
+(NP (NP 
+(NP (DT a) (VBN continued) (NN expansion)) 
+(PP (IN of) 
+(NP (NP (DT the) (NNP International) (NNP Monetary) (NNP Fund) (POS 's)) (NNS reserves)))) (CC and) 
+(NP (NP 
+(NP (DT a) (NN shake-up)) 
+(PP (IN of) 
+(NP (NP (NNS countries) (POS ')) (NN representation)))) (CC and) 
+(NP (NP (VBG voting) (NNS rights)) 
+(PP (IN on) 
+(NP (NP (DT that)) (CC and) 
+(NP (JJ other) (NNP Bretton) (NNP Woods) (NNS institutions))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date = "20080804" id ="TextCodes-2" category="PARSING" sentence="true">
+<!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier --> 
+<!-- versions, extracting non-code text for the source and target -->
+<!-- Last update: 24 Sept 2014 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+President Ilham Aliyev and President of the European Commission Jose Manuel Barroso held 
+a one-on-one meeting on June 14.
+</Text>
+<Parse>
+(ROOT (S (NP (NP (NNP President) (NNP Ilham) (NNP Aliyev) (CC and) (NNP President)) 
+(PP (IN of) (NP (DT the) (JJ European) (NNP Commission) (NNP Jose) (NNP Manuel) 
+(NNP Barroso)))) (VP (VBD held) (NP (DT a) (JJ one-on-one) (NN meeting)) (PP (IN on) 
+(NP (NNP June) (CD 14)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date = "20080804" id ="TextCodes-1" category="PARSING" sentence="true">
+<!-- expand_compound_NEPhrase(kstart,kend) incorrectly parsed the (NEC in earlier -->
+<!-- versions, extracting non-code text for the source and target -->
+<!-- Last update: 16 June 2014 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Abubakar also directed Zuokumor to ensure that there is adequate police presence in all 
+the polling units and collation centres in the state.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NNP Abubakar)) (ADVP (RB also)) 
+(VP (VBD directed) (S (NP (NNP Zuokumor)) 
+(VP (TO to) (VP (VB ensure) (SBAR (IN that) 
+(S (NP (EX there)) (VP (VBZ is) 
+(NP (NP (JJ adequate) (NN police) (NN presence)) (PP (IN in) 
+(NP (NP (NP (PDT all) 
+(DT the) (NN polling) (NNS units)) (CC and) (NP (NN collation) (NNS centres))) 
+(PP (IN in) (NP (DT the) (NN state))
+))))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
 <!--
 ##########################################################################################
 #
@@ -4972,7 +5469,103 @@ the joint OWL standards committee with Albus Dumbledore, Luna Lovegood's news ag
 </Sentence>
 
 
+<Config option="new_actor_length" value="3"></Config>
 
+<Sentence date="19950103" id="ACTOR-03" category="ACTOR" sentence="true">
+<!-- Source and target not in dictionary so extracted from noun phrases-->
+<EventCoding noevents = "True"></EventCoding>
+<!-- Last update: 24 April 2014 -->
+<Text>
+Gryffindor's head Minerva McGonagall left for the Ministry of 
+Magic on Wednesday for meetings of the joint OWL standards 
+committee with Albus Dumbledore, Luna Lovegood's news agency reported. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP 
+      (NP (NNP Gryffindor) (POS 's)
+      ) (NN head) (NN Minerva) (NN McGonagall)
+    )  
+    (VP 
+      (VBD left)  
+      (PP (IN for)  (NP 
+          (NP (DT the) (NNP Ministry)
+          ) 
+          (PP (IN of) (NP (NNP Magic)
+        ) ) )
+      )  
+      (PP (IN on)  (NP 
+          (NP (NNP Wednesday)
+          )  
+          (PP (IN for) (NP 
+              (NP (NNS meetings)
+              )  
+              (PP (IN of)  (NP (DT the) (JJ joint) (NN OWL) (NNS standards) (NN committee)
+            ) ) )
+        ) )
+      )  
+      (PP (IN with) (NP (NNP Albus) (NNP Dumbledore)
+    ) ) )
+  )  (, ,)  (NP 
+    (NP (NNP Luna) (NNP Lovegood) (POS 's)
+    ) (NN news) (NN agency)
+  )  
+  (VP 
+    (VBD reported)
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Config option="new_actor_length" value="0"></Config>
+
+<Sentence date="19950103" id="ACTOR-04" category="ACTOR" sentence="true">
+<!-- Source and target not in dictionary so extracted from noun phrases-->
+<!-- Last update: 24 April 2014 -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Gryffindor's head Minerva McGonagall left for the Ministry of 
+Magic on Wednesday for meetings of the joint OWL standards 
+committee with Albus Dumbledore, Luna Lovegood's news agency reported. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP 
+      (NP (NNP Gryffindor) (POS 's)
+      ) (NN head) (NN Minerva) (NN McGonagall)
+    )  
+    (VP 
+      (VBD left)  
+      (PP (IN for)  (NP 
+          (NP (DT the) (NNP Ministry)
+          ) 
+          (PP (IN of) (NP (NNP Magic)
+        ) ) )
+      )  
+      (PP (IN on)  (NP 
+          (NP (NNP Wednesday)
+          )  
+          (PP (IN for) (NP 
+              (NP (NNS meetings)
+              )  
+              (PP (IN of)  (NP (DT the) (JJ joint) (NN OWL) (NNS standards) (NN committee)
+            ) ) )
+        ) )
+      )  
+      (PP (IN with) (NP (NNP Albus) (NNP Dumbledore)
+    ) ) )
+  )  (, ,)  (NP 
+    (NP (NNP Luna) (NNP Lovegood) (POS 's)
+    ) (NN news) (NN agency)
+  )  
+  (VP 
+    (VBD reported)
+  )  (. .)
+) )
+</Parse>
+</Sentence>
 
 <Sentence date="19950101" id="ACTOR-05" category="ACTOR" sentence="true">
 <!-- Should not match THE_KU_ [USAEDU]; this was used to check an apparent -->
@@ -5239,4 +5832,5469 @@ The United States on Thursday fired two artillery shells at Seoul.
 </Parse>
 </Sentence>
 
+
+<Sentence date="19950103" id="ACTOR-14" category="ACTOR" sentence="true">
+<!-- Multi-word actor matching: some of these sentences were causing errors in early -->
+<!-- Sept-14 due to problems in the matching -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PRK" targetcode="KOR" eventcode="194"></EventCoding>
+<Text>
+Pyongyang on Thursday fired two artillery shells at Seoul.
+</Text>
+<Parse>
+(ROOT (S 
+(NP (NP (NNP Pyongyang)) (PP (IN on) (NP (NNP Thursday)))) 
+(VP (VBD fired) (NP (CD two) (NN artillery) (NNS shells)) (PP (IN at) (NP (NNP Seoul)))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950103" id="ACTOR-15" category="ACTOR" sentence="true">
+<!-- Multi-word actor matching: some of these sentences were causing errors in early -->
+<!-- Sept-14 due to problems in the matching -->
+<!-- Last update: 17-Sept-2014 -->
+<EventCoding sourcecode="PRK" targetcode="KOR" eventcode="194"></EventCoding>
+<Text>
+The Hermit Kingdom fired two artillery shells at Seoul on Thursday.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNP Hermit) (NNP Kingdom)) (VP (VBD fired) (NP (CD two) (NN artillery) (NNS shells)) (PP (IN at) (NP (NNP Seoul))) (PP (IN on) (NP (NNP Thursday)))) (. .)))
+</Parse>
+</Sentence>
+
+<!--
+##################################################################
+#
+#                 VERB REGULAR FORMS AND SYNONYMS
+#
+##################################################################
+-->
+
+<Sentence date="19950101" id="VERB-01" category="VERB" sentence="true">
+<!-- [Multi-word phrase in verb form] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
+<Text>
+Ethiopia has broken relations with Libya almost five years after crowds 
+trashed its embassy. 
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP (NNP Ethiopia)
+  )  
+  (VP 
+    (VBZ has) 
+    (VP 
+      (VBN broken)  (NP 
+        (NP (NNS relations)
+        )  
+        (PP (IN with) (NP (NNP Libya)
+        ) )
+      )  
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S 
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed) (NP 
+              (PRP$ its) (NN embassy)
+            )
+          )  
+    ) ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-02" category="VERB" sentence="true">
+<!-- [Multi-word phrase in verb form] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
+<Text>
+Ethiopia has broken down relations with Libya almost five years after crowds 
+trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT 
+(S 
+  (S  
+    (NP (NNP Ethiopia)
+    ) 
+    (VP 
+      (VBZ has) 
+      (VP 
+        (VBN broken)  (PRT 
+          (RP down)
+        ) (NP 
+          (NP (NNS relations)
+          )  
+          (PP (IN with) (NP (NNP Libya)
+          ) )
+        )  
+        (SBAR 
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          ) (IN after) (S 
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed) (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-03" category="VERB" sentence="true">
+<!-- [Multi-word phrase in verb form] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
+<Text>
+Ethiopia will break relations with Libya almost five years after crowds 
+trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Ethiopia)
+  ) 
+  (VP 
+    (MD will) 
+    (VP 
+      (VB break) (NP (NNS relations)
+      ) 
+      (PP (IN with) (NP (NNP Libya)
+        )
+      ) 
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        ) (IN after) (S 
+          (NP (NNS crowds)
+          ) 
+          (VP 
+            (VBD trashed) (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-04" category="VERB" sentence="true">
+<!-- [Multi-word phrase in verb form with pattern] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="161"></EventCoding>
+<Text>
+Ethiopia broken down a treaty with Libya's  almost five years after 
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBN broken)  (PRT 
+        (RP down)
+      )  (NP (DT a) (NN treaty)
+      )  
+      (PP (IN with)  (NP (NNP Libya) (POS 's)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-05a" category="VERB" sentence="true">
+<!-- [Multi-word phrase in verb form with pattern] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="161"></EventCoding>
+<Text>
+Ethiopia broken down a treaty with Libya's  almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBN broken)  (PRT 
+        (RP down)
+      )  (NP (DT a) (NN treaty)
+      )  
+      (PP (IN with)  (NP (NNP Libya) (POS 's)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-06" category="VERB" sentence="true">
+<!-- Check that ACTING verb form is working -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="100"></EventCoding>
+<Text>
+Ethiopia is acting strangely with Libya almost five years after  
+crowds trashed its embassy. 
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP (NNP Ethiopia)
+  )  
+  (VP 
+    (VBZ is) 
+    (VP 
+      (VBG acting) (ADVP 
+        (RB strangely)
+      )  
+      (PP (IN with) (NP (NNP Libya)
+        )
+      )  
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        ) (IN after)  (S 
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-07" category="VERB" sentence="true">
+<!-- Check that ACTED verb form is working -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="100"></EventCoding>
+<Text>
+Ethiopia has acted oddly with respect to Libya almost five years after  
+crowds trashed its embassy
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP (NNP Ethiopia)
+  )  
+  (VP 
+    (VBZ has) 
+    (VP 
+      (VBN acted)  (ADVP 
+        (RB oddly)
+      ) 
+      (PP (IN with)  (NP 
+          (NP (NN respect)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Libya)
+        ) ) )
+      )  
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        ) (IN after)  (S 
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-08" category="VERB" sentence="true">
+<!-- Check that first pattern is working with main verb -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1010"></EventCoding>
+<Text>
+Ethiopia indicated it would act now with Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBD indicated)  
+      (SBAR  
+        (S  
+          (NP 
+            (PRP it)
+          )  
+          (VP 
+            (MD would)  
+            (VP 
+              (VB act)  (ADVP 
+                (RB now)
+              )  
+              (PP (IN with)  (NP (NNP Libya)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-09" category="VERB" sentence="true">
+<!-- Check that first pattern is working with regular verb form -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1010"></EventCoding>
+<Text>
+Ethiopia indicated it would acting now  with Libya's  almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBD indicated)  
+      (SBAR  
+        (S  
+          (NP 
+            (PRP it)
+          )  
+          (VP 
+            (MD would)  (S  
+              (VP 
+                (VBG acting)  (ADVP 
+                  (RB now)
+                )  
+                (PP (IN with)  (NP (NNP Libya) (POS 's)
+                  )
+                )  
+                (SBAR  
+                  (NP 
+                    (RB almost) (CD five) (NNS years)
+                  )  (IN after)  (S  
+                    (NP (NNS crowds)
+                    )  
+                    (VP 
+                      (VBD trashed)  (NP 
+                        (PRP$ its) (NN embassy)
+                  ) ) )
+              ) )
+              ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-10" category="VERB" sentence="true">
+<!-- [Check that second pattern is working with regular verb form] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1011"></EventCoding>
+<Text>
+Ethiopia indicated it should have acted against Libya almost five years after  
+crowds trashed its embassy. 
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP (NNP Ethiopia)
+  )  
+  (VP 
+    (VBD indicated)  
+    (SBAR 
+      (S 
+        (NP 
+          (PRP it)
+        )  
+        (VP 
+          (MD should) 
+          (VP 
+            (VB have) 
+            (VP 
+              (VBN acted)  
+              (PP (IN against)  (NP (NNP Libya)
+                )
+              )  
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S 
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                  ) )
+                )  
+          ) ) )
+      ) )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-11" category="VERB" sentence="true">
+<!-- Check that third pattern is working with main verb -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="102"></EventCoding>
+<Text>
+Ethiopia act on a resolution  with Libya's  almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBP act)  
+      (PP (IN on)  (NP  
+          (NP (DT a) (NN resolution)
+          )  
+          (PP (IN with)  (NP  
+              (NP (NNP Libya) (POS 's)
+              )  (QP 
+                (RB almost) (CD five)
+              )  (NNS years)
+        ) ) )
+      )  
+      (SBAR 
+        (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-12" category="VERB" sentence="true">
+<!-- Check that third pattern is working with regular verb form -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="102"></EventCoding>
+<Text>
+Ethiopia is acting on a resolution with Libya's  almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (VBG acting)  
+        (PP (IN on)  (NP  
+            (NP (DT a) (NN resolution)
+            )  
+            (PP (IN with)  (NP  
+                (NP (NNP Libya) (POS 's)
+                )  (QP 
+                  (RB almost) (CD five)
+                )  (NNS years)
+          ) ) )
+        )  
+        (SBAR 
+          (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-13" category="VERB" sentence="true">
+<!-- Check that third pattern is working with regular verb form -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="102"></EventCoding>
+<Text>
+Ethiopia acted on a resolution against Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT 
+(S 
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBD acted)  
+      (PP (IN on)  (NP 
+          (NP (DT a) (NN resolution)
+          )  
+          (PP (IN against) (NP (NNP Libya)
+        ) ) )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S 
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed) (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-14" category="VERB" sentence="true">
+<!-- Check that fourth pattern is working with main verb -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="103"></EventCoding>
+<Text>
+Ethiopia will act on some programs with Libya  almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP (NNP Ethiopia)
+  )  
+  (VP 
+    (MD will) 
+    (VP 
+      (VB act)  
+      (PP (IN on)  (NP 
+          (NP (DT some) (NNS programs)
+          )  
+          (PP (IN with) (NP (NNP Libya)
+        ) ) )
+      )  
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        ) (IN after)  (S 
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed) (NP 
+              (PRP$ its) (NN embassy)
+            )
+          )  
+    ) ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-15" category="VERB" sentence="true">
+<!-- Check that fourth pattern is working with regular verb form -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="103"></EventCoding>
+<Text>
+Ethiopia acted on some programs with Libya almost five years after  
+crowds trashed its embassy. 
+</Text>
+<Parse> 
+(ROOT 
+(S  
+  (NP (NNP Ethiopia)
+  )  
+  (VP 
+    (VBD acted)  
+    (PP (IN on)  (NP 
+        (NP (DT some) (NNS programs)
+        )  
+        (PP (IN with)  (NP (NNP Libya)
+      ) ) )
+    )  
+    (SBAR 
+      (NP 
+        (RB almost) (CD five) (NNS years)
+      )  (IN after)  (S 
+        (NP (NNS crowds)
+        )  
+        (VP 
+          (VBD trashed) (NP 
+            (PRP$ its) (NN embassy)
+          )
+        )  
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-16" category="VERB" sentence="true">
+<!-- [Multi-word phrase in verb form] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="1717"></EventCoding>
+<Text>
+Ethiopia broken down with Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBN broken)  (PRT 
+        (RP down)
+      )  
+      (PP (IN with)  (NP (NNP Libya)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-17" category="VERB" sentence="true">
+<!-- [Check that DEPART_ verb is in dictionary; see later tests] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="032"></EventCoding>
+<Text>
+Ethiopia is about to depart from Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB depart)  
+              (PP (IN from)  (NP (NNP Libya)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD trashed)  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-18" category="VERB" sentence="true">
+<!-- [Verb ending S] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="032"></EventCoding>
+<Text>
+Ethiopia departs from Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBZ departs)  
+      (PP (IN from)  (NP (NNP Libya)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-19" category="VERB" sentence="true">
+<!-- [Verb ending ED] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="032"></EventCoding>
+<Text>
+Ethiopia departed from Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBD departed)  
+      (PP (IN from)  (NP (NNP Libya)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-20" category="VERB" sentence="true">
+<!-- Check that invalid verb ending does not match: should not code -->
+<EventCoding noevents = "True"> </EventCoding>
+<Text>
+Ethiopia departx from Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP  
+      (NP (NNP Ethiopia) (NN departx)
+      )  
+      (PP (IN from)  (NP (NNP Libya)
+      ) )
+    )  
+    (VP  
+      (ADVP 
+        (RB almost)  (NP 
+          (CD five) (NNS years)
+        )  
+        (PP (IN after)  (NP (NNS crowds)
+        ) )
+      )  (VBD trashed)  (NP 
+        (PRP$ its) (NN embassy)
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="VERB-21" category="VERB" sentence="true">
+<!-- Verb ending ES where not appropriate: should not code -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True"> </EventCoding>
+<Text>
+Ethiopia departes from Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBZ departes)  
+      (PP (IN from)  (NP (NNP Libya)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-22" category="VERB" sentence="true">
+<!-- [Verb ending ED on verb ending with E] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="122"></EventCoding>
+<Text>
+Ethiopia deplored from Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBD deplored)  
+      (PP (IN from)  (NP (NNP Libya)
+        )
+      )  
+      (SBAR  
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        )  (IN after)  (S  
+          (NP (NNS crowds)
+          )  
+          (VP 
+            (VBD trashed)  (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="VERB-23" category="VERB" sentence="true">
+<!-- [Verb ending ED on verb ending with E in pattern] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ETH" targetcode="LBY" eventcode="123"></EventCoding>
+<Text>
+Ethiopia indicated it deplored Libya almost five years after  
+crowds trashed its embassy, a senior official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Ethiopia)
+    )  
+    (VP 
+      (VBD indicated)  
+      (SBAR  
+        (S  
+          (NP 
+            (PRP it)
+          )  
+          (VP 
+            (VBD deplored)  (NP (NNP Libya)
+            )  
+            (SBAR  
+              (NP 
+                (RB almost) (CD five) (NNS years)
+              )  (IN after)  (S  
+                (NP (NNS crowds)
+                )  
+                (VP 
+                  (VBD trashed)  (NP 
+                    (PRP$ its) (NN embassy)
+              ) ) )
+          ) )
+          ) ) )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<!--
+##################################################################
+#
+#                         BASIC PATTERNS
+#
+##################################################################
+-->
+
+<Sentence date="19920102" id="PATTERN-01" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition of IN_ above verb; does not match on -->
+<!-- BREAK and matches instead on PARADE -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="1717"></EventCoding>
+<Text>
+Gollum was seen to break into an anti- Gondor parade on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (NP (NNP Gollum)
+  )  
+  (VP 
+    (VBD was)  
+    (VP 
+      (VBN seen)  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB break)  
+            (PP (IN into)  (NP  
+                (NP (DT an) (JJ anti-) (NNP Gondor) (NN parade)
+                )  
+                (PP (IN on)  (NP (NNP Saturday)
+              ) ) )
+          ) )
+          ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-02" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition for first verb in dictionary -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Gollum abandoned an anti- Gondor parade on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (NP (NNP Gollum)
+  )  
+  (VP 
+    (VBD abandoned)  (NP (DT an) (JJ anti-) (NNP Gondor) (NN parade)
+    )  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-03" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition for connected words in upper match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="174K"></EventCoding>
+<Text>
+Gollum will bargain for asylum in Gondor, AFP reported. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Gollum)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB bargain)  
+        (PP (IN for)  (NP  
+            (NP (NN asylum)
+            )  
+            (PP (IN in)  (NP (NNP Gondor)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (NNP AFP)
+  )  
+  (VP 
+    (VBD reported)
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-04" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition for connected words in upper match -->
+<!-- 14.04.28: Clever, but this is just pattern-based and not a grammatically correct -->
+<!-- sentence... -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="174L"></EventCoding>
+<Text>
+Gollum will bargain foreign asylum in Gondor, AFP reported. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP (NNP Gollum)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB bargain)  (NP 
+          (JJ foreign) (NN asylum)
+        )  
+        (PP (IN in)  (NP (NNP Gondor)
+      ) ) )
+    )
+  )  (, ,)  (NP (NNP AFP)
+  )  
+  (VP 
+    (VBD reported)
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-05" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition of IN_ - pattern word with length <= 2 - -->
+<!--  which wasn't working in vers. 0.4.6 -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="1717"></EventCoding>
+<Text>
+Gollum was known to break into an anti- Gondor parade on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (NP (NNP Gollum)
+  )  
+  (VP 
+    (VBD was)  
+    (VP 
+      (VBN known)  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB break)  
+            (PP (IN into)  (NP  
+                (NP (DT an) (JJ anti-) (NNP Gondor) (NN parade)
+                )  
+                (PP (IN on)  (NP (NNP Saturday)
+              ) ) )
+          ) )
+          ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-06" category="PATTERN" sentence="true">
+<!-- Match to verb ACCORD cancelled by determiner AN -->
+<!-- This was done using a pattern in TABARI but is now handled by the parse -->
+<!--  { HOB / GON / 111 } */ -->
+<!-- Last update: TABARI validation -->
+<Text>
+Gollum was in an accord with an anti- Gondor parade on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (NP (NNP Gollum)
+  )  
+  (VP 
+    (VBD was)  
+    (PP (IN in)  (NP  
+        (NP (DT an) (NN accord)
+        )  
+        (PP (IN with)  (NP  
+            (NP (DT an) (JJ anti-) (NNP Gondor) (NN parade)
+            )  
+            (PP (IN on)  (NP (NNP Saturday)
+          ) ) )
+      ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950114" id="PATTERN-08" category="PATTERN" sentence="true">
+<!--  Test of source/target reversal in the first event due to pattern  -->
+<!-- 	 FREE                                                           -->
+<!-- 	 - + * FROM $  [066]                                            -->
+<!-- (Yeah, yeah, we know nothing gets freed from Barad-dur...)         -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="MOR" targetcode="ITH" eventcode="066"></EventCoding>
+<Text>
+Ithilen's palace guard militia was freed from Barad-dur after that 
+group yielded ground seized in six days of fighting.
+</Text>
+<Parse> 
+(ROOT (S  
+  (NP  
+    (NP (NNP Ithilen) (POS 's)
+    )  (NN palace) (NN guard) (NN militia)
+  )  
+  (VP 
+    (VBD was)  
+    (VP 
+      (VBN freed)  
+      (PP (IN from)  (NP (NN Barad-dur)
+        )
+      )  
+      (SBAR 
+        (IN after)  (S  
+          (NP (DT that) (NN group)
+          )  
+          (VP 
+            (VBD yielded)  
+            (SBAR  
+              (S  
+                (NP (NN ground)
+                )  
+                (VP 
+                  (VBD seized)  
+                  (PP (IN in)  (NP  
+                      (NP 
+                        (CD six) (NNS days)
+                      )  
+                      (PP (IN of)  (NP (NN fighting)
+                    ) ) )
+                ) )
+                ) ) )
+      ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950116" id="PATTERN-09" category="PATTERN" sentence="true">
+<!-- Testing for correct match on multi-word, disconnected actor phrase -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="FORGOV" targetcode="ITHTV" eventcode="095"></EventCoding>
+<Text>
+Fornost President Umbardacil has again appealed for peace in Ithilen state-run television in 
+a message to the spiritual leader of the war-torn nation's influential 
+Douzu community
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Fornost) (NNP President) (NNP Umbardacil))
+    (VP (VBZ has)
+      (ADVP (RB again))
+      (VP (VBN appealed)
+        (PP (IN for)
+          (NP
+            (NP (NN peace))
+            (PP (IN in)
+              (NP (NNP Ithilen) (JJ state-run) (NN television)))))
+        (PP (IN in)
+          (NP (DT a) (NN message)))
+        (PP (TO to)
+          (NP
+            (NP (DT the) (JJ spiritual) (NN leader))
+            (PP (IN of)
+              (NP
+                (NP (DT the) (JJ war-torn) (NN nation) (POS 's))
+                (JJ influential) (NNP Douzu) (NN community)))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-10" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition of IN_ above verb with + and $  -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="GON" targetcode="HOB" eventcode="075"></EventCoding>
+<Text>
+Gollum was seen to break in an anti- Gondor parade on Saturday. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (VP (VBD was)
+      (VP (VBN seen)
+        (S
+          (VP (TO to)
+            (VP (VB break)
+              (PP (IN in)
+                (NP
+                  (NP (DT an) (JJ anti-) (NNP Gondor) (NN parade))
+                  (PP (IN on)
+                    (NP (NNP Saturday))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19920102" id="PATTERN-11" category="PATTERN" sentence="true">
+<!-- Test of pattern recognition for phrase to first verb in dictionary -->
+<!-- 14.04.28: Highly unlikely this would be an issue in PETRARCH since it is using -->
+<!-- the automatic indexing of Python dictionaries -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Gollum abandoned efforts to stop an anti- Gondor parade on Saturday. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (VP (VBD abandoned)
+      (NP (NNS efforts))
+      (S
+        (VP (TO to)
+          (VP (VB stop)
+            (NP (DT an) (JJ anti-) (NNP Gondor) (NN parade))
+            (PP (IN on)
+              (NP (NNP Saturday)))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-12" category="PATTERN" sentence="true">
+<!-- Test of TABARI stemming, which PETR doesn't use, so the dictionary was modified -->
+<!-- accordingly -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="024"></EventCoding>
+<Text>
+Gollum allowed that Mordor isn't a really pleasant place to visit. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (VP (VBD allowed)
+      (SBAR (IN that)
+        (S
+          (NP (NNP Mordor))
+          (VP (VBZ is) (RB n't)
+            (NP (DT a) (RB really) (JJ pleasant) (NN place))
+            (S
+              (VP (TO to)
+                (VP (VB visit))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-13" category="PATTERN" sentence="true">
+<!-- Test of TABARI stemming, which PETR doesn't use, so the dictionary was modified -->
+<!-- accordingly -->
+<!-- Last update: TABARI validation on stemming  -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="024"></EventCoding>
+<Text>
+Gollum allowed that Mordor isn't a real pleasant place to visit. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (VP (VBD allowed)
+      (SBAR (IN that)
+        (S
+          (NP (NNP Mordor))
+          (VP (VBZ is) (RB n't)
+            (NP (DT a) (JJ real) (JJ pleasant) (NN place)
+              (S
+                (VP (TO to)
+                  (VP (VB visit)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-14" category="PATTERN" sentence="true">
+<!-- Test of _ connector in upper phrase; match on pattern should fail and use default code -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="080"></EventCoding>
+<Text>
+Gollum allowed that Mordor isn't a real easy or pleasant place to visit. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (VP (VBD allowed)
+      (SBAR (IN that)
+        (S
+          (NP (NNP Mordor))
+          (VP (VBZ is) (RB n't)
+            (NP
+              (NP (DT a) (JJ real)
+                (ADJP (JJ easy)
+                  (CC or)
+                  (JJ pleasant))
+                (NN place))
+              (SBAR
+                (S
+                  (VP (TO to)
+                    (VP (VB visit))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-15" category="PATTERN" sentence="true">
+<!-- Test of ~_ connector in lower phrase -->
+<!-- The ~_ connector was a TABARI feature related to stemming, which PETARCH doesn't -->
+<!-- use, so these next few cases are just generic pattern matching. Leave them in here -->
+<!-- in case they can break something. -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="025"></EventCoding>
+<Text>
+Gollum recently allowed that Mordor isn't a such neat place to visit. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (ADVP (RB recently))
+    (VP (VBD allowed)
+      (SBAR (IN that)
+        (S
+          (NP (NNP Mordor))
+          (VP (VBZ is) (RB n't)
+            (NP (DT a) (JJ such) (JJ neat) (NN place)
+              (S
+                (VP (TO to)
+                  (VP (VB visit)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-16" category="PATTERN" sentence="true">
+<!-- Test of ~_ connector in upper phrase; match should fail and use default code -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="080"></EventCoding>
+<Text>
+Gollum recently did allow that Mordor isn't a such neat place to visit. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (ADVP (RB recently))
+    (VP (VBD did)
+      (S
+        (VP (VB allow)
+          (SBAR
+            (S
+              (NP (DT that) (NNP Mordor))
+              (VP (VBZ is) (RB n't)
+                (NP (DT a) (JJ such) (JJ neat) (NN place)
+                  (S
+                    (VP (TO to)
+                      (VP (VB visit)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-17" category="PATTERN" sentence="true">
+<!-- Test of ~_ connector in upper phrase;  -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="027"></EventCoding>
+<Text>
+Gollum allowed that Mordor isn't the neatest place to visit. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Gollum))
+    (VP (VBD allowed)
+      (SBAR (IN that)
+        (S
+          (NP (NNP Mordor))
+          (VP (VBZ is) (RB n't)
+            (NP (DT the) (JJS neatest) (NN place))
+            (S
+              (VP (TO to)
+                (VP (VB visit))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-18" category="PATTERN" sentence="true">
+<!-- Test of ~_ connector in upper and lower phrase; match should fail and  -->
+<!-- use default code -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="MOR" eventcode="080"></EventCoding>
+<Text>
+Gollum in recent days did allow that Mordor isn't the neat or cool place to visit. 
+</Text>
+<Parse>
+(ROOT (S 
+  (NP 
+    (NP (NNP Gollum)
+    ) 
+    (PP (IN in) (NP 
+        (JJ recent) (NNS days)
+    ) )
+  ) 
+  (VP 
+    (VBD did) (S 
+      (VP 
+        (VB allow) 
+        (SBAR 
+          (S 
+            (NP (DT that) (NNP Mordor)
+            ) 
+            (VP 
+              (VBZ is) (RB n't) (NP (DT the) (ADJP 
+                  (JJ neat) (CC or) (JJ cool)
+                ) (NN place) (S 
+                  (VP 
+                    (TO to) 
+                    (VP 
+                      (VB visit)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-19" category="PATTERN" sentence="true">
+<!-- Checked for first phrase as actor, as well as "CALLED/ *_ON  -->
+<!-- subordinate clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="095"></EventCoding>
+<Text>
+Gollum centre of a diplomatic row between Radagast the Brown called on 
+Gondor late Sunday to be allowed to leave Lorien by elves. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP
+      (NP (NNP Gollum) (NN center))
+      (PP (IN of)
+        (NP
+          (NP (DT a) (JJ diplomatic) (NN row))
+          (PP (IN between)
+            (NP (NNP Radagast) (DT the) (NNP Brown))))))
+    (VP (VBN called)
+      (PP (IN on)
+        (NP
+          (NP (NNP Gondor))
+          (NP-TMP (JJ late) (NNP Sunday))
+          (S
+            (VP (TO to)
+              (VP (VB be)
+                (VP (VBN allowed)
+                  (S
+                    (VP (TO to)
+                      (VP (VB leave)
+                        (NP (NNP Lorien))
+                        (PP (IN by)
+                          (NP (NNS elves)))))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19920102" id="PATTERN-20" category="PATTERN" sentence="true">
+<!-- Checked for first phrase as actor, as well as "CALLED/ * FOR  -->
+<!-- 14.04.28: Not exactly a sentence but close enough-->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="HOB" targetcode="GON" eventcode="096"></EventCoding>
+<Text>
+Gollum centre of a diplomatic row between Radagast the Brown called immediately for  
+Gondor late Sunday to be allowed to leave Lorien by elves. 
+</Text>
+<Parse>
+(ROOT (S 
+  (NP 
+    (NP (NNP Gollum) (NN center)
+    ) 
+    (PP (IN of) (NP 
+        (NP (DT a) (JJ diplomatic) (NN row)
+        ) 
+        (PP (IN between) (NP (NNP Radagast) (DT the) (NNP Brown)
+      ) ) )
+    )
+  ) 
+  (VP 
+    (VBD called) 
+    (PP 
+      (ADVP 
+        (RB immediately)
+      ) (IN for) (NP (NNP Gondor)
+      )
+    ) (NP-TMP 
+      (JJ late) (NNP Sunday)
+    ) (S 
+      (VP 
+        (TO to) 
+        (VP 
+          (VB be) 
+          (VP 
+            (VBN allowed) (S 
+              (VP 
+                (TO to) 
+                (VP 
+                  (VB leave) (NP (NNP Lorien)
+                  ) 
+                  (PP (IN by) (NP (NNS elves)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950102" id="PATTERN-21" category="PATTERN" sentence="true">
+<!-- Test of ^ (actor skipping) in a pattern; skipped actor after verb CELEBRATE.   -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="MORMIL" targetcode="MOR" eventcode="042"></EventCoding>
+<Text>
+Mordor will be hosting Osgiliath to celebrate Tabaski with Eriador
+next week at Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Mordor))
+    (VP (MD will)
+      (VP (VB be)
+        (VP (VBG hosting)
+          (S
+            (NP (NNP Osgiliath))
+            (VP (TO to)
+              (VP (VB celebrate)
+                (NP
+                  (NP (NN Tabaski))
+                  (PP (IN with)
+                    (NP (NNP Eriador))))
+                (NP-TMP (JJ next) (NN week))
+                (PP (IN at)
+                  (NP (NNP Cirith) (NNP Ungol)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="PATTERN-22" category="PATTERN" sentence="true">
+<!-- Same structure as above but without the skip   -->
+<!-- Last update: 8 May 2014 -->
+<EventCoding sourcecode="ERI" targetcode="MOR" eventcode="046"></EventCoding>
+<Text>
+Mordor will be hosting Osgiliath to celebrate May Day with Eriador
+next week at Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Mordor))
+    (VP (MD will)
+      (VP (VB be)
+        (VP (VBG hosting)
+          (S
+            (NP (NNP Osgiliath))
+            (VP (TO to)
+              (VP (VB celebrate)
+                (NP
+                  (NP (NNP May) (NNP Day))
+                  (PP (IN with)
+                    (NP (NNP Eriador))))
+                (NP-TMP (JJ next) (NN week))
+                (PP (IN at)
+                  (NP (NNP Cirith) (NNP Ungol)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950102" id="PATTERN-23" category="PATTERN" sentence="true">
+<!-- Test of ^ (actor skipping) in a pattern; skipped actor follows verb.   -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="043"></EventCoding>
+<Text>
+Arnor has celebrated Eid at Osgiliath with Gondor after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Arnor))
+    (VP (VBZ has)
+      (VP (VBN celebrated)
+        (NP
+          (NP (NN Eid))
+          (PP (IN at)
+            (NP (NN Osgiliath))))
+        (PP (IN with)
+          (NP (NNP Gondor)))
+        (SBAR (IN after)
+          (S
+            (NP (DT a) (NN hafling))
+            (VP (VBD was)
+              (VP (VBN reported)
+                (PP (IN on)
+                  (NP
+                    (NP (DT the) (NN pass))
+                    (PP (IN of)
+                      (NP (NNP Cirith) (NNP Ungol)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950102" id="PATTERN-24" category="PATTERN" sentence="true">
+<!--  Just another of  ^ (actor skipping) in a pattern -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="045"></EventCoding>
+<Text>
+Arnor has celebrated Iftar in Osgiliath with the leaders of Gondor after leaving Eriador 
+when a hafling was reported on the pass of Cirith Ungol. </Text>
+<Parse>
+(ROOT (S 
+	(NP (NNP Arnor)) 
+	(VP (VBZ has) (VP (VBN celebrated) 
+	(NP (NP (NNP Iftar)) 
+	(PP (IN in) (NP (NNP Osgiliath)))) 
+	(PP (IN with) 
+	(NP (NP (DT the) (NNS leaders)) 
+	(PP (IN of) (NP (NNP Gondor))))) 
+	(PP (IN after) 
+	(S (VP (VBG leaving) (NP (NP (NNP Eriador)) 
+	(SBAR (WHADVP (WRB when)) 
+	(S (NP (DT a) (NN hafling)) 
+	(VP (VBD was) (VP (VBN reported) 
+	(PP (IN on) 
+	(NP (NP (DT the) (NN pass)) 
+	(PP (IN of) (NP (NNP Cirith) (NNP Ungol)))))))))))))
+)) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="PATTERN-25" category="PATTERN" sentence="true">
+<!-- Test of multiple ^ (actor skipping) in a pattern: second skip is \-\-\-LEG (parliament) -->
+<!-- That "(NE GONDOR IN ERIDOR" isn't ideal but things seem to be working -->
+<!-- Last update: TABARI validation with modifications -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="044"></EventCoding>
+<Text>
+Arnor has celebrated Iftar at Osgiliath with the parliament of Gondor in Eriador 
+after a hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Arnor))
+    (VP (VBZ has)
+      (VP (VBN celebrated)
+        (NP
+          (NP (NNP Iftar))
+          (PP (IN at)
+            (NP (NNP Osgiliath))))
+        (PP (IN with)
+          (NP
+            (NP (DT the) (NNS parliament))
+            (PP (IN of)
+              (NP
+                (NP (NNP Gondor))
+                (PP (IN in)
+                  (NP (NNP Eriador)))))))
+        (SBAR (IN after)
+          (S
+            (NP (DT a) (NN hafling))
+            (VP (VBD was)
+              (VP (VBN reported)
+                (PP (IN on)
+                  (NP
+                    (NP (DT the) (NN pass))
+                    (PP (IN of)
+                      (NP (NNP Cirith) (NNP Ungol)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950102" id="PATTERN-27" category="PATTERN" sentence="true">
+<!-- Test of ^ (actor skipping) in a pattern; skipped actor follows verb.   -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="043"></EventCoding>
+<Text>
+Arnor has celebrated Eid at United Arab Emirates with Gondor after a 
+hafling was reported on the pass of Cirith Ungol. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Arnor))
+    (VP (VBZ has)
+      (VP (VBN celebrated)
+        (NP
+          (NP (NN Eid))
+          (PP (IN at)
+            (NP (NNP United) (NNP Arab) (NNPS Emirates))))
+        (PP (IN with)
+          (NP (NNP Gondor)))
+        (SBAR (IN after)
+          (S
+            (NP (DT a) (NN hafling))
+            (VP (VBD was)
+              (VP (VBN reported)
+                (PP (IN on)
+                  (NP
+                    (NP (DT the) (NN pass))
+                    (PP (IN of)
+                      (NP (NNP Cirith) (NNP Ungol)))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19820727" id="PATTERN-28" category="PATTERN" sentence="true">
+<!-- Conjunction at next to last position in sentence; could cause clause marking issues  -->
+<!-- in TABARI, but just gets absorbed into a very long (NE here -->
+<!-- Last update: TABARI validation with dictionary modifications -->
+<EventCoding sourcecode="GON" targetcode="OSG" eventcode="223"></EventCoding>
+<Text>
+Gondor launched a new bombing and shelling offensive against besieged 
+Osgiliath during the night following daylight raids in which 
+Arnor spokesmen said 54 civilians were killed or injured. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (S
+      (NP (NNP Gondor))
+      (VP (VBD launched)
+        (NP (DT a) (JJ new) (NN bombing))))
+    (CC and)
+    (S
+      (VP (VBG shelling)
+        (NP (NN offensive))
+        (PP (IN against)
+          (S
+            (VP (VBN besieged)
+              (NP (NN Osgiliath))
+              (PP (IN during)
+                (NP
+                  (NP (DT the) (NN night))
+                  (PP (VBG following)
+                    (NP
+                      (NP (NN daylight) (NNS raids))
+                      (SBAR
+                        (WHPP (IN in)
+                          (WHNP (WDT which)))
+                        (S
+                          (NP (NNP Arnor) (NNS spokesmen))
+                          (VP (VBD said)
+                            (SBAR
+                              (S
+                                (NP (CD 54) (NNS civilians))
+                                (VP (VBD were)
+                                  (VP (VBN killed)
+                                    (CC or)
+                                    (VBN injured)))))))))))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="PATTERN-29" category="PATTERN" sentence="true">
+<!-- Basic check on the priority of longer patterns -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="ERI" eventcode="121"></EventCoding>
+<Text>
+The Philippines was criticized over its territorial dispute with Eriador.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNPS Philippines)) (VP (VBD was) (VP (VBN criticized) (PP (IN over) (NP (PRP$ its) (JJ territorial) (NN dispute))) (PP (IN with) (NP (NNP Eriador))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="PATTERN-30" category="PATTERN" sentence="true">
+<!-- Basic check on the priority of longer patterns -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="ERI" eventcode="123"></EventCoding>
+<Text>
+The Philippines was heavily and unjustly criticized over its territorial dispute with Eriador.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNPS Philippines)) (VP (VBD was) (ADVP (ADVP (RB heavily)) (CC and) (ADVP (RB unjustly))) (VP (VBN criticized) (PP (IN over) (NP (PRP$ its) (JJ territorial) (NN dispute))) (PP (IN with) (NP (NN Eriador))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950103" id="PATTERN-31" category="PATTERN" sentence="true">
+<!-- Basic check on the priority of longer patterns -->
+<!-- Last update: 24-Sept-2014 -->
+<EventCoding sourcecode="PHL" targetcode="ERI" eventcode="122"></EventCoding>
+<Text>
+The Philippines was heavily criticized over its territorial dispute with Eriador.
+</Text>
+<Parse>
+(ROOT (S (NP (DT The) (NNPS Philippines)) (VP (VBD was) (ADVP (RB heavily)) (VP (VBN criticized) (PP (IN over) (NP (PRP$ its) (JJ territorial) (NN dispute))) (PP (IN with) (NP (NN Eriador))))) (. .)))
+</Parse>
+</Sentence>
+
+
+<!--
+##################################################################
+#
+#               MODIFICATIONS: PASSIVE VOICE AND
+#                    COMMA-DELIMITED CLAUSES
+#
+##################################################################
+-->
+
+<Sentence date="19950112" id="PASSIVE-01" category="MODIFY" sentence="true">
+<!-- Automatic detection of passive voice in a simple verb -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112"></EventCoding>
+<Text>
+Eriador was opposed by Osgiliath, the state's fiercest foe, 
+in being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Eriador))
+    (VP (VBD was)
+      (VP (VBN opposed)
+        (PP (IN by)
+          (NP
+            (NP (NNP Osgiliath))
+            (, ,)
+            (NP
+              (NP (DT the) (NN state) (POS 's))
+              (JJS fiercest) (NN foe))
+            (, ,)))
+        (PP (IN in)
+          (S
+            (VP (VBG being)
+              (VP (VBN drawn)
+                (PP (IN into)
+                  (NP (DT the) (NN peace) (NN process)))
+                (PP (IN by)
+                  (NP
+                    (NP (PRP$ its) (NN resumption))
+                    (PP (IN of)
+                      (NP (JJ diplomatic) (NNS ties)))))
+                (PP (IN with)
+                  (NP (NNP Gondor)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-02" category="MODIFY" sentence="true">
+<!-- [Automatic detection of passive voice in a simple verb plus adverb] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112"></EventCoding>
+<Text>
+Eriador was fiercely opposed by Osgiliath, the state's fiercest foe, 
+in being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Eriador))
+    (VP (VBD was)
+      (ADVP (RB fiercely))
+      (VP (VBN opposed)
+        (PP (IN by)
+          (NP
+            (NP (NNP Osgiliath))
+            (, ,)
+            (NP
+              (NP (DT the) (NN state) (POS 's))
+              (JJS fiercest) (NN foe))
+            (, ,)))
+        (PP (IN in)
+          (S
+            (VP (VBG being)
+              (VP (VBN drawn)
+                (PP (IN into)
+                  (NP (DT the) (NN peace) (NN process)))
+                (PP (IN by)
+                  (NP
+                    (NP (PRP$ its) (NN resumption))
+                    (PP (IN of)
+                      (NP (JJ diplomatic) (NNS ties)))))
+                (PP (IN with)
+                  (NP (NNP Gondor)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-03" category="MODIFY" sentence="true">
+<!-- Not passive voice but has actor switching by +/$ pattern fitting; -->
+<!-- (order is still OSG-ERI, but it is set by the pattern generating 071 -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="071"></EventCoding>
+<Text>
+Eriador has received by courier money from Osgiliath, the state's 
+fiercest foe, to be drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT (S 
+  (NP (NNP Eriador)
+  ) 
+  (VP 
+    (VBZ has) 
+    (VP 
+      (VBN received) 
+      (PP (IN by) (NP (NN courier) (NN money)
+        )
+      ) 
+      (PP (IN from) (NP 
+          (NP (NNP Osgiliath)
+          ) (, ,) (NP 
+            (NP (DT the) (NN state) (POS 's)
+            ) (JJS fiercest) (NN foe)
+        ) )
+      ) (, ,) (S 
+        (VP 
+          (TO to) 
+          (VP 
+            (VB be) 
+            (VP 
+              (VBN drawn) 
+              (PP (IN into) (NP (DT the) (NN peace) (NN process)
+                )
+              ) 
+              (PP (IN by) (NP 
+                  (NP 
+                    (PRP$ its) (NN resumption)
+                  ) 
+                  (PP (IN of) (NP 
+                      (JJ diplomatic) (NNS ties)
+                ) ) )
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+            ) ) )
+        ) )
+      )
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-04" category="MODIFY" sentence="true">
+<!-- Automatic detection of passive voice in a verb followed by a  -->
+<!--  modifier, which failed in earlier versions -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="OSG" targetcode="ERI" eventcode="112"></EventCoding>
+<Text>
+Eriador was opposed earlier by Osgiliath, the state's fiercest foe, 
+in being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (NP (NNP Eriador))
+    (VP (VBD was)
+      (VP (VBN opposed)
+        (ADVP (RB earlier)
+          (PP (IN by)
+            (NP
+              (NP (NNP Osgiliath))
+              (, ,)
+              (NP
+                (NP (DT the) (NN state) (POS 's))
+                (JJS fiercest) (NN foe))
+              (, ,))))
+        (PP (IN in)
+          (S
+            (VP (VBG being)
+              (VP (VBN drawn)
+                (PP (IN into)
+                  (NP (DT the) (NN peace) (NN process)))
+                (PP (IN by)
+                  (NP
+                    (NP (PRP$ its) (NN resumption))
+                    (PP (IN of)
+                      (NP (JJ diplomatic) (NNS ties)))))
+                (PP (IN with)
+                  (NP (NNP Gondor)))))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950112" id="PASSIVE-05" category="MODIFY" sentence="true">
+<!-- Generated an array bounds problem in earlier versions OF TAB; generates no events  -->
+<!-- since no actor before verb] -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Rebuked by Eriador, the state's fiercest foe, 
+Osgiliath is being drawn into the peace process by its resumption 
+of diplomatic ties with Gondor. 
+</Text>
+<Parse>
+(ROOT
+  (S
+    (S
+      (VP (VBN Rebuked)
+        (PP (IN by)
+          (NP
+            (NP (NNP Eriador))
+            (, ,)
+            (NP
+              (NP (DT the) (NN state) (POS 's))
+              (JJS fiercest) (NN foe))))))
+    (, ,)
+    (NP (NN Osgiliath))
+    (VP (VBZ is)
+      (VP (VBG being)
+        (VP (VBN drawn)
+          (PP (IN into)
+            (NP (DT the) (NN peace) (NN process)))
+          (PP (IN by)
+            (NP
+              (NP (PRP$ its) (NN resumption))
+              (PP (IN of)
+                (NP (JJ diplomatic) (NNS ties)))))
+          (PP (IN with)
+            (NP (NNP Gondor))))))
+    (. .)))
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-01" category="MODIFY" sentence="true">
+<!--  Standard elimination of internal comma-delimited clause only -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor, 
+five years after crowds burned down its embassy,  a very senior 
+Bree official said on Saturday night. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+            ) ) )
+        ) )
+      )
+    )
+  )  (, ,)  (S  
+    (NP  
+      (ADJP  
+        (NP 
+          (CD five) (NNS years)
+        )  (JJ after)
+      )  (NNS crowds)
+    )  
+    (VP 
+      (VBD burned)  (PRT 
+        (RP down)
+      )  (NP 
+        (PRP$ its) (NN embassy)
+    ) )
+  )  (, ,)  (S  
+    (NP (DT a) (JJ very) (JJ senior) (NNP Bree) (NN official)
+    )  
+    (VP 
+      (VBD said)  
+      (PP (IN on)  (NP (NNP Saturday) (NN night)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-02" category="MODIFY" sentence="true">
+<!--  Standard elimination of comma-delimited terminal clause only -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NN Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNP Calenardhon) (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD burned)  (PRT 
+                      (RP down)
+                    )  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-03" category="MODIFY" sentence="true">
+<!--  Standard elimination of both an internal and terminal comma-delimited clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor, 
+five years after crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+            ) ) )
+        ) )
+      )
+    )
+  )  (, ,)  (S  
+    (NP  
+      (ADJP  
+        (NP 
+          (CD five) (NNS years)
+        )  (JJ after)
+      )  (NNS crowds)
+    )  
+    (VP 
+      (VBD burned)  (PRT 
+        (RP down)
+      )  (NP 
+        (PRP$ its) (NN embassy)
+    ) )
+  )  (, ,)  (S  
+    (NP (DT a) (JJ senior) (NN official)
+    )  
+    (VP 
+      (VBD said)  
+      (PP (IN on)  (NP (NNP Saturday)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-04" category="MODIFY" sentence="true">
+<!-- Initial comma-delimited clause should not be eliminated -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+Arnor is about to restore complete, full diplomatic ties with Gondor almost 
+five years after Cxlenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NNP Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNP Cxlenardhon) (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD burned)  (PRT 
+                      (RP down)
+                    )  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<!-- OPTION: COMMA: MIN = 4 MAX = 6 EMIN = 3 EMAX = 6 BMIN = 3 BMAX = 6 -->
+<!-- Change length of comma-delimited initial, internal and terminal clauses -->
+
+<Config option="comma_min" value="4"></Config>
+<Config option="comma_max" value="6"></Config>
+<Config option="comma_emin" value="3"></Config>
+<Config option="comma_emax" value="6"></Config>
+<Config option="comma_bmin" value="3"></Config>
+<Config option="comma_bmax" value="6"></Config>
+
+<!-- Turn off require_dyad to pick up some terminal clauses -->
+<Config option="require_dyad" value="false"></Config>
+
+<Sentence date="19950101" id="COMMA-05" category="MODIFY" sentence="true">
+<!--  Should match the internal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="CAL" eventcode="064"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gxndor, almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gxndor)
+                )
+              ) (, ,) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-06" category="MODIFY" sentence="true">
+<!--  Under TABARI, this would match the terminal clause. However, the (NP-TMP markup -->
+<!--  not converted to an (NE, so there is no object for SAID, and hence nothing is   -->
+<!--  coded there even though the check_comma() leaves the phrase intact (which is    -->
+<!--  probably the correct response). But see next record.  -->
+<!-- Last update: TABARI validation, with modifications 14.05.02 -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor almost five years after 
+Calenardhon crowds burned down its embassy,  a clearly inebriated Bree official said today. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (ADJP 
+      (RB clearly) (JJ inebriated)
+    ) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) (NP-TMP 
+      (NN today)
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-07" category="MODIFY" sentence="true">
+<!-- Initial comma-delimited clause should be eliminated since it is not part of a -->
+<!-- noun phrase. This removes the source actor from the primary phrase, but the   --> 
+<!-- phrase is coded because CoreNLP, for whatever reason, converts "on Saturday". -->
+<!-- to an (NP which is converted to (NE \-\-\- and thus provides a target. But just  -->
+<!-- 'Saturday' would go to (NP-TMP. CoreNLP is subtle, but probably not mean.     -->
+<!-- Last update: 14.05.02 -->
+<EventCoding sourcecode="GON" targetcode="---" eventcode="222"></EventCoding>
+<EventCoding sourcecode="BREGOV" targetcode="---" eventcode="023"></EventCoding>
+<Text>
+Arnor is about to restore, it seems, complete, full diplomatic ties with Gondor almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) (ADJP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (PRN 
+                (, ,) (S 
+                  (NP 
+                    (PRP it)
+                  ) 
+                  (VP 
+                    (VBZ seems)
+                  )
+                ) (, ,)
+              ) (NP 
+                (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+            ) ) )
+        ) )
+      ) 
+      (SBAR 
+        (NP 
+          (RB almost) (CD five) (NNS years)
+        ) (IN after) (S 
+          (NP (NN Calenardhon) (NNS crowds)
+          ) 
+          (VP 
+            (VBD burned) (PRT 
+              (RP down)
+            ) (NP 
+              (PRP$ its) (NN embassy)
+        ) ) )
+    ) )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="COMMA-08" category="MODIFY" sentence="true">
+<!-- Initial clause is not eliminated because the first comma is absorbed the  -->
+<!-- the noun phrase, which is a distinction TABARI would not have made -->
+<!-- Last update: TABARI validation with modification of outcome -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<EventCoding sourcecode="BREGOV" targetcode="---" eventcode="023"></EventCoding>
+<Text>
+Arnor is about to restore complete, full diplomatic ties with Gondor almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-09" category="MODIFY" sentence="true">
+<!--  Initial comma-delimited clause should not be eliminated because of length -->
+<!--  This also shifts the code from RESTORE [064] to SAID [023] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="023"></EventCoding>
+<EventCoding sourcecode="BREGOV" targetcode="---" eventcode="023"></EventCoding>
+<Text>
+Arnor is said to be about to restore, it seems, complete, full diplomatic ties with
+Gondor almost five years after Calenardhon crowds burned down its embassy, a senior Bree 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (VBN said) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB be) (ADJP 
+                (RB about) (S 
+                  (VP 
+                    (TO to) 
+                    (VP 
+                      (VB restore) (PRN 
+                        (, ,) (S 
+                          (NP 
+                            (PRP it)
+                          ) 
+                          (VP 
+                            (VBZ seems)
+                          )
+                        ) (, ,)
+                      ) (NP 
+                        (JJ complete) (, ,) (JJ full) (JJ diplomatic) (NNS ties)
+                      ) 
+                      (PP (IN with) (NP (NNP Gondor)
+                    ) ) )
+                ) )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<!-- OPTION: COMMA: OFF -->
+<!-- Turn off all of the comma-delimited clauses checking at this point -->
+
+<Config option="comma_max" value="0"></Config>
+<Config option="comma_emax" value="0"></Config>
+<Config option="comma_bmax" value="0"></Config>
+
+<Sentence date="19950101" id="COMMA-10" category="MODIFY" sentence="true">
+<!--  Should match the internal clause and terminal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="064"></EventCoding>
+<EventCoding sourcecode="---GOV" targetcode="---" eventcode="023"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gondor, almost 
+five years after Calenardhon crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT  
+(S  
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (VBZ is)  
+      (VP 
+        (IN about)  (S  
+          (VP 
+            (TO to)  
+            (VP 
+              (VB restore)  (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              )  
+              (PP (IN with)  (NP (NN Gondor)
+                )
+              )  
+              (SBAR  
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                )  (IN after)  (S  
+                  (NP (NNP Calenardhon) (NNS crowds)
+                  )  
+                  (VP 
+                    (VBD burned)  (PRT 
+                      (RP down)
+                    )  (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-11" category="MODIFY" sentence="true">
+<!--  Should match BURNED DOWN (NE EMBASSY and the terminal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="---" eventcode="222"></EventCoding>
+<EventCoding sourcecode="---GOV" targetcode="---" eventcode="023"></EventCoding>
+<Text>
+Arnor is about to improve full diplomatic ties with Gondor, almost 
+five years after Calenardhon crowds burned down its embassy,  a 
+clearly inebriated Bree official said today.
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB improve) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) (, ,) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-12" category="MODIFY" sentence="true">
+<!-- TABARI would [incorrectly] match BREGOV the terminal clause after picking up GON -->
+<!-- as source.  PETR picks up only BURNED DOWN (NE EMBASSY due to the absence of an  -->
+<!-- (NE in the terminal clause -->
+<!-- clause -->
+<!-- Last update: TABARI validation with modification -->
+<EventCoding sourcecode="CAL" targetcode="---" eventcode="222"></EventCoding>
+<Text>
+Arnor is about to improve full diplomatic ties with Gondor, almost 
+five years after Calenardhon crowds burned down its embassy,  a 
+senior Bree official said today. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB improve) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NNP Gondor)
+                )
+              ) (, ,) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) (NP-TMP 
+      (NN today)
+    )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<!-- OPTION: COMMA: MIN = 2 MAX = 8 EMIN = 2 EMAX = 8 BMIN = 0 BMAX = 0 -->
+<!-- Canceling COMMA changes in .options file and returning to the state prior to the  -->
+<!-- change. bmin/bmax remains deactivated.  -->
+
+<Config option="comma_min" value="2"></Config>
+<Config option="comma_max" value="8"></Config>
+<Config option="comma_emin" value="2"></Config>
+<Config option="comma_emax" value="8"></Config>
+<Config option="require_dyad" value="true"></Config>
+
+
+<Sentence date="19950113" id="COMMA-13" category="MODIFY"  sentence="true">
+<!-- Last update: TABARI validation: DEMO-13  -->
+<EventCoding sourcecode="ARN" targetcode="DAG" eventcode="085"></EventCoding>
+<Text>
+Arnor on Thursday signed an 800 million ducat trade protocol
+for 1990 with Dagolath, its biggest trading partner, officials said. 
+</Text>
+<Parse> 
+(ROOT (S  
+  (S  
+    (NP  
+      (NP (NNP Arnor)
+      )  
+      (PP (IN on)  (NP (NNP Thursday)
+      ) )
+    )  
+    (VP 
+      (VBD signed)  (NP (DT an)  (ADJP  
+          (QP 
+            (CD 800) (CD million)
+          )
+        )  (NN ducat) (NN trade) (NN protocol)
+      )  
+      (PP (IN for)  (NP 
+          (CD 1990)
+        )
+      )  
+      (PP (IN with)  (NP (NN Dagolath)
+        )
+      )  (, ,)  (S  
+        (NP 
+          (PRP$ its) (JJS biggest) (NN trading) (NN partner)
+    ) ) )
+  )  (, ,)  (NP (NNS officials)
+  )  
+  (VP 
+    (VBD said)
+  )  (. .)
+) )
+</Parse>
+<!-- 
+Coreference set:
+	(1,16,[16,17)) -> (1,1,[1,4)), that is: "its" -> "Arnor on Thursday"
+-->
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-15" category="MODIFY" sentence="true">
+<!--  Standard elimination of internal comma-delimited clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gxndor, several 
+years after Calenardhon crowds burned down its embassy,  a senior 
+official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NN AArnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP 
+                  (NP (NNP Gxndor)
+                  ) (, ,) (NP 
+                    (JJ several) (NNS years)
+                ) )
+              ) 
+              (SBAR 
+                (IN after) (S 
+                  (NP (NN Calenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="COMMA-16" category="MODIFY" sentence="true">
+<!--  Standard elimination of comma-delimited terminal clause -->
+<!-- Last update: TABARI validation -->
+<EventCoding noevents = "True"></EventCoding>
+<Text>
+Arnor is about to restore full diplomatic ties with Gxndor almost 
+five years after Cxlenardhon crowds burned down its embassy,  a senior 
+Bree official said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S 
+    (NP (NNP Arnor)
+    ) 
+    (VP 
+      (VBZ is) 
+      (VP 
+        (IN about) (S 
+          (VP 
+            (TO to) 
+            (VP 
+              (VB restore) (NP 
+                (JJ full) (JJ diplomatic) (NNS ties)
+              ) 
+              (PP (IN with) (NP (NN Gxndor)
+                )
+              ) 
+              (SBAR 
+                (NP 
+                  (RB almost) (CD five) (NNS years)
+                ) (IN after) (S 
+                  (NP (NNP Cxlenardhon) (NNS crowds)
+                  ) 
+                  (VP 
+                    (VBD burned) (PRT 
+                      (RP down)
+                    ) (NP 
+                      (PRP$ its) (NN embassy)
+                ) ) )
+            ) )
+            ) ) )
+    )
+  ) (, ,) (NP (DT a) (JJ senior) (NNP Bree) (NN official)
+  ) 
+  (VP 
+    (VBD said) 
+    (PP (IN on) (NP (NNP Saturday)
+    ) )
+  ) (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<!--
+##################################################################
+#
+#                           SYNSETS
+#  Numbering on these is still erratic since some of the TABARI 
+#  cases were not relevant either because they were not grammatical
+#  or because they involved recursive synsets, which are not 
+#  implemented at present.
+#
+##################################################################
+-->
+
+<Sentence date="19950101" id="SYNSET-01" category="SYNSET" sentence="true">
+<!-- Simple coding for potential synset match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="901"></EventCoding>
+<Text>
+Arnor will abandon full diplomatic ties with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ full) (JJ diplomatic) (NNS ties)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-02" category="SYNSET" sentence="true">
+<!-- [Just to make sure we aren't hitting a synset directly, or getting any -->
+<!--  crashes when doing this. -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Arnor will abandon full &amp;TIETYPE ties with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday.
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP  
+          (NP 
+            (JJ full)
+          )  (CC &amp;)  (NP  
+            (NP (NNP TIETYPE) (NNS ties)
+            )  
+            (PP (IN with)  (NP (NNP Gondor)
+          ) ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-03" category="SYNSET" sentence="true">
+<!-- Synset element in upper match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="902"></EventCoding>
+<Text>
+Arnor will abandon full economic ties with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ full) (JJ economic) (NNS ties)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-04" category="SYNSET" sentence="true">
+<!-- [Synset element in upper match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="902"></EventCoding>
+<Text>
+Arnor will abandon full cultural ties with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ full) (JJ cultural) (NNS ties)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-05" category="SYNSET" sentence="true">
+<!-- [Synset element in upper match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="902"></EventCoding>
+<Text>
+Arnor will abandon full military ties with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ full) (JJ military) (NNS ties)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-06a" category="SYNSET" sentence="true">
+<!-- [Synset element in upper match: should not match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Arnor will abandon full military txes with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ full) (JJ military) (NNS txes)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-06c" category="SYNSET" sentence="true">
+<!-- Not in the synset: should not code -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Arnor will abandon full symbolic ties with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ full) (JJ symbolic) (NNS ties)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-07a" category="SYNSET" sentence="true">
+<!-- Synset element in lower pattern: this matches a simple pattern -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="071"></EventCoding>
+<Text>
+Arnor will contribute a million rupees to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP  
+            (QP 
+              (DT a) (CD million)
+            )  (NNS rupees)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-07b" category="SYNSET" sentence="true">
+<!-- Synset element in lower match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million dollars to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP  
+            (QP 
+              (DT a) (CD million)
+            )  (NNS dollars)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-08a" category="SYNSET" sentence="true">
+<!-- [Synset element as last element of phrase in upper match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million euros to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP  
+            (QP 
+              (DT a) (CD million)
+            )  (NNS euros)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-08b" category="SYNSET" sentence="true">
+<!-- [Synset element as last element of phrase in upper match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million kroner to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP (DT a) (CD million) (NN kroner)
+        )  
+        (PP 
+          (TO to)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-09" category="SYNSET" sentence="true">
+<!-- Multi-word synset element in upper match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million swiss francs to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP  
+            (QP 
+              (DT a) (CD million)
+            )  (JJ swiss) (NNS francs)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-10" category="SYNSET" sentence="true">
+<!-- [Multi-word synset element in upper match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million golden goblin galleons to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP (DT a) (CD million) (JJ golden) (NN goblin) (NNS galleons)
+        )  
+        (PP 
+          (TO to)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-11a" category="SYNSET" sentence="true">
+<!-- [Partial Multi-word synset element in upper match; should not match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="070"></EventCoding>
+<Text>
+Arnor will contribute a million goblin galleons to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP (DT a) (CD million) (NN goblin) (NNS galleons)
+        )  
+        (PP 
+          (TO to)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-11b" category="SYNSET" sentence="true">
+<!-- [Partial Multi-word synset element in upper match; should not match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="070"></EventCoding>
+<Text>
+Arnor will contribute a million golden galleons to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP  
+            (QP 
+              (DT a) (CD million)
+            )  (JJ golden) (NNS galleons)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-12" category="SYNSET" sentence="true">
+<!-- [Verb containing lower synset but no match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="121"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil clashed over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  
+  (VP 
+    (VBD clashed)  
+    (PP (IN over)  (NP  
+        (NP (DT the) (NNS efforts)
+        )  
+        (PP (IN of)  (NP (NNP Eriadori)
+      ) ) )
+    )  (S  
+      (VP 
+        (TO to)  
+        (VP 
+          (VB deal)  
+          (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+            )
+          )  
+          (PP (IN during)  (NP  
+              (NP (DT a) (JJ brief) (JJ private) (NN visit)
+              )  
+              (PP 
+                (TO to)  (NP (NNP Eriador)
+            ) ) )
+          )  
+          (PP 
+            (VBG starting)  
+            (PP (IN on)  (NP (NNP Sunday)
+          ) ) )
+      ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-13" category="SYNSET" sentence="true">
+<!-- Synset element in lower match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil didn't clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  
+  (VP 
+    (VBD did) (RB n't)  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-14" category="SYNSET" sentence="true">
+<!-- Synset element in lower match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil will not clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  
+  (VP 
+    (MD will) (RB not)  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-15a" category="SYNSET" sentence="true">
+<!-- Synset element in lower match -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil will not ever clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  
+  (VP 
+    (MD will) (RB not)  (ADVP 
+      (RB ever)
+    )  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-15b" category="SYNSET" sentence="true">
+<!-- [Synset element in lower match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil can't ever clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  
+  (VP 
+    (MD ca) (RB n't)  (ADVP 
+      (RB ever)
+    )  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-16" category="SYNSET" sentence="true">
+<!-- [Synset element in lower match, &syn is second element in pattern] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="906"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil unexpectedly won't clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RB unexpectedly)
+  )  
+  (VP 
+    (MD wo) (RB n't)  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-17" category="SYNSET" sentence="true">
+<!-- [Complex synset pattern in lower match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil most certainly really did not clash over the efforts of Eriadori  
+to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RBS most) (RB certainly)
+  )  (ADVP 
+    (RB really)
+  )  
+  (VP 
+    (VBD did) (RB not)  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-18" category="SYNSET" sentence="true">
+<!-- [Verb containing lower synset ] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="904"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil didn't clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  
+  (VP 
+    (VBD did) (RB n't)  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-19a" category="SYNSET" sentence="true">
+<!-- [Should allow ending on an open match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million yum yennyen to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP (DT a) (CD million) (NN yum) (NN yennyen)
+        )  
+        (PP 
+          (TO to)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+<Sentence date="19950101" id="SYNSET-20a" category="SYNSET" sentence="true">
+<!-- [Pre-check on open match within a phrase] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will contribute a million austrian florin to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP (DT a)  (ADJP 
+              (CD million) (JJ austrian)
+            )  (NN florin)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-20b" category="SYNSET" sentence="true">
+<!-- [Should allow open match within a phrase] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="904"></EventCoding>
+<Text>
+Arnor will contribute a million austrian gold florin to Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB contribute)  (NP  
+          (NP  
+            (QP 
+              (DT a) (CD million)
+            )  (JJ austrian) (NN gold) (NN florin)
+          )  
+          (PP 
+            (TO to)  (NP (NNP Gondor)
+          ) )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-21a" category="SYNSET" sentence="true">
+<!-- Synset development: closed match in conventional pattern -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="102"></EventCoding>
+<Text>
+Arnor will adopt a resolution with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB adopt)  (NP (DT a) (NN resolution)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-21b" category="SYNSET" sentence="true">
+<!-- [Synset development: failed closed match in conventional pattern ] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="081"></EventCoding>
+<Text>
+Arnor will adopt a set of resolutions with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB adopt)  (NP  
+          (NP (DT a) (NN set)
+          )  
+          (PP (IN of)  (NP (NNS resolutions)
+          ) )
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-21c" category="SYNSET" sentence="true">
+<!-- Synset development: open [TABARI] match in conventional pattern -->
+<!-- Last update: TABARI validation with addition of &REVOLT synset which is a  -->
+<!-- for the stemmed matching of TABARI -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="802"></EventCoding>
+<Text>
+Arnor will adopt a revolution with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB adopt)  (NP (DT a) (NN revolution)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-21d" category="SYNSET" sentence="true">
+<!-- [Synset development: open match in conventional pattern ] -->
+<!-- Last update: TABARI validation with addition of &REVOLT synset  -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="802"></EventCoding>
+<Text>
+Arnor will adopt a revolutionary manifesto with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB adopt)  (NP (DT a) (JJ revolutionary) (NN manifesto)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-22a" category="SYNSET" sentence="true">
+<!-- [synset upper match: internal consecutive] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="903"></EventCoding>
+<Text>
+Arnor will abandon new economic relations with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ new) (JJ economic) (NNS relations)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-22b" category="SYNSET" sentence="true">
+<!-- [synset upper match: internal consecutive; fails] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Arnor will abandon new global economic relations with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ new) (JJ global) (JJ economic) (NNS relations)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-22bb" category="SYNSET" sentence="true">
+<!-- [synset upper match: internal consecutive; fails] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="345"></EventCoding>
+<Text>
+Arnor will abandon new global economic trade relations with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ new) (JJ global) (JJ economic) (NN trade) (NNS relations)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-22c" category="SYNSET" sentence="true">
+<!-- [synset upper match: internal open] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="904"></EventCoding>
+<Text>
+Arnor will abandon improved economic relations with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ improved) (JJ economic) (NNS relations)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-22d" category="SYNSET" sentence="true">
+<!-- [synset match: internal consecutive] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="904"></EventCoding>
+<Text>
+Arnor will abandon improved global economic relations with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (S  
+    (NP (NNP Arnor)
+    )  
+    (VP 
+      (MD will)  
+      (VP 
+        (VB abandon)  (NP 
+          (JJ improved) (JJ global) (JJ economic) (NNS relations)
+        )  
+        (PP (IN with)  (NP (NNP Gondor)
+          )
+        )  
+        (SBAR  
+          (NP 
+            (RB almost) (CD five) (NNS years)
+          )  (IN after)  (S  
+            (NP (NNS crowds)
+            )  
+            (VP 
+              (VBD trashed)  (NP 
+                (PRP$ its) (NN embassy)
+          ) ) )
+      ) )
+    )
+  )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+  )  
+  (VP 
+    (VBD said)  
+    (PP (IN on)  (NP (NNP Saturday)
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-22e" category="SYNSET" sentence="true">
+<!-- Synset element in lower match, open connector -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="906"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil unexpectedly now won't try to clash over the efforts of Eriadori to deal 
+with an orc infestation during a brief private trip to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RB unexpectedly)
+  )  (ADVP 
+    (RB now)
+  )  
+  (VP 
+    (MD wo) (RB n't)  
+    (VP 
+      (VB try)  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB clash)  
+            (PP (IN over)  (NP  
+                (NP (DT the) (NNS efforts)
+                )  
+                (PP (IN of)  (NP (NNP Eriadori)
+              ) ) )
+            )  (S  
+              (VP 
+                (TO to)  
+                (VP 
+                  (VB deal)  
+                  (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+                    )
+                  )  
+                  (PP (IN during)  (NP  
+                      (NP (DT a) (JJ brief) (JJ private) (NN trip)
+                      )  
+                      (PP 
+                        (TO to)  (NP (NNP Eriador)
+                    ) ) )
+                ) )
+                ) ) )
+        )
+      )  
+      (PP 
+        (VBG starting)  
+        (PP (IN on)  (NP (NNP Sunday)
+      ) ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-22f" category="SYNSET" sentence="true">
+<!-- [Complex synset pattern in lower match, closed connector] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="907"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil most certainly won't ever clash over the efforts of Eriadori  
+to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RBS most) (RB certainly)
+  )  
+  (VP 
+    (MD wo) (RB n't)  (ADVP 
+      (RB ever)
+    )  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-22g" category="SYNSET" sentence="true">
+<!-- [Complex synset pattern in lower match, closed connector] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="907"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil most certainly really did not ever clash over the efforts of Eriadori  
+to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RBS most) (RB certainly)
+  )  (ADVP 
+    (RB really)
+  )  
+  (VP 
+    (VBD did) (RB not)  (ADVP 
+      (RB ever)
+    )  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-22h" category="SYNSET" sentence="true">
+<!-- [Complex synset pattern in lower match, closed connector, fails] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil most certainly really did not even ever clash over the efforts 
+of Eriadori to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RBS most) (RB certainly)
+  )  (ADVP 
+    (RB really)
+  )  
+  (VP 
+    (VBD did) (RB not)  (ADVP 
+      (RB even) (RB ever)
+    )  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950111" id="SYNSET-22i" category="SYNSET" sentence="true">
+<!-- [Complex synset pattern in lower match, closed connector, fails on 907] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="BREGOV" targetcode="ERI" eventcode="905"></EventCoding>
+<Text>
+Bree Prime Minister Romendacil most certainly really won't even ever clash over the efforts 
+of Eriadori to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Bree) (NNP Prime) (NNP Minister) (NNP Romendacil)
+  )  (ADVP 
+    (RBS most) (RB certainly)
+  )  (ADVP 
+    (RB really)
+  )  
+  (VP 
+    (MD wo) (RB n't)  (ADVP 
+      (RB even) (RB ever)
+    )  
+    (VP 
+      (VB clash)  
+      (PP (IN over)  (NP  
+          (NP (DT the) (NNS efforts)
+          )  
+          (PP (IN of)  (NP (NNP Eriadori)
+        ) ) )
+      )  (S  
+        (VP 
+          (TO to)  
+          (VP 
+            (VB deal)  
+            (PP (IN with)  (NP (DT an) (NN orc) (NN infestation)
+              )
+            )  
+            (PP (IN during)  (NP  
+                (NP (DT a) (JJ brief) (JJ private) (NN visit)
+                )  
+                (PP 
+                  (TO to)  (NP (NNP Eriador)
+              ) ) )
+            )  
+            (PP 
+              (VBG starting)  
+              (PP (IN on)  (NP (NNP Sunday)
+            ) ) )
+        ) )
+      )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23a" category="SYNSET" sentence="true">
+<!-- [Recursive synset match: no match] -->
+<!-- TABARI allowed synsets inside multi-word patterns in synsets; this has not been -->
+<!-- implemented in PETRARCH; the "SYNSET-23*" cases use the somewhat redundant patterns -->
+<!-- in WELCOME to accomplish the same things. These may or may not actually be testing -->
+<!-- additional features.  pas 14.05.09 -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="041"></EventCoding>
+<Text>
+Calenardhon welcomed memos from Bree on its role for in forthcoming peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP (NNS memos)
+    )  
+    (PP (IN from)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23b" category="SYNSET" sentence="true">
+<!-- [Recursive synset match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="911"></EventCoding>
+<Text>
+Calenardhon welcomed economic memos from Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP 
+      (JJ economic) (NNS memos)
+    )  
+    (PP (IN from)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23c" category="SYNSET" sentence="true">
+<!-- [Recursive synset match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="915"></EventCoding>
+<Text>
+Calenardhon welcomed economic rumors about Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP 
+      (JJ economic) (NNS rumors)
+    )  
+    (PP (IN about)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23d" category="SYNSET" sentence="true">
+<!-- [Recursive synset match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="915"></EventCoding>
+<Text>
+Calenardhon welcomed economic memos not about Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP 
+      (JJ economic) (NNS memos)
+    )  
+    (PP 
+      (RB not) (IN about)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23e" category="SYNSET" sentence="true">
+<!-- [Recursive synset match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="912"></EventCoding>
+<Text>
+Calenardhon welcomed cultural memos sent by Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP  
+      (NP 
+        (JJ cultural) (NNS memos)
+      )  
+      (VP 
+        (VBN sent)  
+        (PP (IN by)  (NP (NNP Bree)
+          )
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+          )
+        )  
+        (PP (IN for)  
+          (PP (IN in)  (NP 
+              (JJ forthcoming) (NN peace) (NNS talks)
+        ) ) )
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23ee" category="SYNSET" sentence="true">
+<!-- [Recursive synset match; fails on a closed connector] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="041"></EventCoding>
+<Text>
+Calenardhon welcomed cultural secret memos sent by Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP  
+      (NP 
+        (JJ cultural) (JJ secret) (NNS memos)
+      )  
+      (VP 
+        (VBN sent)  
+        (PP (IN by)  (NP (NNP Bree)
+          )
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+          )
+        )  
+        (PP (IN for)  
+          (PP (IN in)  (NP 
+              (JJ forthcoming) (NN peace) (NNS talks)
+        ) ) )
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23f" category="SYNSET" sentence="true">
+<!-- [Recursive synset match] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="911"></EventCoding>
+<Text>
+Calenardhon welcomed memos on economic issue from Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP (NNS memos)
+    )  
+    (PP (IN on)  (NP 
+        (JJ economic) (NN issue)
+      )
+    )  
+    (PP (IN from)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23g" category="SYNSET" sentence="true">
+<!-- [Recursive synset match: fails on closed] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="041"></EventCoding>
+<Text>
+Calenardhon welcomed cultural internal memos from Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP 
+      (JJ cultural) (JJ internal) (NNS memos)
+    )  
+    (PP (IN from)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23h" category="SYNSET" sentence="true">
+<!-- [Recursive synset match: matches open] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="914"></EventCoding>
+<Text>
+Calenardhon welcomed cultural internal assurances sent by Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP  
+      (NP 
+        (JJ cultural) (JJ internal) (NNS assurances)
+      )  
+      (VP 
+        (VBN sent)  
+        (PP (IN by)  (NP (NNP Bree)
+          )
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+          )
+        )  
+        (PP (IN for)  
+          (PP (IN in)  (NP 
+              (JJ forthcoming) (NN peace) (NNS talks)
+        ) ) )
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23i" category="SYNSET" sentence="true">
+<!-- [Recursive synset match: matches open] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="913"></EventCoding>
+<Text>
+Calenardhon welcomed assurances on cultural issues from Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NN Calenardhon)
+  )  
+  (VP 
+    (VBD welcomed)  (NP (NNS assurances)
+    )  
+    (PP (IN on)  (NP 
+        (JJ cultural) (NNS issues)
+      )
+    )  
+    (PP (IN from)  (NP  
+        (NP (NNP Bree)
+        )  
+        (PP (IN on)  (NP 
+            (PRP$ its) (NN role)
+      ) ) )
+    )  
+    (PP (IN for)  
+      (PP (IN in)  (NP 
+          (JJ forthcoming) (NN peace) (NNS talks)
+    ) ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950118" id="SYNSET-23j" category="SYNSET" sentence="true">
+<!-- [Recursive synset match: matches open] -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="CAL" targetcode="BRE" eventcode="913"></EventCoding>
+<Text>
+Calenardhon welcomed assurances on cultural issues sent from Bree on its role for in forthcoming 
+peace talks. 
+</Text>
+<Parse> 
+(ROOT (S 
+(NP (NN Calenardhon)
+)  
+(VP 
+(VBD welcomed)  (NP (NNS assurances)
+    )  
+    (PP (IN on)  (NP  
+        (NP 
+          (JJ cultural) (NNS issues)
+        )  
+        (VP 
+          (VBN sent)  
+          (PP (IN from)  (NP (NNP Bree)
+            )
+          )  
+          (PP (IN on)  (NP 
+              (PRP$ its) (NN role)
+            )
+          )  
+          (PP (IN for)  
+            (PP (IN in)  (NP 
+                (JJ forthcoming) (NN peace) (NNS talks)
+          ) ) )
+      ) )
+    )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+<Sentence date="19950101" id="SYNSET-24b" category="SYNSET" sentence="true">
+<!-- Test with basic conditional containing synsets -->
+<!-- Last update: TABARI validation -->
+<EventCoding sourcecode="ARN" targetcode="GON" eventcode="083"></EventCoding>
+<Text>
+Arnor is inching nearer to accord with Gondor almost 
+five years after crowds trashed its embassy, a senior official 
+said on Saturday. 
+</Text>
+<Parse> 
+(ROOT (S 
+  (NP (NNP Arnor)
+  )  
+  (VP 
+    (VBZ is)  
+    (VP 
+      (VBG inching)  (S  
+        (SBAR 
+          (IN nearer)  (S  
+            (VP 
+              (TO to)  
+              (VP 
+                (VB accord)  
+                (PP (IN with)  (NP (NNP Gondor)
+                  )
+                )  
+                (SBAR  
+                  (NP 
+                    (RB almost) (CD five) (NNS years)
+                  )  (IN after)  (S  
+                    (NP (NNS crowds)
+                    )  
+                    (VP 
+                      (VBD trashed)  (NP 
+                        (PRP$ its) (NN embassy)
+                  ) ) )
+              ) )
+            )
+          )
+        )  (, ,)  (NP (DT a) (JJ senior) (NN official)
+        )  
+        (VP 
+          (VBD said)  
+          (PP (IN on)  (NP (NNP Saturday)
+        ) ) )
+    ) )
+  )  (. .)
+) )
+</Parse>
+</Sentence>
+
+
+
+<Sentence date="19950104" id="ABOUT-01" category="DEMO" sentence="true">
+<!-- Successful termination of the unit tests -->
+<EventCoding sourcecode="RUSCOP" targetcode="RUSEDU" eventcode="212"></EventCoding>
+
+<Text>
+Russian police arrested Russian students in Moscow today.
+</Text>
+<Parse> 
+(ROOT (S (NP (JJ Russian) (NN police)) (VP (VBD arrested) (NP (JJ Russian) (NNS students)) (PP (IN in) (NP (NNP Moscow))) (NP-TMP (NN today))) (. .)))
+</Parse>
+</Sentence>
+
+<Sentence date="19950104" id="ABOUT-02" category="DEMO" sentence="true">
+<!-- Successful termination of the unit tests -->
+<EventCoding sourcecode="RUSCOP" targetcode="---EDU" eventcode="212"></EventCoding>
+
+<Text>
+Russian police arrested students in Moscow today.
+</Text>
+<Parse> 
+(ROOT (S (NP (JJ Russian) (NN police)) (VP (VBD arrested) (NP (NNS students)) (PP (IN in) (NP (NNP Moscow))) (NP-TMP (NN today))) (. .)))
+</Parse>
+</Sentence>
+
+
+
+<Sentence date="19950104" id="ICC-01" category="DEMO" sentence="true">
+<!-- Successful termination of the unit tests-->
+
+<EventCoding sourcecode="IGOCOPITP" targetcode="GON" eventcode="064"></EventCoding>
+<Text>
+The International Criminal Court is about to restore full diplomatic ties with Gondor almost 
+five years after crowds trashed its embassy.
+</Text>
+<Parse> 
+(ROOT (S (NP (DT The) (NNP International) (NNP Criminal) (NNP Police) (NNP Organization)) (VP (VBZ is) (VP (IN about) (S (VP (TO to) (VP (VB restore) (NP (JJ full) (JJ diplomatic) (NNS ties)) (PP (IN with) (NP (NNP Gondor))) (SBAR (NP (RB almost) (CD five) (NNS years)) (IN after) (S (NP (NNS crowds)) (VP (VBD trashed) (NP (PRP$ its) (NN embassy)))))))))) (. .)))
+</Parse>
+</Sentence>
+
+
+</Sentences>
 </Validation>

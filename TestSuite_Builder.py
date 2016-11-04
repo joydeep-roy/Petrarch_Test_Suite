@@ -59,7 +59,7 @@ def check_line(line):
 		fout.write("            fout_report.write(text +\"~\"+ parsed +\"~ "+ eventcode + "~ noevent \\n \" )\n")
 		fout.write("            print(\"test"+str(tfuncnum)+" Failed\")\n")
 		fout.write("    except:\n")
-		fout.write("        fout_report.write(text +\"~\"+ parsed +\"~ "+ eventcode + "~ noeventexception \\n \" )\n")
+		fout.write("        #fout_report.write(text +\"~\"+ parsed +\"~ "+ eventcode + "~ noeventexception \\n \" )\n")
 		fout.write("        print(\"test"+str(tfuncnum)+" Failed\")\n")
 		eventcode = ""
 		text=""
