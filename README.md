@@ -13,3 +13,19 @@ The test suite generates report in "~" separated Text File, which can be inporte
 
 Limitations of Test Suite :
 Currently the test suite does  not support scenarios to validate errors.
+
+# Petrarch_Universal Dependencies Test_Suite
+To run the Petrarch Universal Dependencies Test Suite Builder :
+- py TestSuite_Builder_UD.py <input_xml_file>
+
+The TestSuiteBuilder will generate test_script_ud.py with the test cases coded in python for all scenarios in the <input_xml_file>
+
+To run test_script_ud.py:
+- Copy the test_script_ud.py to the directory containing Petrarch_UD.py
+- py test_script_ud.py
+
+Output of test_script_ud.py :
+The test suite generates report in "@" separated Text File, which can be inported in Excel. It reports the Text,  Parse Tree, Expected Output as per Petrarch and the Output from PetrarchUD
+
+Limitations of Test Suite :
+Currently the test suite does  not support scenarios to validate errors.
