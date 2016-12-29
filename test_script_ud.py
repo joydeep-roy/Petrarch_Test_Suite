@@ -8,7 +8,28 @@ PETRreader.parse_Config(config)
 print("reading dicts")
 petrarch_ud.read_dictionaries()
 fout_report = codecs.open("test_report.txt","w",encoding='utf8') #opens test report file for writing
-fout_report.write("Text@ Parse Tree@ Expected Encoding as per Petrarch@ Result from Petrarch2\n")
+fout_report.write("Text@ Parse Tree@ Expected Encoding as per Petrarch@ Result from Petrarch2 @Verbs @Nouns\n")
+def parse_parser(parse):
+    phrase_dict = {}
+    for line in parse.splitlines():
+        line = line.split("_")
+        num = line[0][:2].strip()
+        str = line[0][2:].strip()
+        phrase_dict[num]=str
+        #print(num)
+        #print(str)
+    return phrase_dict	
+def parse_verb_noun(strs,phrase_dict):
+    str_out = ""
+    str_arr = str(strs).strip("{").split(",")
+    print("Verb/Noun") 
+    print("Printing Verbs/Noun")
+    for x in str_arr:
+        str_num = x.find(":")		
+        str_out = str_out + ", " + phrase_dict[x[:str_num].strip()]
+        #print(phrase_dict[verb[:verb_num].strip()])
+    fout_report.write("@"+ str_out[1:])
+    return
 def test1():
     text="""Arnor is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -33,6 +54,7 @@ five years after crowds trashed its embassy.
 18	embassy	_	NOUN	NOUN	_	16	dobj
 19	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test2': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -44,13 +66,22 @@ five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test2']['sents']['0']:
             print(return_dict['test2']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test2']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test2']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test2 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test2 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test2']['sents']['0']:
+        verbs=return_dict['test2']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test2']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test2']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test2():
     text="""Arnor is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -83,6 +114,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test3': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -94,13 +126,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test3']['sents']['0']:
             print(return_dict['test3']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test3']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test3']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test3 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test3 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test3']['sents']['0']:
+        verbs=return_dict['test3']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test3']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test3']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test3():
     text="""Dagolath's first Deputy Prime Minister Telemar left for 
 Minas Tirith on Wednesday for meetings of the joint transport 
@@ -136,6 +177,7 @@ committee with Arnor, the Dagolathi news agency reported.
 28	reported	_	VERB	VERB	_	27	acl
 29	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test4': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -147,13 +189,22 @@ committee with Arnor, the Dagolathi news agency reported.
     try:
         if 'events' in return_dict['test4']['sents']['0']:
             print(return_dict['test4']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DAGGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"DAGGOV\", u\"033\")@ " + str(return_dict['test4']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DAGGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"DAGGOV\", u\"033\")@ " + str(return_dict['test4']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DAGGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"DAGGOV\", u\"033\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DAGGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"DAGGOV\", u\"033\")@ noevent  " )
             print("test4 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DAGGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"DAGGOV\", u\"033\")@ noeventexception \n " )
         print("test4 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test4']['sents']['0']:
+        verbs=return_dict['test4']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test4']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test4']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test4():
     text="""Caras Galadhon's new mayor left yesterday for Minas Tirith for meetings of 
 the joint transport committee with Arnor. 
@@ -179,6 +230,7 @@ the joint transport committee with Arnor.
 19	Arnor	_	PROPN	PROPN	_	17	nmod
 20	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test5': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -190,13 +242,22 @@ the joint transport committee with Arnor.
     try:
         if 'events' in return_dict['test5']['sents']['0']:
             print(return_dict['test5']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"032\"),(u\"GON\", u\"ELF\", u\"033\")@ " + str(return_dict['test5']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"032\"),(u\"GON\", u\"ELF\", u\"033\")@ " + str(return_dict['test5']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"032\"),(u\"GON\", u\"ELF\", u\"033\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"032\"),(u\"GON\", u\"ELF\", u\"033\")@ noevent  " )
             print("test5 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"032\"),(u\"GON\", u\"ELF\", u\"033\")@ noeventexception \n " )
         print("test5 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test5']['sents']['0']:
+        verbs=return_dict['test5']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test5']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test5']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test5():
     text="""Arnor is about to restore fxll diplomatic ties with Gondor almost 
 five years after volleyball crowds burned down its embassy,  a senior 
@@ -231,6 +292,7 @@ official said on Saturday.
 27	Saturday	_	PROPN	PROPN	_	25	nmod
 28	.	_	PUNCT	PUNCT	_	25	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test6': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -242,13 +304,22 @@ official said on Saturday.
     try:
         if 'events' in return_dict['test6']['sents']['0']:
             print(return_dict['test6']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test6']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test6']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test6 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test6 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test6']['sents']['0']:
+        verbs=return_dict['test6']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test6']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test6']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test6():
     text="""An Eriadorian was shot dead in Osgiliath, the state's fiercest foe. 
 """
@@ -267,6 +338,7 @@ def test6():
 13	foe	_	NOUN	NOUN	_	4	nmod
 14	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test7': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -278,13 +350,22 @@ def test6():
     try:
         if 'events' in return_dict['test7']['sents']['0']:
             print(return_dict['test7']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"224\")@ " + str(return_dict['test7']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"224\")@ " + str(return_dict['test7']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"224\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"224\")@ noevent  " )
             print("test7 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"224\")@ noeventexception \n " )
         print("test7 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test7']['sents']['0']:
+        verbs=return_dict['test7']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test7']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test7']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test7():
     text="""The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday and promised aid to the affected Ithilen villages. 
@@ -313,6 +394,7 @@ in south Ithilen on Thursday and promised aid to the affected Ithilen villages.
 22	villages	_	NOUN	NOUN	_	17	nmod
 23	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test8': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -324,13 +406,22 @@ in south Ithilen on Thursday and promised aid to the affected Ithilen villages.
     try:
         if 'events' in return_dict['test8']['sents']['0']:
             print(return_dict['test8']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ " + str(return_dict['test8']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ " + str(return_dict['test8']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ noevent  " )
             print("test8 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ noeventexception \n " )
         print("test8 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test8']['sents']['0']:
+        verbs=return_dict['test8']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test8']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test8']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test8():
     text="""Arnor believes Dagolath and Osgiliath can cope with a decrease in vital 
 water from the mighty Entwash river when a major dam is filled next 
@@ -364,6 +455,7 @@ month.
 26	month	_	NOUN	NOUN	_	24	dobj
 27	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test9': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950107'}}}
@@ -375,13 +467,22 @@ month.
     try:
         if 'events' in return_dict['test9']['sents']['0']:
             print(return_dict['test9']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"023\"),(u\"ARN\", u\"OSG\", u\"023\")@ " + str(return_dict['test9']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"023\"),(u\"ARN\", u\"OSG\", u\"023\")@ " + str(return_dict['test9']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"023\"),(u\"ARN\", u\"OSG\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"023\"),(u\"ARN\", u\"OSG\", u\"023\")@ noevent  " )
             print("test9 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"023\"),(u\"ARN\", u\"OSG\", u\"023\")@ noeventexception \n " )
         print("test9 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test9']['sents']['0']:
+        verbs=return_dict['test9']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test9']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test9']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test9():
     text="""The ambassadors of Arnor, Osgiliath and Gondor presented 
 credentials to Ithilen's president on Wednesday in a further 
@@ -417,6 +518,7 @@ show of support to his government by their countries.
 28	countries	_	NOUN	NOUN	_	9	nmod
 29	.	_	PUNCT	PUNCT	_	9	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test10': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950108'}}}
@@ -428,13 +530,22 @@ show of support to his government by their countries.
     try:
         if 'events' in return_dict['test10']['sents']['0']:
             print(return_dict['test10']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ " + str(return_dict['test10']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ " + str(return_dict['test10']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ noevent  " )
             print("test10 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ noeventexception \n " )
         print("test10 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test10']['sents']['0']:
+        verbs=return_dict['test10']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test10']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test10']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test10():
     text="""Gondor's Prime Minister Falastur noted that Cirith Ungol regretted Eriador's 
 refusal to talk to Calenardhon leader Calimehtar. 
@@ -460,6 +571,7 @@ refusal to talk to Calenardhon leader Calimehtar.
 19	Calimehtar	_	PROPN	PROPN	_	18	vocative
 20	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test11': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950110'}}}
@@ -471,13 +583,22 @@ refusal to talk to Calenardhon leader Calimehtar.
     try:
         if 'events' in return_dict['test11']['sents']['0']:
             print(return_dict['test11']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONGOV\", u\"MORMIL\", u\"115\")@ " + str(return_dict['test11']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONGOV\", u\"MORMIL\", u\"115\")@ " + str(return_dict['test11']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONGOV\", u\"MORMIL\", u\"115\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONGOV\", u\"MORMIL\", u\"115\")@ noevent  " )
             print("test11 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONGOV\", u\"MORMIL\", u\"115\")@ noeventexception \n " )
         print("test11 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test11']['sents']['0']:
+        verbs=return_dict['test11']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test11']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test11']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test11():
     text="""Bree Prime Minister Romendacil will meet Eriadori and Calenardhon 
 leaders during a brief private visit to Eriador starting on Sunday. 
@@ -504,6 +625,7 @@ leaders during a brief private visit to Eriador starting on Sunday.
 20	Sunday	_	PROPN	PROPN	_	18	nmod
 21	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test12': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -515,13 +637,22 @@ leaders during a brief private visit to Eriador starting on Sunday.
     try:
         if 'events' in return_dict['test12']['sents']['0']:
             print(return_dict['test12']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"031\"),(u\"ERI\", u\"BREGOV\", u\"031\"),(u\"BREGOV\", u\"CAL\", u\"031\"),(u\"CAL\", u\"BREGOV\", u\"031\")@ " + str(return_dict['test12']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"031\"),(u\"ERI\", u\"BREGOV\", u\"031\"),(u\"BREGOV\", u\"CAL\", u\"031\"),(u\"CAL\", u\"BREGOV\", u\"031\")@ " + str(return_dict['test12']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"031\"),(u\"ERI\", u\"BREGOV\", u\"031\"),(u\"BREGOV\", u\"CAL\", u\"031\"),(u\"CAL\", u\"BREGOV\", u\"031\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"031\"),(u\"ERI\", u\"BREGOV\", u\"031\"),(u\"BREGOV\", u\"CAL\", u\"031\"),(u\"CAL\", u\"BREGOV\", u\"031\")@ noevent  " )
             print("test12 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"031\"),(u\"ERI\", u\"BREGOV\", u\"031\"),(u\"BREGOV\", u\"CAL\", u\"031\"),(u\"CAL\", u\"BREGOV\", u\"031\")@ noeventexception \n " )
         print("test12 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test12']['sents']['0']:
+        verbs=return_dict['test12']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test12']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test12']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test12():
     text="""Eriador expressed hopes on Thursday that Osgiliath, the state's 
 fiercest foe, could be drawn into the peace process by its resumption 
@@ -558,6 +689,7 @@ of diplomatic ties with Gondor.
 29	Gondor	_	PROPN	PROPN	_	27	nmod
 30	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test13': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -569,13 +701,22 @@ of diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test13']['sents']['0']:
             print(return_dict['test13']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"024\")@ " + str(return_dict['test13']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"024\")@ " + str(return_dict['test13']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"024\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"024\")@ noevent  " )
             print("test13 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"024\")@ noeventexception \n " )
         print("test13 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test13']['sents']['0']:
+        verbs=return_dict['test13']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test13']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test13']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test13():
     text="""Arnor on Thursday signed an 800 million ducat trade protocol
 for 1990 with Dagolath, its biggest trading partner, officials said. 
@@ -604,6 +745,7 @@ for 1990 with Dagolath, its biggest trading partner, officials said.
 22	said	_	VERB	VERB	_	0	root
 23	.	_	PUNCT	PUNCT	_	22	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test14': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950113'}}}
@@ -615,13 +757,22 @@ for 1990 with Dagolath, its biggest trading partner, officials said.
     try:
         if 'events' in return_dict['test14']['sents']['0']:
             print(return_dict['test14']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ " + str(return_dict['test14']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ " + str(return_dict['test14']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ noevent  " )
             print("test14 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ noeventexception \n " )
         print("test14 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test14']['sents']['0']:
+        verbs=return_dict['test14']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test14']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test14']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test14():
     text="""Ithilen's militia vowed on Thursday to wage war on the Rohans until that 
 group yielded ground seized in six days of fighting.
@@ -651,6 +802,7 @@ group yielded ground seized in six days of fighting.
 23	fighting	_	NOUN	NOUN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test15': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950114'}}}
@@ -662,13 +814,22 @@ group yielded ground seized in six days of fighting.
     try:
         if 'events' in return_dict['test15']['sents']['0']:
             print(return_dict['test15']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"ROH\", u\"173\")@ " + str(return_dict['test15']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"ROH\", u\"173\")@ " + str(return_dict['test15']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"ROH\", u\"173\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"ROH\", u\"173\")@ noevent  " )
             print("test15 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"ROH\", u\"173\")@ noeventexception \n " )
         print("test15 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test15']['sents']['0']:
+        verbs=return_dict['test15']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test15']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test15']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test15():
     text="""Arnor signed an accord on Thursday to supply Gondor with some 
 50,000 tonnes of wheat, worth 11.8 million ducats, an Arnorian 
@@ -702,6 +863,7 @@ embassy spokesman said.
 26	said	_	VERB	VERB	_	25	acl
 27	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test16': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950115'}}}
@@ -713,13 +875,22 @@ embassy spokesman said.
     try:
         if 'events' in return_dict['test16']['sents']['0']:
             print(return_dict['test16']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ " + str(return_dict['test16']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ " + str(return_dict['test16']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ noevent  " )
             print("test16 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ noeventexception \n " )
         print("test16 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test16']['sents']['0']:
+        verbs=return_dict['test16']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test16']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test16']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test16():
     text="""Fornost President Umbardacil has again appealed for peace in Ithilen in 
 a message to the spiritial leader of the war-torn nation's influential 
@@ -752,6 +923,7 @@ Douzu community.
 25	community	_	NOUN	NOUN	_	17	nmod
 26	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test17': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950116'}}}
@@ -763,13 +935,22 @@ Douzu community.
     try:
         if 'events' in return_dict['test17']['sents']['0']:
             print(return_dict['test17']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITH\", u\"095\")@ " + str(return_dict['test17']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITH\", u\"095\")@ " + str(return_dict['test17']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITH\", u\"095\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITH\", u\"095\")@ noevent  " )
             print("test17 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITH\", u\"095\")@ noeventexception \n " )
         print("test17 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test17']['sents']['0']:
+        verbs=return_dict['test17']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test17']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test17']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test17():
     text="""Bree President Romendacil arrived in Gondor on Monday on his first 
 official foreign visit since pro-restoration demonstrators 
@@ -801,6 +982,7 @@ in Eymn Muil were crushed last June.
 24	June	_	PROPN	PROPN	_	22	dobj
 25	.	_	PUNCT	PUNCT	_	22	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test18': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950117'}}}
@@ -812,13 +994,22 @@ in Eymn Muil were crushed last June.
     try:
         if 'events' in return_dict['test18']['sents']['0']:
             print(return_dict['test18']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"BREGOV\", u\"033\")@ " + str(return_dict['test18']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"BREGOV\", u\"033\")@ " + str(return_dict['test18']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"BREGOV\", u\"033\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"BREGOV\", u\"033\")@ noevent  " )
             print("test18 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"GON\", u\"032\"),(u\"GON\", u\"BREGOV\", u\"033\")@ noeventexception \n " )
         print("test18 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test18']['sents']['0']:
+        verbs=return_dict['test18']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test18']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test18']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test18():
     text="""Calenardhon urged Bree on Monday to help win a greater role for 
 it in forthcoming peace talks.
@@ -842,6 +1033,7 @@ it in forthcoming peace talks.
 17	talks	_	NOUN	NOUN	_	8	nmod
 18	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test19': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -853,13 +1045,22 @@ it in forthcoming peace talks.
     try:
         if 'events' in return_dict['test19']['sents']['0']:
             print(return_dict['test19']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"102\")@ " + str(return_dict['test19']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"102\")@ " + str(return_dict['test19']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"102\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"102\")@ noevent  " )
             print("test19 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"102\")@ noeventexception \n " )
         print("test19 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test19']['sents']['0']:
+        verbs=return_dict['test19']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test19']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test19']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test19():
     text="""Arnor's foreign minister, in remarks published on Monday, urged 
 Eriador to respond to Gondor's proposals on elections.
@@ -887,6 +1088,7 @@ Eriador to respond to Gondor's proposals on elections.
 21	elections	_	NOUN	NOUN	_	15	nmod
 22	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test20': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950119'}}}
@@ -898,13 +1100,22 @@ Eriador to respond to Gondor's proposals on elections.
     try:
         if 'events' in return_dict['test20']['sents']['0']:
             print(return_dict['test20']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOVFRM\", u\"ERI\", u\"102\")@ " + str(return_dict['test20']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOVFRM\", u\"ERI\", u\"102\")@ " + str(return_dict['test20']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOVFRM\", u\"ERI\", u\"102\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOVFRM\", u\"ERI\", u\"102\")@ noevent  " )
             print("test20 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOVFRM\", u\"ERI\", u\"102\")@ noeventexception \n " )
         print("test20 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test20']['sents']['0']:
+        verbs=return_dict['test20']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test20']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test20']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test20():
     text="""Eriador's death toll has risen in the dispute with  Osgiliath, the state's 
 fiercest foe. 
@@ -928,6 +1139,7 @@ fiercest foe.
 17	foe	_	NOUN	NOUN	_	6	nmod
 18	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test21': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -939,13 +1151,22 @@ fiercest foe.
     try:
         if 'events' in return_dict['test21']['sents']['0']:
             print(return_dict['test21']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ " + str(return_dict['test21']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ " + str(return_dict['test21']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ noevent  " )
             print("test21 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ noeventexception \n " )
         print("test21 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test21']['sents']['0']:
+        verbs=return_dict['test21']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test21']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test21']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test21():
     text="""Eriador's death and injury toll has risen in the dispute with Osgiliath, the state's 
 fiercest foe. 
@@ -971,6 +1192,7 @@ fiercest foe.
 19	foe	_	NOUN	NOUN	_	8	nmod
 20	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test22': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -982,13 +1204,22 @@ fiercest foe.
     try:
         if 'events' in return_dict['test22']['sents']['0']:
             print(return_dict['test22']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ " + str(return_dict['test22']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ " + str(return_dict['test22']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ noevent  " )
             print("test22 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\")@ noeventexception \n " )
         print("test22 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test22']['sents']['0']:
+        verbs=return_dict['test22']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test22']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test22']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test22():
     text="""Eriador's death and injury toll has risen in the dispute with Osgiliath, the state's 
 fiercest foe. 
@@ -1014,6 +1245,7 @@ fiercest foe.
 19	foe	_	NOUN	NOUN	_	8	nmod
 20	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test23': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -1025,13 +1257,22 @@ fiercest foe.
     try:
         if 'events' in return_dict['test23']['sents']['0']:
             print(return_dict['test23']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\"),(u\"&quot;INJURY TOLL&quot;\", u\"OSG\", u\"223\")@ " + str(return_dict['test23']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\"),(u\"&quot;INJURY TOLL&quot;\", u\"OSG\", u\"223\")@ " + str(return_dict['test23']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\"),(u\"&quot;INJURY TOLL&quot;\", u\"OSG\", u\"223\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\"),(u\"&quot;INJURY TOLL&quot;\", u\"OSG\", u\"223\")@ noevent  " )
             print("test23 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"223\"),(u\"&quot;INJURY TOLL&quot;\", u\"OSG\", u\"223\")@ noeventexception \n " )
         print("test23 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test23']['sents']['0']:
+        verbs=return_dict['test23']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test23']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test23']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test23():
     text="""Eriador's death total has risen in the dispute with  Osgiliath, the state's 
 fiercest foe. 
@@ -1055,6 +1296,7 @@ fiercest foe.
 17	foe	_	NOUN	NOUN	_	6	nmod
 18	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test24': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -1066,13 +1308,22 @@ fiercest foe.
     try:
         if 'events' in return_dict['test24']['sents']['0']:
             print(return_dict['test24']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"224\")@ " + str(return_dict['test24']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"224\")@ " + str(return_dict['test24']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"224\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"224\")@ noevent  " )
             print("test24 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"224\")@ noeventexception \n " )
         print("test24 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test24']['sents']['0']:
+        verbs=return_dict['test24']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test24']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test24']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test24():
     text="""Eriador's death and injury total has risen in the dispute with Osgiliath, the state's 
 fiercest foe. 
@@ -1098,6 +1349,7 @@ fiercest foe.
 19	foe	_	NOUN	NOUN	_	8	nmod
 20	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test25': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -1109,13 +1361,22 @@ fiercest foe.
     try:
         if 'events' in return_dict['test25']['sents']['0']:
             print(return_dict['test25']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test25']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test25']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test25 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test25 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test25']['sents']['0']:
+        verbs=return_dict['test25']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test25']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test25']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test25():
     text="""Gondor and Osgiliath have postponed their meeting after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -1140,6 +1401,7 @@ hafling was reported on the pass of Cirith Ungol.
 18	Ungol	_	PROPN	PROPN	_	15	nmod
 19	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test26': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -1151,13 +1413,22 @@ hafling was reported on the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test26']['sents']['0']:
             print(return_dict['test26']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORMIL\", u\"191\"),(u\"OSG\", u\"MORMIL\", u\"191\")@ " + str(return_dict['test26']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORMIL\", u\"191\"),(u\"OSG\", u\"MORMIL\", u\"191\")@ " + str(return_dict['test26']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORMIL\", u\"191\"),(u\"OSG\", u\"MORMIL\", u\"191\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORMIL\", u\"191\"),(u\"OSG\", u\"MORMIL\", u\"191\")@ noevent  " )
             print("test26 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORMIL\", u\"191\"),(u\"OSG\", u\"MORMIL\", u\"191\")@ noeventexception \n " )
         print("test26 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test26']['sents']['0']:
+        verbs=return_dict['test26']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test26']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test26']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test26():
     text="""Gondor and Osgiliath have delayed their meeting after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -1182,6 +1453,7 @@ hafling was reported on the pass of Cirith Ungol.
 18	Ungol	_	PROPN	PROPN	_	15	nmod
 19	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test27': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -1193,13 +1465,22 @@ hafling was reported on the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test27']['sents']['0']:
             print(return_dict['test27']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ " + str(return_dict['test27']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ " + str(return_dict['test27']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noevent  " )
             print("test27 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noeventexception \n " )
         print("test27 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test27']['sents']['0']:
+        verbs=return_dict['test27']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test27']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test27']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test27():
     text="""Gondor and Osgiliath have downplayed their meeting after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -1224,6 +1505,7 @@ hafling was reported on the pass of Cirith Ungol.
 18	Ungol	_	PROPN	PROPN	_	15	nmod
 19	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test28': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -1235,13 +1517,22 @@ hafling was reported on the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test28']['sents']['0']:
             print(return_dict['test28']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ " + str(return_dict['test28']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ " + str(return_dict['test28']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noevent  " )
             print("test28 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noeventexception \n " )
         print("test28 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test28']['sents']['0']:
+        verbs=return_dict['test28']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test28']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test28']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test28():
     text="""It has been noted that Gondor and Osgiliath have delayed their meeting after a hafling was reported on the pass
 """
@@ -1269,6 +1560,7 @@ def test28():
 22	Cirith	_	PROPN	PROPN	_	23	compound
 23	Ungol	_	PROPN	PROPN	_	20	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test29': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -1280,13 +1572,22 @@ def test28():
     try:
         if 'events' in return_dict['test29']['sents']['0']:
             print(return_dict['test29']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ " + str(return_dict['test29']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ " + str(return_dict['test29']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noevent  " )
             print("test29 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"191\"),(u\"OSG\", u\"GON\", u\"191\")@ noeventexception \n " )
         print("test29 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test29']['sents']['0']:
+        verbs=return_dict['test29']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test29']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test29']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test29():
     text="""Soldiers from Gondor have cordoned off the roads leading into Mordor along the pass 
 of Cirith Ungol.
@@ -1310,6 +1611,7 @@ of Cirith Ungol.
 17	Ungol	_	PROPN	PROPN	_	14	nmod
 18	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test30': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1321,13 +1623,22 @@ of Cirith Ungol.
     try:
         if 'events' in return_dict['test30']['sents']['0']:
             print(return_dict['test30']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1721\")@ " + str(return_dict['test30']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1721\")@ " + str(return_dict['test30']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1721\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1721\")@ noevent  " )
             print("test30 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1721\")@ noeventexception \n " )
         print("test30 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test30']['sents']['0']:
+        verbs=return_dict['test30']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test30']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test30']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test30():
     text="""Soldiers from Gondor wire tapped all communication links leading into Mordor along the 
 pass of Cirith Ungol.
@@ -1351,6 +1662,7 @@ pass of Cirith Ungol.
 17	Ungol	_	PROPN	PROPN	_	14	nmod
 18	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test31': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1362,13 +1674,22 @@ pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test31']['sents']['0']:
             print(return_dict['test31']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1711\")@ " + str(return_dict['test31']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1711\")@ " + str(return_dict['test31']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1711\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1711\")@ noevent  " )
             print("test31 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"1711\")@ noeventexception \n " )
         print("test31 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test31']['sents']['0']:
+        verbs=return_dict['test31']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test31']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test31']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test31():
     text="""Soldiers from Gondor will not wire tap the communication links leading into Mordor along  
 the pass of Cirith Ungol.
@@ -1394,6 +1715,7 @@ the pass of Cirith Ungol.
 19	Ungol	_	PROPN	PROPN	_	16	nmod
 20	.	_	PUNCT	PUNCT	_	1	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test32': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1405,13 +1727,22 @@ the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test32']['sents']['0']:
             print(return_dict['test32']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"081\")@ " + str(return_dict['test32']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"081\")@ " + str(return_dict['test32']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"081\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"081\")@ noevent  " )
             print("test32 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"081\")@ noeventexception \n " )
         print("test32 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test32']['sents']['0']:
+        verbs=return_dict['test32']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test32']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test32']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test32():
     text="""Soldiers from Gondor have cordoned off for construction the roads leading into Mordor 
 along the pass of Cirith Ungol.
@@ -1437,6 +1768,7 @@ along the pass of Cirith Ungol.
 19	Ungol	_	PROPN	PROPN	_	16	nmod
 20	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test33': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1448,13 +1780,22 @@ along the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test33']['sents']['0']:
             print(return_dict['test33']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"071\")@ " + str(return_dict['test33']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"071\")@ " + str(return_dict['test33']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"071\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"071\")@ noevent  " )
             print("test33 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GONMIL\", u\"MOR\", u\"071\")@ noeventexception \n " )
         print("test33 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test33']['sents']['0']:
+        verbs=return_dict['test33']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test33']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test33']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test33():
     text="""Arnor cleric is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -1480,6 +1821,7 @@ five years after crowds trashed its embassy.
 19	embassy	_	NOUN	NOUN	_	17	dobj
 20	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test34': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1491,13 +1833,22 @@ five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test34']['sents']['0']:
             print(return_dict['test34']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNREL\", u\"GON\", u\"064\")@ " + str(return_dict['test34']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNREL\", u\"GON\", u\"064\")@ " + str(return_dict['test34']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNREL\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNREL\", u\"GON\", u\"064\")@ noevent  " )
             print("test34 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNREL\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test34 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test34']['sents']['0']:
+        verbs=return_dict['test34']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test34']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test34']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test34():
     text="""MSF Arnor is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -1523,6 +1874,7 @@ five years after crowds trashed its embassy.
 19	embassy	_	NOUN	NOUN	_	17	dobj
 20	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test35': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1534,13 +1886,22 @@ five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test35']['sents']['0']:
             print(return_dict['test35']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARN\", u\"GON\", u\"064\")@ " + str(return_dict['test35']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARN\", u\"GON\", u\"064\")@ " + str(return_dict['test35']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test35 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test35 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test35']['sents']['0']:
+        verbs=return_dict['test35']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test35']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test35']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test35():
     text="""An MSF Arnor diplomat is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -1568,6 +1929,7 @@ five years after crowds trashed its embassy.
 21	embassy	_	NOUN	NOUN	_	19	dobj
 22	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test36': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1579,13 +1941,22 @@ five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test36']['sents']['0']:
             print(return_dict['test36']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARNGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test36']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARNGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test36']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARNGOV\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARNGOV\", u\"GON\", u\"064\")@ noevent  " )
             print("test36 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGOARNGOV\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test36 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test36']['sents']['0']:
+        verbs=return_dict['test36']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test36']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test36']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test36():
     text="""Arnor is about to restore full diplomatic ties with the Gondor main opposition group 
 almost five years after crowds trashed its embassy.
@@ -1614,6 +1985,7 @@ almost five years after crowds trashed its embassy.
 22	embassy	_	NOUN	NOUN	_	20	dobj
 23	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test37': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1625,13 +1997,22 @@ almost five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test37']['sents']['0']:
             print(return_dict['test37']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ " + str(return_dict['test37']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ " + str(return_dict['test37']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noevent  " )
             print("test37 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noeventexception \n " )
         print("test37 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test37']['sents']['0']:
+        verbs=return_dict['test37']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test37']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test37']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test37():
     text="""Arnor is about to restore full diplomatic ties with Gondor's government 
 almost five years after crowds trashed its embassy.
@@ -1658,6 +2039,7 @@ almost five years after crowds trashed its embassy.
 20	embassy	_	NOUN	NOUN	_	18	dobj
 21	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test38': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1669,13 +2051,22 @@ almost five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test38']['sents']['0']:
             print(return_dict['test38']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGOV\", u\"064\")@ " + str(return_dict['test38']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGOV\", u\"064\")@ " + str(return_dict['test38']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGOV\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGOV\", u\"064\")@ noevent  " )
             print("test38 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGOV\", u\"064\")@ noeventexception \n " )
         print("test38 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test38']['sents']['0']:
+        verbs=return_dict['test38']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test38']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test38']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test38():
     text="""Arnor is about to restore full diplomatic ties with Gondor's main opposition group 
 almost five years after crowds trashed its embassy.
@@ -1704,6 +2095,7 @@ almost five years after crowds trashed its embassy.
 22	embassy	_	NOUN	NOUN	_	20	dobj
 23	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test39': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1715,13 +2107,22 @@ almost five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test39']['sents']['0']:
             print(return_dict['test39']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ " + str(return_dict['test39']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ " + str(return_dict['test39']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noevent  " )
             print("test39 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noeventexception \n " )
         print("test39 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test39']['sents']['0']:
+        verbs=return_dict['test39']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test39']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test39']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test39():
     text="""Human rights activists in Arnor are about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy.
@@ -1750,6 +2151,7 @@ five years after crowds trashed its embassy.
 22	embassy	_	NOUN	NOUN	_	20	dobj
 23	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test40': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1761,13 +2163,22 @@ five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test40']['sents']['0']:
             print(return_dict['test40']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNOPP\", u\"GON\", u\"064\")@ " + str(return_dict['test40']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNOPP\", u\"GON\", u\"064\")@ " + str(return_dict['test40']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNOPP\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNOPP\", u\"GON\", u\"064\")@ noevent  " )
             print("test40 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNOPP\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test40 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test40']['sents']['0']:
+        verbs=return_dict['test40']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test40']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test40']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test40():
     text="""Arnor is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -1800,6 +2211,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test41': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1811,13 +2223,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test41']['sents']['0']:
             print(return_dict['test41']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"XYZGOV\", u\"XYZ\", u\"023\")@ " + str(return_dict['test41']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"XYZGOV\", u\"XYZ\", u\"023\")@ " + str(return_dict['test41']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"XYZGOV\", u\"XYZ\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"XYZGOV\", u\"XYZ\", u\"023\")@ noevent  " )
             print("test41 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"XYZGOV\", u\"XYZ\", u\"023\")@ noeventexception \n " )
         print("test41 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test41']['sents']['0']:
+        verbs=return_dict['test41']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test41']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test41']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test41():
     text="""The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1837,6 +2258,7 @@ in south Ithilen on Thursday
 13	on	_	ADP	ADP	_	14	case
 14	Thursday	_	PROPN	PROPN	_	4	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test42': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -1848,13 +2270,22 @@ in south Ithilen on Thursday
     try:
         if 'events' in return_dict['test42']['sents']['0']:
             print(return_dict['test42']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test42']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test42']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noevent  " )
             print("test42 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noeventexception \n " )
         print("test42 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test42']['sents']['0']:
+        verbs=return_dict['test42']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test42']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test42']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test42():
     text="""Arnor security officials are about to restore full diplomatic 
 ties with Gondor police. 
@@ -1874,6 +2305,7 @@ ties with Gondor police.
 13	police	_	NOUN	NOUN	_	10	nmod
 14	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test43': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1885,13 +2317,22 @@ ties with Gondor police.
     try:
         if 'events' in return_dict['test43']['sents']['0']:
             print(return_dict['test43']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"GONCOP\", u\"064\")@ " + str(return_dict['test43']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"GONCOP\", u\"064\")@ " + str(return_dict['test43']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"GONCOP\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"GONCOP\", u\"064\")@ noevent  " )
             print("test43 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"GONCOP\", u\"064\")@ noeventexception \n " )
         print("test43 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test43']['sents']['0']:
+        verbs=return_dict['test43']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test43']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test43']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test43():
     text="""White House security officials are about to restore full diplomatic 
 ties with Minas Tirith border police. 
@@ -1914,6 +2355,7 @@ ties with Minas Tirith border police.
 16	police	_	NOUN	NOUN	_	11	nmod
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test44': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -1925,13 +2367,22 @@ ties with Minas Tirith border police.
     try:
         if 'events' in return_dict['test44']['sents']['0']:
             print(return_dict['test44']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GONCOP\", u\"064\")@ " + str(return_dict['test44']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GONCOP\", u\"064\")@ " + str(return_dict['test44']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GONCOP\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GONCOP\", u\"064\")@ noevent  " )
             print("test44 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GONCOP\", u\"064\")@ noeventexception \n " )
         print("test44 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test44']['sents']['0']:
+        verbs=return_dict['test44']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test44']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test44']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test44():
     text="""The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1951,6 +2402,7 @@ in south Ithilen on Thursday
 13	on	_	ADP	ADP	_	14	case
 14	Thursday	_	PROPN	PROPN	_	4	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test45': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -1962,13 +2414,22 @@ in south Ithilen on Thursday
     try:
         if 'events' in return_dict['test45']['sents']['0']:
             print(return_dict['test45']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test45']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test45']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ noevent  " )
             print("test45 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ noeventexception \n " )
         print("test45 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test45']['sents']['0']:
+        verbs=return_dict['test45']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test45']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test45']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test45():
     text="""The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -1988,6 +2449,7 @@ in south Ithilen on Thursday
 13	on	_	ADP	ADP	_	14	case
 14	Thursday	_	PROPN	PROPN	_	4	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test46': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -1999,13 +2461,22 @@ in south Ithilen on Thursday
     try:
         if 'events' in return_dict['test46']['sents']['0']:
             print(return_dict['test46']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test46']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test46']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ noevent  " )
             print("test46 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALLEG\", u\"OSGMIL\", u\"122\")@ noeventexception \n " )
         print("test46 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test46']['sents']['0']:
+        verbs=return_dict['test46']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test46']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test46']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test46():
     text="""The Calenardhon Ministry of Silly Walks condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -2028,6 +2499,7 @@ in south Ithilen on Thursday
 16	on	_	ADP	ADP	_	17	case
 17	Thursday	_	PROPN	PROPN	_	7	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test47': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -2039,13 +2511,22 @@ in south Ithilen on Thursday
     try:
         if 'events' in return_dict['test47']['sents']['0']:
             print(return_dict['test47']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test47']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test47']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noevent  " )
             print("test47 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noeventexception \n " )
         print("test47 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test47']['sents']['0']:
+        verbs=return_dict['test47']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test47']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test47']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test47():
     text="""The Calenardhon Minister of Silly Walks condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday 
@@ -2068,6 +2549,7 @@ in south Ithilen on Thursday
 16	on	_	ADP	ADP	_	17	case
 17	Thursday	_	PROPN	PROPN	_	7	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test48': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -2079,13 +2561,22 @@ in south Ithilen on Thursday
     try:
         if 'events' in return_dict['test48']['sents']['0']:
             print(return_dict['test48']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test48']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ " + str(return_dict['test48']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noevent  " )
             print("test48 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\")@ noeventexception \n " )
         print("test48 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test48']['sents']['0']:
+        verbs=return_dict['test48']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test48']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test48']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test48():
     text="""The human rights activists of Amnesty International are about to restore 
 full diplomatic ties with Gondor. 
@@ -2108,6 +2599,7 @@ full diplomatic ties with Gondor.
 16	Gondor	_	PROPN	PROPN	_	14	nmod
 17	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test49': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2119,13 +2611,22 @@ full diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test49']['sents']['0']:
             print(return_dict['test49']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGMOPP\", u\"GON\", u\"064\")@ " + str(return_dict['test49']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGMOPP\", u\"GON\", u\"064\")@ " + str(return_dict['test49']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGMOPP\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGMOPP\", u\"GON\", u\"064\")@ noevent  " )
             print("test49 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"NGMOPP\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test49 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test49']['sents']['0']:
+        verbs=return_dict['test49']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test49']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test49']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test49():
     text="""Washington security officials are about to restore full diplomatic 
 ties with Gondor. 
@@ -2144,6 +2645,7 @@ ties with Gondor.
 12	Gondor	_	PROPN	PROPN	_	10	nmod
 13	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test50': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2155,13 +2657,22 @@ ties with Gondor.
     try:
         if 'events' in return_dict['test50']['sents']['0']:
             print(return_dict['test50']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test50']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test50']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ noevent  " )
             print("test50 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test50 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test50']['sents']['0']:
+        verbs=return_dict['test50']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test50']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test50']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test50():
     text="""White House security officials are about to restore full diplomatic 
 ties with Gondor. 
@@ -2181,6 +2692,7 @@ ties with Gondor.
 13	Gondor	_	PROPN	PROPN	_	11	nmod
 14	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test51': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2192,13 +2704,22 @@ ties with Gondor.
     try:
         if 'events' in return_dict['test51']['sents']['0']:
             print(return_dict['test51']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test51']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test51']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ noevent  " )
             print("test51 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test51 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test51']['sents']['0']:
+        verbs=return_dict['test51']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test51']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test51']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test51():
     text="""The Quibbler government newspaper is about to restore full diplomatic 
 ties with Gondor now. 
@@ -2219,6 +2740,7 @@ ties with Gondor now.
 14	now	_	ADV	ADV	_	8	advmod
 15	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test52': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2230,13 +2752,22 @@ ties with Gondor now.
     try:
         if 'events' in return_dict['test52']['sents']['0']:
             print(return_dict['test52']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HGWGOVMED\", u\"GON\", u\"064\")@ " + str(return_dict['test52']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HGWGOVMED\", u\"GON\", u\"064\")@ " + str(return_dict['test52']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HGWGOVMED\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HGWGOVMED\", u\"GON\", u\"064\")@ noevent  " )
             print("test52 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HGWGOVMED\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test52 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test52']['sents']['0']:
+        verbs=return_dict['test52']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test52']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test52']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test52():
     text="""Arnor is about to restore full diplomatic ties with Gondor's main opposition groups 
 almost five years after crowds trashed its embassy.
@@ -2265,6 +2796,7 @@ almost five years after crowds trashed its embassy.
 22	embassy	_	NOUN	NOUN	_	20	dobj
 23	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test53': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2276,13 +2808,22 @@ almost five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test53']['sents']['0']:
             print(return_dict['test53']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ " + str(return_dict['test53']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ " + str(return_dict['test53']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noevent  " )
             print("test53 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONMOP\", u\"064\")@ noeventexception \n " )
         print("test53 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test53']['sents']['0']:
+        verbs=return_dict['test53']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test53']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test53']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test53():
     text="""Arnor is about to restore full diplomatic ties with Gondor's golden geese 
 almost five years after crowds trashed its embassy.
@@ -2310,6 +2851,7 @@ almost five years after crowds trashed its embassy.
 21	embassy	_	NOUN	NOUN	_	19	dobj
 22	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test54': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2321,13 +2863,22 @@ almost five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test54']['sents']['0']:
             print(return_dict['test54']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGGS\", u\"064\")@ " + str(return_dict['test54']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGGS\", u\"064\")@ " + str(return_dict['test54']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGGS\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGGS\", u\"064\")@ noevent  " )
             print("test54 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GONGGS\", u\"064\")@ noeventexception \n " )
         print("test54 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test54']['sents']['0']:
+        verbs=return_dict['test54']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test54']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test54']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test54():
     text="""Arnor is about to restore full diplomatic ties with Gondor's polices 
 almost five years after crowds trashed its embassy.
@@ -2354,6 +2905,7 @@ almost five years after crowds trashed its embassy.
 20	embassy	_	NOUN	NOUN	_	18	dobj
 21	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test55': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2365,13 +2917,22 @@ almost five years after crowds trashed its embassy.
     try:
         if 'events' in return_dict['test55']['sents']['0']:
             print(return_dict['test55']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test55']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test55']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test55 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test55 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test55']['sents']['0']:
+        verbs=return_dict['test55']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test55']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test55']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test55():
     text="""West German world government activists are about to restore 
 full diplomatic ties with human rights activists of Gonzo GMO. 
@@ -2397,6 +2958,7 @@ full diplomatic ties with human rights activists of Gonzo GMO.
 19	GMO	_	PROPN	PROPN	_	16	nmod
 20	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test56': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2408,13 +2970,22 @@ full diplomatic ties with human rights activists of Gonzo GMO.
     try:
         if 'events' in return_dict['test56']['sents']['0']:
             print(return_dict['test56']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GMWGOVWGO\", u\"GONGMOOPP\", u\"064\")@ " + str(return_dict['test56']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GMWGOVWGO\", u\"GONGMOOPP\", u\"064\")@ " + str(return_dict['test56']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GMWGOVWGO\", u\"GONGMOOPP\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GMWGOVWGO\", u\"GONGMOOPP\", u\"064\")@ noevent  " )
             print("test56 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GMWGOVWGO\", u\"GONGMOOPP\", u\"064\")@ noeventexception \n " )
         print("test56 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test56']['sents']['0']:
+        verbs=return_dict['test56']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test56']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test56']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test56():
     text="""White House security officials are about to restore full diplomatic 
 ties with Gondor and Arnor. 
@@ -2436,6 +3007,7 @@ ties with Gondor and Arnor.
 15	Arnor	_	PROPN	PROPN	_	13	conj
 16	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test57': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2447,13 +3019,22 @@ ties with Gondor and Arnor.
     try:
         if 'events' in return_dict['test57']['sents']['0']:
             print(return_dict['test57']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ " + str(return_dict['test57']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ " + str(return_dict['test57']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ noevent  " )
             print("test57 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ noeventexception \n " )
         print("test57 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test57']['sents']['0']:
+        verbs=return_dict['test57']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test57']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test57']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test57():
     text="""Arnor former security officials are about to restore full diplomatic 
 ties with former Gondor prosecutors. 
@@ -2475,6 +3056,7 @@ ties with former Gondor prosecutors.
 15	prosecutors	_	NOUN	NOUN	_	11	nmod
 16	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test58': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2486,13 +3068,22 @@ ties with former Gondor prosecutors.
     try:
         if 'events' in return_dict['test58']['sents']['0']:
             print(return_dict['test58']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNELI\", u\"GONELI\", u\"064\")@ " + str(return_dict['test58']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNELI\", u\"GONELI\", u\"064\")@ " + str(return_dict['test58']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNELI\", u\"GONELI\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNELI\", u\"GONELI\", u\"064\")@ noevent  " )
             print("test58 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNELI\", u\"GONELI\", u\"064\")@ noeventexception \n " )
         print("test58 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test58']['sents']['0']:
+        verbs=return_dict['test58']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test58']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test58']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test58():
     text="""Former security officials in White House are about to restore full 
 diplomatic ties with former Minas Tirith border police. 
@@ -2518,6 +3109,7 @@ diplomatic ties with former Minas Tirith border police.
 19	police	_	NOUN	NOUN	_	13	nmod
 20	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test59': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -2529,13 +3121,22 @@ diplomatic ties with former Minas Tirith border police.
     try:
         if 'events' in return_dict['test59']['sents']['0']:
             print(return_dict['test59']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOVELI\", u\"GONELI\", u\"064\")@ " + str(return_dict['test59']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOVELI\", u\"GONELI\", u\"064\")@ " + str(return_dict['test59']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOVELI\", u\"GONELI\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOVELI\", u\"GONELI\", u\"064\")@ noevent  " )
             print("test59 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOVELI\", u\"GONELI\", u\"064\")@ noeventexception \n " )
         print("test59 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test59']['sents']['0']:
+        verbs=return_dict['test59']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test59']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test59']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test59():
     text="""Old foes Gondor and Osgiliath have renewed diplomatic ties after a 
 12-year break in a step that holds advantages for both major 
@@ -2566,6 +3167,7 @@ powers.
 23	powers	_	NOUN	NOUN	_	18	nmod
 24	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test60': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -2577,13 +3179,22 @@ powers.
     try:
         if 'events' in return_dict['test60']['sents']['0']:
             print(return_dict['test60']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"064\"),(u\"OSG\", u\"GON\", u\"064\")@ " + str(return_dict['test60']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"064\"),(u\"OSG\", u\"GON\", u\"064\")@ " + str(return_dict['test60']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"064\"),(u\"OSG\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"064\"),(u\"OSG\", u\"GON\", u\"064\")@ noevent  " )
             print("test60 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"064\"),(u\"OSG\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test60 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test60']['sents']['0']:
+        verbs=return_dict['test60']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test60']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test60']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test60():
     text="""Mordor, Rohan, Fornost and Bree welcomed their resumption of formal 
 diplomatic ties with Osgiliath after a 12-year rift. 
@@ -2610,6 +3221,7 @@ diplomatic ties with Osgiliath after a 12-year rift.
 20	rift	_	NOUN	NOUN	_	8	nmod
 21	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test61': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2621,13 +3233,22 @@ diplomatic ties with Osgiliath after a 12-year rift.
     try:
         if 'events' in return_dict['test61']['sents']['0']:
             print(return_dict['test61']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ " + str(return_dict['test61']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ " + str(return_dict['test61']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noevent  " )
             print("test61 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test61 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test61']['sents']['0']:
+        verbs=return_dict['test61']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test61']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test61']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test61():
     text="""Fornost and Gondor welcome a resumption of formal diplomatic ties with  
 Osgiliath after a 12-year rift, the primary official news agency WFNA said 
@@ -2661,6 +3282,7 @@ on Thursday.
 26	Thursday	_	PROPN	PROPN	_	24	nmod
 27	.	_	PUNCT	PUNCT	_	24	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test62': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2672,13 +3294,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test62']['sents']['0']:
             print(return_dict['test62']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test62']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test62']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test62 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test62 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test62']['sents']['0']:
+        verbs=return_dict['test62']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test62']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test62']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test62():
     text="""Fornost welcomed a resumption of formal diplomatic ties between Gondor 
 and Osgiliath after a 12-year rift, the primary official news agency WFNA said 
@@ -2712,6 +3343,7 @@ on Thursday.
 26	Thursday	_	PROPN	PROPN	_	24	nmod
 27	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test63': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2723,13 +3355,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test63']['sents']['0']:
             print(return_dict['test63']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test63']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test63']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test63 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test63 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test63']['sents']['0']:
+        verbs=return_dict['test63']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test63']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test63']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test63():
     text="""Osgiliath welcomed the resumption of formal  diplomatic ties with 
 Mordor, Rohan, Fornost and Bree after a 12-year rift. 
@@ -2756,6 +3397,7 @@ Mordor, Rohan, Fornost and Bree after a 12-year rift.
 20	rift	_	NOUN	NOUN	_	2	nmod
 21	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test64': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2767,13 +3409,22 @@ Mordor, Rohan, Fornost and Bree after a 12-year rift.
     try:
         if 'events' in return_dict['test64']['sents']['0']:
             print(return_dict['test64']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"MOR\", u\"041\"),(u\"OSG\", u\"ROH\", u\"041\"),(u\"OSG\", u\"FOR\", u\"041\"),(u\"OSG\", u\"BRE\", u\"041\")@ " + str(return_dict['test64']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"MOR\", u\"041\"),(u\"OSG\", u\"ROH\", u\"041\"),(u\"OSG\", u\"FOR\", u\"041\"),(u\"OSG\", u\"BRE\", u\"041\")@ " + str(return_dict['test64']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"MOR\", u\"041\"),(u\"OSG\", u\"ROH\", u\"041\"),(u\"OSG\", u\"FOR\", u\"041\"),(u\"OSG\", u\"BRE\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"MOR\", u\"041\"),(u\"OSG\", u\"ROH\", u\"041\"),(u\"OSG\", u\"FOR\", u\"041\"),(u\"OSG\", u\"BRE\", u\"041\")@ noevent  " )
             print("test64 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"MOR\", u\"041\"),(u\"OSG\", u\"ROH\", u\"041\"),(u\"OSG\", u\"FOR\", u\"041\"),(u\"OSG\", u\"BRE\", u\"041\")@ noeventexception \n " )
         print("test64 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test64']['sents']['0']:
+        verbs=return_dict['test64']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test64']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test64']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test64():
     text="""Fornost and Gondor welcomed a resumption of formal diplomatic ties
 between Eriador and Osgiliath after a 12-year rift, the official news
@@ -2808,6 +3459,7 @@ agency WFNA said on Thursday .
 27	Thursday	_	PROPN	PROPN	_	25	nmod
 28	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test65': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2819,13 +3471,22 @@ agency WFNA said on Thursday .
     try:
         if 'events' in return_dict['test65']['sents']['0']:
             print(return_dict['test65']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"ERI\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"ERI\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test65']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"ERI\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"ERI\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test65']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"ERI\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"ERI\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"ERI\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"ERI\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent  " )
             print("test65 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"ERI\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"ERI\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test65 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test65']['sents']['0']:
+        verbs=return_dict['test65']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test65']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test65']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test65():
     text="""Mordor, Rohan, Fornost and Bree welcomed a resumption of formal 
 diplomatic ties between Gondor and Osgiliath after a 12-year rift, the 
@@ -2864,6 +3525,7 @@ official news agency WFNA said on Thursday .
 31	Thursday	_	PROPN	PROPN	_	29	nmod
 32	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test66': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2875,13 +3537,22 @@ official news agency WFNA said on Thursday .
     try:
         if 'events' in return_dict['test66']['sents']['0']:
             print(return_dict['test66']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"GON\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ " + str(return_dict['test66']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"GON\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ " + str(return_dict['test66']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"GON\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"GON\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noevent  " )
             print("test66 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"ROH\", u\"GON\", u\"041\"),(u\"ROH\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test66 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test66']['sents']['0']:
+        verbs=return_dict['test66']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test66']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test66']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test66():
     text="""Mordor, the Shire, Fornost and Bree welcomed a resumption of formal 
 diplomatic ties between Minas Tirith and Osgiliath after a 12-year rift, 
@@ -2922,6 +3593,7 @@ the official news agency WFNA said on Thursday.
 33	Thursday	_	PROPN	PROPN	_	31	nmod
 34	.	_	PUNCT	PUNCT	_	31	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test67': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2933,13 +3605,22 @@ the official news agency WFNA said on Thursday.
     try:
         if 'events' in return_dict['test67']['sents']['0']:
             print(return_dict['test67']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"FRO\", u\"GON\", u\"041\"),(u\"BIL\", u\"GON\", u\"041\"),(u\"SAM\", u\"GON\", u\"041\"),(u\"FRO\", u\"OSG\", u\"041\"),(u\"BIL\", u\"OSG\", u\"041\"),(u\"SAM\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ " + str(return_dict['test67']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"FRO\", u\"GON\", u\"041\"),(u\"BIL\", u\"GON\", u\"041\"),(u\"SAM\", u\"GON\", u\"041\"),(u\"FRO\", u\"OSG\", u\"041\"),(u\"BIL\", u\"OSG\", u\"041\"),(u\"SAM\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ " + str(return_dict['test67']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"FRO\", u\"GON\", u\"041\"),(u\"BIL\", u\"GON\", u\"041\"),(u\"SAM\", u\"GON\", u\"041\"),(u\"FRO\", u\"OSG\", u\"041\"),(u\"BIL\", u\"OSG\", u\"041\"),(u\"SAM\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"FRO\", u\"GON\", u\"041\"),(u\"BIL\", u\"GON\", u\"041\"),(u\"SAM\", u\"GON\", u\"041\"),(u\"FRO\", u\"OSG\", u\"041\"),(u\"BIL\", u\"OSG\", u\"041\"),(u\"SAM\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noevent  " )
             print("test67 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"GON\", u\"041\"),(u\"MOR\", u\"OSG\", u\"041\"),(u\"FRO\", u\"GON\", u\"041\"),(u\"BIL\", u\"GON\", u\"041\"),(u\"SAM\", u\"GON\", u\"041\"),(u\"FRO\", u\"OSG\", u\"041\"),(u\"BIL\", u\"OSG\", u\"041\"),(u\"SAM\", u\"OSG\", u\"041\"),(u\"FOR\", u\"GON\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"BRE\", u\"GON\", u\"041\"),(u\"BRE\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test67 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test67']['sents']['0']:
+        verbs=return_dict['test67']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test67']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test67']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test67():
     text="""Lawmakers in Fornost and Gondor welcomed a resumption of formal diplomatic ties
 with Eriador. 
@@ -2960,6 +3641,7 @@ with Eriador.
 14	Eriador	_	PROPN	PROPN	_	12	nmod
 15	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test68': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -2971,13 +3653,22 @@ with Eriador.
     try:
         if 'events' in return_dict['test68']['sents']['0']:
             print(return_dict['test68']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\")@ " + str(return_dict['test68']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\")@ " + str(return_dict['test68']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\")@ noevent  " )
             print("test68 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\")@ noeventexception \n " )
         print("test68 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test68']['sents']['0']:
+        verbs=return_dict['test68']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test68']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test68']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test68():
     text="""Lawmakers and officials in Fornost and Gondor welcomed a resumption of formal diplomatic ties
 with Eriador. 
@@ -3000,6 +3691,7 @@ with Eriador.
 16	Eriador	_	PROPN	PROPN	_	14	nmod
 17	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test69': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3011,13 +3703,22 @@ with Eriador.
     try:
         if 'events' in return_dict['test69']['sents']['0']:
             print(return_dict['test69']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\"),(u\"FORGOV\", u\"ERI\", u\"041\"),(u\"GONGOV\", u\"ERI\", u\"041\")@ " + str(return_dict['test69']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\"),(u\"FORGOV\", u\"ERI\", u\"041\"),(u\"GONGOV\", u\"ERI\", u\"041\")@ " + str(return_dict['test69']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\"),(u\"FORGOV\", u\"ERI\", u\"041\"),(u\"GONGOV\", u\"ERI\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\"),(u\"FORGOV\", u\"ERI\", u\"041\"),(u\"GONGOV\", u\"ERI\", u\"041\")@ noevent  " )
             print("test69 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORLEG\", u\"ERI\", u\"041\"),(u\"GONLEG\", u\"ERI\", u\"041\"),(u\"FORGOV\", u\"ERI\", u\"041\"),(u\"GONGOV\", u\"ERI\", u\"041\")@ noeventexception \n " )
         print("test69 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test69']['sents']['0']:
+        verbs=return_dict['test69']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test69']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test69']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test69():
     text="""The Shire is about to restore full diplomatic ties with Lorien almost 
 five years after crowds burned down its embassy. 
@@ -3044,6 +3745,7 @@ five years after crowds burned down its embassy.
 20	embassy	_	NOUN	NOUN	_	17	nmod
 21	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test70': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -3055,13 +3757,22 @@ five years after crowds burned down its embassy.
     try:
         if 'events' in return_dict['test70']['sents']['0']:
             print(return_dict['test70']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FRO\", u\"ELR\", u\"064\"),(u\"FRO\", u\"GAL\", u\"064\"),(u\"BIL\", u\"ELR\", u\"064\"),(u\"BIL\", u\"GAL\", u\"064\"),(u\"SAM\", u\"ELR\", u\"064\"),(u\"SAM\", u\"GAL\", u\"064\")@ " + str(return_dict['test70']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FRO\", u\"ELR\", u\"064\"),(u\"FRO\", u\"GAL\", u\"064\"),(u\"BIL\", u\"ELR\", u\"064\"),(u\"BIL\", u\"GAL\", u\"064\"),(u\"SAM\", u\"ELR\", u\"064\"),(u\"SAM\", u\"GAL\", u\"064\")@ " + str(return_dict['test70']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FRO\", u\"ELR\", u\"064\"),(u\"FRO\", u\"GAL\", u\"064\"),(u\"BIL\", u\"ELR\", u\"064\"),(u\"BIL\", u\"GAL\", u\"064\"),(u\"SAM\", u\"ELR\", u\"064\"),(u\"SAM\", u\"GAL\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FRO\", u\"ELR\", u\"064\"),(u\"FRO\", u\"GAL\", u\"064\"),(u\"BIL\", u\"ELR\", u\"064\"),(u\"BIL\", u\"GAL\", u\"064\"),(u\"SAM\", u\"ELR\", u\"064\"),(u\"SAM\", u\"GAL\", u\"064\")@ noevent  " )
             print("test70 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FRO\", u\"ELR\", u\"064\"),(u\"FRO\", u\"GAL\", u\"064\"),(u\"BIL\", u\"ELR\", u\"064\"),(u\"BIL\", u\"GAL\", u\"064\"),(u\"SAM\", u\"ELR\", u\"064\"),(u\"SAM\", u\"GAL\", u\"064\")@ noeventexception \n " )
         print("test70 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test70']['sents']['0']:
+        verbs=return_dict['test70']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test70']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test70']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test70():
     text="""Fornost and the evil awful Gondor welcomed a resumption of formal diplomatic  
 ties with Osgiliath after a 12-year rift, the official news agency WFNA said 
@@ -3097,6 +3808,7 @@ on Thursday.
 28	Thursday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test71': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3108,13 +3820,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test71']['sents']['0']:
             print(return_dict['test71']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test71']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test71']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent  " )
             print("test71 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test71 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test71']['sents']['0']:
+        verbs=return_dict['test71']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test71']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test71']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test71():
     text="""Evil Mordor, the awful Fornost, and good Gondor welcomed a resumption of formal   
 diplomatic ties with Osgiliath after a 12-year rift, the official news agency WFNA said 
@@ -3154,6 +3875,7 @@ on Thursday.
 32	Thursday	_	PROPN	PROPN	_	30	nmod
 33	.	_	PUNCT	PUNCT	_	30	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test72': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3165,13 +3887,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test72']['sents']['0']:
             print(return_dict['test72']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test72']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test72']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent  " )
             print("test72 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"OSG\", u\"041\"),(u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test72 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test72']['sents']['0']:
+        verbs=return_dict['test72']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test72']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test72']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test72():
     text="""Arnor, Calenardhon and the evil awful Gondor welcomed a resumption of formal diplomatic  
 ties with Osgiliath after a 12-year rift, the official news agency WFNA said 
@@ -3209,6 +3940,7 @@ on Thursday.
 30	Thursday	_	PROPN	PROPN	_	28	nmod
 31	.	_	PUNCT	PUNCT	_	28	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test73': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3220,13 +3952,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test73']['sents']['0']:
             print(return_dict['test73']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"OSG\", u\"041\"),(u\"CAL\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test73']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"OSG\", u\"041\"),(u\"CAL\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test73']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"OSG\", u\"041\"),(u\"CAL\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"OSG\", u\"041\"),(u\"CAL\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent  " )
             print("test73 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"OSG\", u\"041\"),(u\"CAL\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test73 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test73']['sents']['0']:
+        verbs=return_dict['test73']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test73']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test73']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test73():
     text="""Calenardhon and the evil Arnor awful Gondor welcomed a resumption of formal diplomatic  
 ties with Osgiliath after a 12-year rift, the official news agency WFNA said 
@@ -3263,6 +4004,7 @@ on Thursday.
 29	Thursday	_	PROPN	PROPN	_	27	nmod
 30	.	_	PUNCT	PUNCT	_	27	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test74': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3274,13 +4016,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test74']['sents']['0']:
             print(return_dict['test74']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"OSG\", u\"041\"),(u\"ARN\", u\"OSG\", u\"041\")@ " + str(return_dict['test74']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"OSG\", u\"041\"),(u\"ARN\", u\"OSG\", u\"041\")@ " + str(return_dict['test74']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"OSG\", u\"041\"),(u\"ARN\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"OSG\", u\"041\"),(u\"ARN\", u\"OSG\", u\"041\")@ noevent  " )
             print("test74 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"OSG\", u\"041\"),(u\"ARN\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test74 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test74']['sents']['0']:
+        verbs=return_dict['test74']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test74']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test74']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test74():
     text="""The lions and the evil awful Gondor welcomed a resumption of formal diplomatic  
 ties with Osgiliath after a 12-year rift, the primary official news agency WFNA said 
@@ -3318,6 +4069,7 @@ on Thursday.
 30	Thursday	_	PROPN	PROPN	_	28	nmod
 31	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test75': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3329,13 +4081,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test75']['sents']['0']:
             print(return_dict['test75']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test75']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test75']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test75 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test75 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test75']['sents']['0']:
+        verbs=return_dict['test75']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test75']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test75']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test75():
     text="""Lions, tigers, and Gondor welcomed a resumption of formal diplomatic ties  
 with Osgiliath after a 12-year rift, the primary official news agency WFNA said 
@@ -3372,6 +4133,7 @@ on Thursday.
 29	Thursday	_	PROPN	PROPN	_	27	nmod
 30	.	_	PUNCT	PUNCT	_	27	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test76': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3383,13 +4145,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test76']['sents']['0']:
             print(return_dict['test76']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test76']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test76']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test76 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"041\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test76 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test76']['sents']['0']:
+        verbs=return_dict['test76']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test76']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test76']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test76():
     text="""Ithilen's awful and evil minister Calimehtar warned of the Prince of 
 Dol Amroth. 
@@ -3410,6 +4181,7 @@ Dol Amroth.
 14	Amroth	_	PROPN	PROPN	_	11	nmod
 15	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test77': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3421,13 +4193,22 @@ Dol Amroth.
     try:
         if 'events' in return_dict['test77']['sents']['0']:
             print(return_dict['test77']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ " + str(return_dict['test77']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ " + str(return_dict['test77']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ noevent  " )
             print("test77 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ noeventexception \n " )
         print("test77 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test77']['sents']['0']:
+        verbs=return_dict['test77']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test77']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test77']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test77():
     text="""Fornost and Gondor welcomed a resumption of formal diplomatic ties with  
 Osgiliath after a 12-year rift, the official news agency WFNA said 
@@ -3460,6 +4241,7 @@ on Thursday.
 25	Thursday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test78': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -3471,13 +4253,22 @@ on Thursday.
     try:
         if 'events' in return_dict['test78']['sents']['0']:
             print(return_dict['test78']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test78']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ " + str(return_dict['test78']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noevent  " )
             print("test78 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FOR\", u\"OSG\", u\"041\"),(u\"GON\", u\"OSG\", u\"041\")@ noeventexception \n " )
         print("test78 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test78']['sents']['0']:
+        verbs=return_dict['test78']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test78']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test78']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test78():
     text="""Ithilen's awful and cool minister Calimehtar warned of the Prince of 
 Dol Amroth. 
@@ -3498,6 +4289,7 @@ Dol Amroth.
 14	Amroth	_	PROPN	PROPN	_	11	nmod
 15	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test79': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3509,13 +4301,22 @@ Dol Amroth.
     try:
         if 'events' in return_dict['test79']['sents']['0']:
             print(return_dict['test79']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ " + str(return_dict['test79']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ " + str(return_dict['test79']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ noevent  " )
             print("test79 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITHGOV\", u\"DOL\", u\"160\")@ noeventexception \n " )
         print("test79 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test79']['sents']['0']:
+        verbs=return_dict['test79']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test79']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test79']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test79():
     text="""Ithilen's sheep and goats of Gondor warned of the Prince of Dol_Amroth. 
 """
@@ -3534,6 +4335,7 @@ def test79():
 13	Dol_Amroth	_	PROPN	PROPN	_	11	nmod
 14	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test80': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3545,13 +4347,22 @@ def test79():
     try:
         if 'events' in return_dict['test80']['sents']['0']:
             print(return_dict['test80']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"160\"),(u\"GON\", u\"DOL\", u\"160\")@ " + str(return_dict['test80']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"160\"),(u\"GON\", u\"DOL\", u\"160\")@ " + str(return_dict['test80']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"160\"),(u\"GON\", u\"DOL\", u\"160\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"160\"),(u\"GON\", u\"DOL\", u\"160\")@ noevent  " )
             print("test80 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"160\"),(u\"GON\", u\"DOL\", u\"160\")@ noeventexception \n " )
         print("test80 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test80']['sents']['0']:
+        verbs=return_dict['test80']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test80']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test80']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test80():
     text="""Ithilen and the government of Gondor warned their populations about the Prince of Dol_Amroth. 
 """
@@ -3571,6 +4382,7 @@ def test80():
 14	Dol_Amroth	_	PROPN	PROPN	_	12	nmod
 15	.	_	PUNCT	PUNCT	_	1	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test81': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3582,13 +4394,22 @@ def test80():
     try:
         if 'events' in return_dict['test81']['sents']['0']:
             print(return_dict['test81']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ " + str(return_dict['test81']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ " + str(return_dict['test81']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ noevent  " )
             print("test81 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ noeventexception \n " )
         print("test81 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test81']['sents']['0']:
+        verbs=return_dict['test81']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test81']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test81']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test81():
     text="""Ithilen and the government of Gondor warned their Ent populations about the Prince of Dol_Amroth. 
 """
@@ -3609,6 +4430,7 @@ def test81():
 15	Dol_Amroth	_	PROPN	PROPN	_	13	nmod
 16	.	_	PUNCT	PUNCT	_	1	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test82': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3620,13 +4442,22 @@ def test81():
     try:
         if 'events' in return_dict['test82']['sents']['0']:
             print(return_dict['test82']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ " + str(return_dict['test82']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ " + str(return_dict['test82']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ noevent  " )
             print("test82 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ITH\", u\"DOL\", u\"162\"),(u\"GONGOV\", u\"DOL\", u\"162\")@ noeventexception \n " )
         print("test82 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test82']['sents']['0']:
+        verbs=return_dict['test82']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test82']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test82']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test82():
     text="""Neither Galadriel nor Gollum boycotted the parade supporting Gondor 
 on Saturday. 
@@ -3644,6 +4475,7 @@ on Saturday.
 11	Saturday	_	PROPN	PROPN	_	8	nmod
 12	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test83': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -3655,13 +4487,22 @@ on Saturday.
     try:
         if 'events' in return_dict['test83']['sents']['0']:
             print(return_dict['test83']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"081\"),(u\"HOB\", u\"GON\", u\"081\")@ " + str(return_dict['test83']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"081\"),(u\"HOB\", u\"GON\", u\"081\")@ " + str(return_dict['test83']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"081\"),(u\"HOB\", u\"GON\", u\"081\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"081\"),(u\"HOB\", u\"GON\", u\"081\")@ noevent  " )
             print("test83 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ELF\", u\"GON\", u\"081\"),(u\"HOB\", u\"GON\", u\"081\")@ noeventexception \n " )
         print("test83 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test83']['sents']['0']:
+        verbs=return_dict['test83']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test83']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test83']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test83():
     text="""The Calenardhon government condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday and promised aid to the affected Ithilen villages. 
@@ -3690,6 +4531,7 @@ in south Ithilen on Thursday and promised aid to the affected Ithilen villages.
 22	villages	_	NOUN	NOUN	_	17	nmod
 23	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test84': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -3701,13 +4543,22 @@ in south Ithilen on Thursday and promised aid to the affected Ithilen villages.
     try:
         if 'events' in return_dict['test84']['sents']['0']:
             print(return_dict['test84']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ " + str(return_dict['test84']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ " + str(return_dict['test84']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ noevent  " )
             print("test84 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"122\"),(u\"CALGOV\", u\"ITH\", u\"050\")@ noeventexception \n " )
         print("test84 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test84']['sents']['0']:
+        verbs=return_dict['test84']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test84']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test84']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test84():
     text="""Danish media and government warned at the Gondor of the Prince of Dol Amroth. 
 """
@@ -3727,6 +4578,7 @@ def test84():
 14	Amroth	_	PROPN	PROPN	_	11	nmod
 15	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test85': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3738,13 +4590,22 @@ def test84():
     try:
         if 'events' in return_dict['test85']['sents']['0']:
             print(return_dict['test85']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"DOL\", u\"162\"),(u\"DNKGOV\", u\"DOL\", u\"162\")@ " + str(return_dict['test85']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"DOL\", u\"162\"),(u\"DNKGOV\", u\"DOL\", u\"162\")@ " + str(return_dict['test85']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"DOL\", u\"162\"),(u\"DNKGOV\", u\"DOL\", u\"162\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"DOL\", u\"162\"),(u\"DNKGOV\", u\"DOL\", u\"162\")@ noevent  " )
             print("test85 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"DOL\", u\"162\"),(u\"DNKGOV\", u\"DOL\", u\"162\")@ noeventexception \n " )
         print("test85 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test85']['sents']['0']:
+        verbs=return_dict['test85']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test85']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test85']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test85():
     text=""""""
     parse="""1	The	_	DET	DET	_	3	det
@@ -3765,6 +4626,7 @@ def test85():
 16	Amroth	_	PROPN	PROPN	_	13	nmod
 17	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test86': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3776,13 +4638,22 @@ def test85():
     try:
         if 'events' in return_dict['test86']['sents']['0']:
             print(return_dict['test86']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"GON\", u\"160\"),(u\"---GOV\", u\"GON\", u\"160\")@ " + str(return_dict['test86']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"GON\", u\"160\"),(u\"---GOV\", u\"GON\", u\"160\")@ " + str(return_dict['test86']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"GON\", u\"160\"),(u\"---GOV\", u\"GON\", u\"160\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"GON\", u\"160\"),(u\"---GOV\", u\"GON\", u\"160\")@ noevent  " )
             print("test86 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMED\", u\"GON\", u\"160\"),(u\"---GOV\", u\"GON\", u\"160\")@ noeventexception \n " )
         print("test86 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test86']['sents']['0']:
+        verbs=return_dict['test86']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test86']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test86']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test86():
     text="""The Danish Islamist media and government warned at the Gondor of the Prince of Dol Amroth. 
 """
@@ -3804,6 +4675,7 @@ def test86():
 16	Amroth	_	PROPN	PROPN	_	13	nmod
 17	.	_	PUNCT	PUNCT	_	7	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test87': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990809'}}}
@@ -3815,13 +4687,22 @@ def test86():
     try:
         if 'events' in return_dict['test87']['sents']['0']:
             print(return_dict['test87']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMUSMED\", u\"GON\", u\"160\"),(u\"DNKMUSGOV\", u\"GON\", u\"160\")@ " + str(return_dict['test87']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMUSMED\", u\"GON\", u\"160\"),(u\"DNKMUSGOV\", u\"GON\", u\"160\")@ " + str(return_dict['test87']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMUSMED\", u\"GON\", u\"160\"),(u\"DNKMUSGOV\", u\"GON\", u\"160\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMUSMED\", u\"GON\", u\"160\"),(u\"DNKMUSGOV\", u\"GON\", u\"160\")@ noevent  " )
             print("test87 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"DNKMUSMED\", u\"GON\", u\"160\"),(u\"DNKMUSGOV\", u\"GON\", u\"160\")@ noeventexception \n " )
         print("test87 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test87']['sents']['0']:
+        verbs=return_dict['test87']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test87']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test87']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test87():
     text="""Frodo said he has deep satisfaction toward Gondor and Arnor's Elrond, 
 and Gondor's dramatic cooperation and its eye-catching development are of 
@@ -3866,6 +4747,7 @@ great significance to the region and even the entire world, he noted.
 37	noted	_	VERB	VERB	_	34	acl:relcl
 38	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test88': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20000423'}}}
@@ -3877,13 +4759,22 @@ great significance to the region and even the entire world, he noted.
     try:
         if 'events' in return_dict['test88']['sents']['0']:
             print(return_dict['test88']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"023\"),(u\"HOB\", u\"ARN\", u\"023\")@ " + str(return_dict['test88']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"023\"),(u\"HOB\", u\"ARN\", u\"023\")@ " + str(return_dict['test88']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"023\"),(u\"HOB\", u\"ARN\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"023\"),(u\"HOB\", u\"ARN\", u\"023\")@ noevent  " )
             print("test88 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"023\"),(u\"HOB\", u\"ARN\", u\"023\")@ noeventexception \n " )
         print("test88 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test88']['sents']['0']:
+        verbs=return_dict['test88']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test88']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test88']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test88():
     text="""The Calenardhon government issue condemned an attack by Osgiliath soldiers 
 in south Ithilen on Thursday and promised raids to the affected Ithilen villages. 
@@ -3913,6 +4804,7 @@ in south Ithilen on Thursday and promised raids to the affected Ithilen villages
 23	villages	_	NOUN	NOUN	_	18	nmod
 24	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test89': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -3924,13 +4816,22 @@ in south Ithilen on Thursday and promised raids to the affected Ithilen villages
     try:
         if 'events' in return_dict['test89']['sents']['0']:
             print(return_dict['test89']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"132\"),(u\"CALGOV\", u\"ITH\", u\"173\")@ " + str(return_dict['test89']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"132\"),(u\"CALGOV\", u\"ITH\", u\"173\")@ " + str(return_dict['test89']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"132\"),(u\"CALGOV\", u\"ITH\", u\"173\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"132\"),(u\"CALGOV\", u\"ITH\", u\"173\")@ noevent  " )
             print("test89 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"132\"),(u\"CALGOV\", u\"ITH\", u\"173\")@ noeventexception \n " )
         print("test89 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test89']['sents']['0']:
+        verbs=return_dict['test89']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test89']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test89']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test89():
     text="""The Calenardhon government chided an attack by Osgiliath soldiers 
 in south Ithilen on Thursday and ousted the affected Ithilen villages. 
@@ -3957,6 +4858,7 @@ in south Ithilen on Thursday and ousted the affected Ithilen villages.
 20	villages	_	NOUN	NOUN	_	16	dobj
 21	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test90': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950106'}}}
@@ -3968,13 +4870,22 @@ in south Ithilen on Thursday and ousted the affected Ithilen villages.
     try:
         if 'events' in return_dict['test90']['sents']['0']:
             print(return_dict['test90']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"131\"),(u\"CALGOV\", u\"ITH\", u\"201\")@ " + str(return_dict['test90']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"131\"),(u\"CALGOV\", u\"ITH\", u\"201\")@ " + str(return_dict['test90']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"131\"),(u\"CALGOV\", u\"ITH\", u\"201\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"131\"),(u\"CALGOV\", u\"ITH\", u\"201\")@ noevent  " )
             print("test90 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CALGOV\", u\"OSGMIL\", u\"131\"),(u\"CALGOV\", u\"ITH\", u\"201\")@ noeventexception \n " )
         print("test90 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test90']['sents']['0']:
+        verbs=return_dict['test90']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test90']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test90']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test90():
     text="""And Eriador has called for a boycott against Osgiliath, the state's fiercest foe. 
 """
@@ -3995,6 +4906,7 @@ def test90():
 15	foe	_	NOUN	NOUN	_	4	nmod
 16	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test91': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -4006,13 +4918,22 @@ def test90():
     try:
         if 'events' in return_dict['test91']['sents']['0']:
             print(return_dict['test91']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"096\")@ " + str(return_dict['test91']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"096\")@ " + str(return_dict['test91']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"096\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"096\")@ noevent  " )
             print("test91 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"OSG\", u\"096\")@ noeventexception \n " )
         print("test91 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test91']['sents']['0']:
+        verbs=return_dict['test91']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test91']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test91']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test91():
     text="""Resumption of ties between Arnor and Gondor may spur reconciliation 
 between Calenardhon and Gondor, and Gondor and Dagolath, the Osgiliath
@@ -4047,6 +4968,7 @@ newspaper al-Raya said on Friday.
 27	Friday	_	PROPN	PROPN	_	25	nmod
 28	.	_	PUNCT	PUNCT	_	9	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test92': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20000423'}}}
@@ -4058,13 +4980,22 @@ newspaper al-Raya said on Friday.
     try:
         if 'events' in return_dict['test92']['sents']['0']:
             print(return_dict['test92']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"081\"),(u\"ARN\", u\"GON\", u\"081\"),(u\"GON\", u\"CAL\", u\"081\")@ " + str(return_dict['test92']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"081\"),(u\"ARN\", u\"GON\", u\"081\"),(u\"GON\", u\"CAL\", u\"081\")@ " + str(return_dict['test92']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"081\"),(u\"ARN\", u\"GON\", u\"081\"),(u\"GON\", u\"CAL\", u\"081\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"081\"),(u\"ARN\", u\"GON\", u\"081\"),(u\"GON\", u\"CAL\", u\"081\")@ noevent  " )
             print("test92 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"081\"),(u\"ARN\", u\"GON\", u\"081\"),(u\"GON\", u\"CAL\", u\"081\")@ noeventexception \n " )
         print("test92 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test92']['sents']['0']:
+        verbs=return_dict['test92']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test92']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test92']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test92():
     text="""Clerics and lawmakers believe Dagolath and Osgiliath can cope with a decrease in vital 
 water from the mighty Entwash river when a major dam is filled next 
@@ -4100,6 +5031,7 @@ month.
 28	month	_	NOUN	NOUN	_	26	dobj
 29	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test93': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950107'}}}
@@ -4111,13 +5043,22 @@ month.
     try:
         if 'events' in return_dict['test93']['sents']['0']:
             print(return_dict['test93']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"---REL\", u\"DAG\", u\"023\"),(u\"---REL\", u\"OSG\", u\"023\"),(u\"---LEG\", u\"DAG\", u\"023\"),(u\"---LEG\", u\"OSG\", u\"023\")@ " + str(return_dict['test93']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"---REL\", u\"DAG\", u\"023\"),(u\"---REL\", u\"OSG\", u\"023\"),(u\"---LEG\", u\"DAG\", u\"023\"),(u\"---LEG\", u\"OSG\", u\"023\")@ " + str(return_dict['test93']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"---REL\", u\"DAG\", u\"023\"),(u\"---REL\", u\"OSG\", u\"023\"),(u\"---LEG\", u\"DAG\", u\"023\"),(u\"---LEG\", u\"OSG\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"---REL\", u\"DAG\", u\"023\"),(u\"---REL\", u\"OSG\", u\"023\"),(u\"---LEG\", u\"DAG\", u\"023\"),(u\"---LEG\", u\"OSG\", u\"023\")@ noevent  " )
             print("test93 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"---REL\", u\"DAG\", u\"023\"),(u\"---REL\", u\"OSG\", u\"023\"),(u\"---LEG\", u\"DAG\", u\"023\"),(u\"---LEG\", u\"OSG\", u\"023\")@ noeventexception \n " )
         print("test93 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test93']['sents']['0']:
+        verbs=return_dict['test93']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test93']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test93']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test93():
     text="""The Nasgul said on Friday that an arms embargo against Mordor would not 
 work and warned that a blockade of the Bay of Belfalas would harm all  
@@ -4156,6 +5097,7 @@ countries of the region.
 31	region	_	NOUN	NOUN	_	28	nmod
 32	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test94': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950105'}}}
@@ -4167,13 +5109,22 @@ countries of the region.
     try:
         if 'events' in return_dict['test94']['sents']['0']:
             print(return_dict['test94']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"###\", u\"MOR\", u\"023\")@ " + str(return_dict['test94']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"###\", u\"MOR\", u\"023\")@ " + str(return_dict['test94']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"###\", u\"MOR\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"###\", u\"MOR\", u\"023\")@ noevent  " )
             print("test94 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"###\", u\"MOR\", u\"023\")@ noeventexception \n " )
         print("test94 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test94']['sents']['0']:
+        verbs=return_dict['test94']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test94']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test94']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test94():
     text="""The information ministry of Gondor and the Nasgul said on Friday that an arms 
 embargo against the Mordor police would not work and warned that a blockade of 
@@ -4220,6 +5171,7 @@ the Bay of Belfalas would harm all countries of the region.
 39	region	_	NOUN	NOUN	_	36	nmod
 40	.	_	PUNCT	PUNCT	_	34	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test95': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950105'}}}
@@ -4231,13 +5183,22 @@ the Bay of Belfalas would harm all countries of the region.
     try:
         if 'events' in return_dict['test95']['sents']['0']:
             print(return_dict['test95']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORCOP\", u\"023\"),(u\"###\", u\"MORCOP\", u\"023\")@ " + str(return_dict['test95']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORCOP\", u\"023\"),(u\"###\", u\"MORCOP\", u\"023\")@ " + str(return_dict['test95']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORCOP\", u\"023\"),(u\"###\", u\"MORCOP\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORCOP\", u\"023\"),(u\"###\", u\"MORCOP\", u\"023\")@ noevent  " )
             print("test95 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"MORCOP\", u\"023\"),(u\"###\", u\"MORCOP\", u\"023\")@ noeventexception \n " )
         print("test95 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test95']['sents']['0']:
+        verbs=return_dict['test95']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test95']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test95']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test95():
     text="""White House security officials are about to restore full diplomatic 
 ties with Gondor and Arnor. 
@@ -4259,6 +5220,7 @@ ties with Gondor and Arnor.
 15	Arnor	_	PROPN	PROPN	_	13	conj
 16	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test96': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -4270,13 +5232,22 @@ ties with Gondor and Arnor.
     try:
         if 'events' in return_dict['test96']['sents']['0']:
             print(return_dict['test96']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ " + str(return_dict['test96']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ " + str(return_dict['test96']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ noevent  " )
             print("test96 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAGOV\", u\"GON\", u\"064\"),(u\"USAGOV\", u\"ARN\", u\"064\")@ noeventexception \n " )
         print("test96 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test96']['sents']['0']:
+        verbs=return_dict['test96']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test96']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test96']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test96():
     text="""The ambassadors of Arnor, Osgiliath and Gondor presented their 
 credentials to Ithilen's president on Wednesday in a further 
@@ -4313,6 +5284,7 @@ show of support to his government by their countries.
 29	countries	_	NOUN	NOUN	_	9	nmod
 30	.	_	PUNCT	PUNCT	_	9	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test97': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950108'}}}
@@ -4324,13 +5296,22 @@ show of support to his government by their countries.
     try:
         if 'events' in return_dict['test97']['sents']['0']:
             print(return_dict['test97']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ " + str(return_dict['test97']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ " + str(return_dict['test97']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ noevent  " )
             print("test97 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARNGOV\", u\"ITHGOV\", u\"032\"),(u\"OSGGOV\", u\"ITHGOV\", u\"032\"),(u\"GONGOV\", u\"ITHGOV\", u\"032\")@ noeventexception \n " )
         print("test97 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test97']['sents']['0']:
+        verbs=return_dict['test97']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test97']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test97']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test97():
     text="""The Philippines and the European Union (EU) agree that territorial disputes in the South China Sea should be resolved through international arbitration.
 """
@@ -4360,6 +5341,7 @@ def test97():
 24	arbitration	_	NOUN	NOUN	_	21	nmod
 25	.	_	PUNCT	PUNCT	_	10	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test98': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -4371,13 +5353,22 @@ def test97():
     try:
         if 'events' in return_dict['test98']['sents']['0']:
             print(return_dict['test98']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"IGOEEU\", u\"030\"),(u\"IGOEEU\", u\"PHL\", u\"030\")@ " + str(return_dict['test98']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"IGOEEU\", u\"030\"),(u\"IGOEEU\", u\"PHL\", u\"030\")@ " + str(return_dict['test98']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"IGOEEU\", u\"030\"),(u\"IGOEEU\", u\"PHL\", u\"030\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"IGOEEU\", u\"030\"),(u\"IGOEEU\", u\"PHL\", u\"030\")@ noevent  " )
             print("test98 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"IGOEEU\", u\"030\"),(u\"IGOEEU\", u\"PHL\", u\"030\")@ noeventexception \n " )
         print("test98 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test98']['sents']['0']:
+        verbs=return_dict['test98']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test98']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test98']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test98():
     text="""The Philippines and France agree that territorial disputes should be resolved through international arbitration.
 """
@@ -4397,6 +5388,7 @@ def test98():
 14	arbitration	_	NOUN	NOUN	_	11	nmod
 15	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test99': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -4408,13 +5400,22 @@ def test98():
     try:
         if 'events' in return_dict['test99']['sents']['0']:
             print(return_dict['test99']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ " + str(return_dict['test99']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ " + str(return_dict['test99']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ noevent  " )
             print("test99 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ noeventexception \n " )
         print("test99 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test99']['sents']['0']:
+        verbs=return_dict['test99']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test99']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test99']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test99():
     text="""The Philippines and the Central African Republic agree that territorial disputes should be resolved through international arbitration.
 """
@@ -4437,6 +5438,7 @@ def test99():
 17	arbitration	_	NOUN	NOUN	_	14	nmod
 18	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test100': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -4448,13 +5450,22 @@ def test99():
     try:
         if 'events' in return_dict['test100']['sents']['0']:
             print(return_dict['test100']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"CAF\", u\"030\"),(u\"CAF\", u\"PHL\", u\"030\")@ " + str(return_dict['test100']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"CAF\", u\"030\"),(u\"CAF\", u\"PHL\", u\"030\")@ " + str(return_dict['test100']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"CAF\", u\"030\"),(u\"CAF\", u\"PHL\", u\"030\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"CAF\", u\"030\"),(u\"CAF\", u\"PHL\", u\"030\")@ noevent  " )
             print("test100 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"CAF\", u\"030\"),(u\"CAF\", u\"PHL\", u\"030\")@ noeventexception \n " )
         print("test100 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test100']['sents']['0']:
+        verbs=return_dict['test100']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test100']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test100']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test100():
     text="""The Philippines and France agree that territorial disputes in the South China Sea should be resolved through international arbitration.
 """
@@ -4479,6 +5490,7 @@ def test100():
 19	arbitration	_	NOUN	NOUN	_	16	nmod
 20	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test101': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -4490,13 +5502,22 @@ def test100():
     try:
         if 'events' in return_dict['test101']['sents']['0']:
             print(return_dict['test101']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ " + str(return_dict['test101']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ " + str(return_dict['test101']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ noevent  " )
             print("test101 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"FRA\", u\"030\"),(u\"FRA\", u\"PHL\", u\"030\")@ noeventexception \n " )
         print("test101 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test101']['sents']['0']:
+        verbs=return_dict['test101']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test101']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test101']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test101():
     text="""Eriador agrees with the Philippines and France that territorial disputes should be resolved through international arbitration.
 """
@@ -4518,6 +5539,7 @@ def test101():
 16	arbitration	_	NOUN	NOUN	_	13	nmod
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test102': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -4529,13 +5551,22 @@ def test101():
     try:
         if 'events' in return_dict['test102']['sents']['0']:
             print(return_dict['test102']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"FRA\", u\"031\"),(u\"ERI\", u\"PHL\", u\"031\")@ " + str(return_dict['test102']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"FRA\", u\"031\"),(u\"ERI\", u\"PHL\", u\"031\")@ " + str(return_dict['test102']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"FRA\", u\"031\"),(u\"ERI\", u\"PHL\", u\"031\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"FRA\", u\"031\"),(u\"ERI\", u\"PHL\", u\"031\")@ noevent  " )
             print("test102 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"FRA\", u\"031\"),(u\"ERI\", u\"PHL\", u\"031\")@ noeventexception \n " )
         print("test102 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test102']['sents']['0']:
+        verbs=return_dict['test102']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test102']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test102']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test102():
     text="""Sam Gamgee will be renewing his gardener's license in Michel Delving.
 """
@@ -4553,6 +5584,7 @@ def test102():
 12	Delving	_	PROPN	PROPN	_	9	nmod
 13	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test103': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -4564,13 +5596,22 @@ def test102():
     try:
         if 'events' in return_dict['test103']['sents']['0']:
             print(return_dict['test103']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ " + str(return_dict['test103']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ " + str(return_dict['test103']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ noevent  " )
             print("test103 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ noeventexception \n " )
         print("test103 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test103']['sents']['0']:
+        verbs=return_dict['test103']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test103']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test103']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test103():
     text="""Sam Gamgee will be renewing his gardener's license in Michel Delving.
 """
@@ -4588,6 +5629,7 @@ def test103():
 12	Delving	_	PROPN	PROPN	_	9	nmod
 13	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test104': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080119'}}}
@@ -4599,13 +5641,22 @@ def test103():
     try:
         if 'events' in return_dict['test104']['sents']['0']:
             print(return_dict['test104']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ " + str(return_dict['test104']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ " + str(return_dict['test104']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ noevent  " )
             print("test104 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBCIV\", u\"SHRGOV\", u\"031\")@ noeventexception \n " )
         print("test104 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test104']['sents']['0']:
+        verbs=return_dict['test104']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test104']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test104']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test104():
     text="""Hamfast Gamgee has rescheduled his annual mushroom hunting trip in the White Downs.
 """
@@ -4624,6 +5675,7 @@ def test104():
 13	Downs	_	PROPN	PROPN	_	8	nmod
 14	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test105': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950104'}}}
@@ -4635,13 +5687,22 @@ def test104():
     try:
         if 'events' in return_dict['test105']['sents']['0']:
             print(return_dict['test105']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ " + str(return_dict['test105']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ " + str(return_dict['test105']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ noevent  " )
             print("test105 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ noeventexception \n " )
         print("test105 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test105']['sents']['0']:
+        verbs=return_dict['test105']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test105']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test105']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test105():
     text="""Hamfast Gamgee has criticized the recent closure of guest houses in Bree.
 """
@@ -4659,6 +5720,7 @@ def test105():
 12	Bree	_	PROPN	PROPN	_	4	nmod
 13	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test106': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20121109'}}}
@@ -4670,13 +5732,22 @@ def test105():
     try:
         if 'events' in return_dict['test106']['sents']['0']:
             print(return_dict['test106']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"121\")@ " + str(return_dict['test106']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"121\")@ " + str(return_dict['test106']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"121\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"121\")@ noevent  " )
             print("test106 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"121\")@ noeventexception \n " )
         print("test106 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test106']['sents']['0']:
+        verbs=return_dict['test106']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test106']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test106']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test106():
     text="""Hamfast Gamgee has criticized the recent closure of guest houses in Michel Delving.
 """
@@ -4695,6 +5766,7 @@ def test106():
 13	Delving	_	PROPN	PROPN	_	10	nmod
 14	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test107': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20121225'}}}
@@ -4706,13 +5778,22 @@ def test106():
     try:
         if 'events' in return_dict['test107']['sents']['0']:
             print(return_dict['test107']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"121\")@ " + str(return_dict['test107']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"121\")@ " + str(return_dict['test107']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"121\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"121\")@ noevent  " )
             print("test107 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"121\")@ noeventexception \n " )
         print("test107 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test107']['sents']['0']:
+        verbs=return_dict['test107']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test107']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test107']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test107():
     text="""Hamfast Gamgee has arranged for the reopening of guest houses in Bree.
 """
@@ -4730,6 +5811,7 @@ def test107():
 12	Bree	_	PROPN	PROPN	_	4	nmod
 13	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test108': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20121109'}}}
@@ -4741,13 +5823,22 @@ def test107():
     try:
         if 'events' in return_dict['test108']['sents']['0']:
             print(return_dict['test108']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"031\")@ " + str(return_dict['test108']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"031\")@ " + str(return_dict['test108']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"031\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"031\")@ noevent  " )
             print("test108 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"BRE\", u\"031\")@ noeventexception \n " )
         print("test108 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test108']['sents']['0']:
+        verbs=return_dict['test108']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test108']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test108']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test108():
     text="""Hamfast Gamgee has rescheduled his annual mushroom hunting trip in the White Downs.
 """
@@ -4766,6 +5857,7 @@ def test108():
 13	Downs	_	PROPN	PROPN	_	8	nmod
 14	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test109': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20140104'}}}
@@ -4777,13 +5869,22 @@ def test108():
     try:
         if 'events' in return_dict['test109']['sents']['0']:
             print(return_dict['test109']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ " + str(return_dict['test109']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ " + str(return_dict['test109']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ noevent  " )
             print("test109 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"SHR\", u\"082\")@ noeventexception \n " )
         print("test109 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test109']['sents']['0']:
+        verbs=return_dict['test109']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test109']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test109']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test109():
     text="""Sam Gamgee has marched very close to the border with Mordor.
 """
@@ -4800,6 +5901,7 @@ def test109():
 11	Mordor	_	PROPN	PROPN	_	9	nmod
 12	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test110': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20100106'}}}
@@ -4811,13 +5913,22 @@ def test109():
     try:
         if 'events' in return_dict['test110']['sents']['0']:
             print(return_dict['test110']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MOR\", u\"181\")@ " + str(return_dict['test110']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MOR\", u\"181\")@ " + str(return_dict['test110']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MOR\", u\"181\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MOR\", u\"181\")@ noevent  " )
             print("test110 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MOR\", u\"181\")@ noeventexception \n " )
         print("test110 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test110']['sents']['0']:
+        verbs=return_dict['test110']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test110']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test110']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test110():
     text="""Sam Gamgee met a bunch of Morgul Orcs.
 """
@@ -4831,6 +5942,7 @@ def test110():
 8	Orcs	_	PROPN	PROPN	_	5	nmod
 9	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test111': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20100109'}}}
@@ -4842,13 +5954,22 @@ def test110():
     try:
         if 'events' in return_dict['test111']['sents']['0']:
             print(return_dict['test111']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"031\"),(u\"MRGORC\", u\"ORCHOB\", u\"032\")@ " + str(return_dict['test111']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"031\"),(u\"MRGORC\", u\"ORCHOB\", u\"032\")@ " + str(return_dict['test111']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"031\"),(u\"MRGORC\", u\"ORCHOB\", u\"032\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"031\"),(u\"MRGORC\", u\"ORCHOB\", u\"032\")@ noevent  " )
             print("test111 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"031\"),(u\"MRGORC\", u\"ORCHOB\", u\"032\")@ noeventexception \n " )
         print("test111 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test111']['sents']['0']:
+        verbs=return_dict['test111']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test111']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test111']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test111():
     text="""Sam Gamgee has overcome the animosity of the Morgul Orcs, which is no small feat.
 """
@@ -4870,6 +5991,7 @@ def test111():
 16	feat	_	NOUN	NOUN	_	13	dobj
 17	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test112': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20100110'}}}
@@ -4881,13 +6003,22 @@ def test111():
     try:
         if 'events' in return_dict['test112']['sents']['0']:
             print(return_dict['test112']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"036\")@ " + str(return_dict['test112']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"036\")@ " + str(return_dict['test112']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"036\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"036\")@ noevent  " )
             print("test112 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"036\")@ noeventexception \n " )
         print("test112 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test112']['sents']['0']:
+        verbs=return_dict['test112']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test112']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test112']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test112():
     text="""Sam Gamgee has begun to question whether he really has much of a future with the
 Morgul Orcs.
@@ -4912,6 +6043,7 @@ Morgul Orcs.
 18	Orcs	_	PROPN	PROPN	_	14	nmod
 19	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test113': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20100112'}}}
@@ -4923,13 +6055,22 @@ Morgul Orcs.
     try:
         if 'events' in return_dict['test113']['sents']['0']:
             print(return_dict['test113']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"212\")@ " + str(return_dict['test113']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"212\")@ " + str(return_dict['test113']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"212\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"212\")@ noevent  " )
             print("test113 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ORCHOB\", u\"MRGORC\", u\"212\")@ noeventexception \n " )
         print("test113 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test113']['sents']['0']:
+        verbs=return_dict['test113']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test113']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test113']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test113():
     text="""Sam Gamgee halted his march towards further adventures in the vicinity of Cirith Ungol.
 """
@@ -4949,6 +6090,7 @@ def test113():
 14	Ungol	_	PROPN	PROPN	_	11	nmod
 15	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test114': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20100113'}}}
@@ -4960,13 +6102,22 @@ def test113():
     try:
         if 'events' in return_dict['test114']['sents']['0']:
             print(return_dict['test114']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MORMIL\", u\"192\")@ " + str(return_dict['test114']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MORMIL\", u\"192\")@ " + str(return_dict['test114']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MORMIL\", u\"192\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MORMIL\", u\"192\")@ noevent  " )
             print("test114 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBMIL\", u\"MORMIL\", u\"192\")@ noeventexception \n " )
         print("test114 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test114']['sents']['0']:
+        verbs=return_dict['test114']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test114']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test114']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test114():
     text="""Sam Gamgee has reasserted friendship with the gardening license raj of Michel Delving.
 """
@@ -4985,6 +6136,7 @@ def test114():
 13	Delving	_	PROPN	PROPN	_	10	nmod
 14	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test115': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20121231'}}}
@@ -4996,13 +6148,22 @@ def test114():
     try:
         if 'events' in return_dict['test115']['sents']['0']:
             print(return_dict['test115']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"042\")@ " + str(return_dict['test115']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"042\")@ " + str(return_dict['test115']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"042\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"042\")@ noevent  " )
             print("test115 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"SHRGOV\", u\"042\")@ noeventexception \n " )
         print("test115 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test115']['sents']['0']:
+        verbs=return_dict['test115']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test115']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test115']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test115():
     text="""Smeagol is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5035,6 +6196,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test116': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19951101'}}}
@@ -5046,13 +6208,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test116']['sents']['0']:
             print(return_dict['test116']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test116']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test116']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ noevent  " )
             print("test116 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test116 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test116']['sents']['0']:
+        verbs=return_dict['test116']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test116']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test116']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test116():
     text="""Arnor  is about to restore full diplomatic ties with Slinker almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5085,6 +6256,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test117': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19951101'}}}
@@ -5096,13 +6268,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test117']['sents']['0']:
             print(return_dict['test117']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ " + str(return_dict['test117']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ " + str(return_dict['test117']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ noevent  " )
             print("test117 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ noeventexception \n " )
         print("test117 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test117']['sents']['0']:
+        verbs=return_dict['test117']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test117']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test117']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test117():
     text="""Stinker is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5135,6 +6316,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test118': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -5146,13 +6328,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test118']['sents']['0']:
             print(return_dict['test118']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test118']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test118']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test118 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test118 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test118']['sents']['0']:
+        verbs=return_dict['test118']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test118']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test118']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test118():
     text="""Arnor  is about to restore full diplomatic ties with Slinker almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5185,6 +6376,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test119': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19980101'}}}
@@ -5196,13 +6388,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test119']['sents']['0']:
             print(return_dict['test119']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ " + str(return_dict['test119']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ " + str(return_dict['test119']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ noevent  " )
             print("test119 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBGOV\", u\"064\")@ noeventexception \n " )
         print("test119 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test119']['sents']['0']:
+        verbs=return_dict['test119']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test119']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test119']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test119():
     text="""Smeagol is about to restore full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5235,6 +6436,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test120': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990101'}}}
@@ -5246,13 +6448,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test120']['sents']['0']:
             print(return_dict['test120']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test120']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ " + str(return_dict['test120']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ noevent  " )
             print("test120 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOBGOV\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test120 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test120']['sents']['0']:
+        verbs=return_dict['test120']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test120']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test120']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test120():
     text="""Arnor is about to restore full diplomatic ties with Slinker almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5285,6 +6496,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test121': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20010101'}}}
@@ -5296,13 +6508,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test121']['sents']['0']:
             print(return_dict['test121']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBREB\", u\"064\")@ " + str(return_dict['test121']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBREB\", u\"064\")@ " + str(return_dict['test121']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBREB\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBREB\", u\"064\")@ noevent  " )
             print("test121 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"HOBREB\", u\"064\")@ noeventexception \n " )
         print("test121 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test121']['sents']['0']:
+        verbs=return_dict['test121']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test121']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test121']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test121():
     text="""Zimbabwe is about to restore full diplomatic ties with Slinker almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5335,6 +6556,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test122': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19781223'}}}
@@ -5346,13 +6568,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test122']['sents']['0']:
             print(return_dict['test122']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"RHO\", u\"HOB\", u\"064\")@ " + str(return_dict['test122']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"RHO\", u\"HOB\", u\"064\")@ " + str(return_dict['test122']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"RHO\", u\"HOB\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"RHO\", u\"HOB\", u\"064\")@ noevent  " )
             print("test122 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"RHO\", u\"HOB\", u\"064\")@ noeventexception \n " )
         print("test122 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test122']['sents']['0']:
+        verbs=return_dict['test122']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test122']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test122']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test122():
     text="""Arnor is about to restore full diplomatic ties with Zimbabwe almost 
 five years after crowds trashed its embassy, a senior official 
@@ -5385,6 +6616,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test123': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20010101'}}}
@@ -5396,13 +6628,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test123']['sents']['0']:
             print(return_dict['test123']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"ZBW\", u\"064\")@ " + str(return_dict['test123']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"ZBW\", u\"064\")@ " + str(return_dict['test123']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"ZBW\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"ZBW\", u\"064\")@ noevent  " )
             print("test123 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"ZBW\", u\"064\")@ noeventexception \n " )
         print("test123 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test123']['sents']['0']:
+        verbs=return_dict['test123']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test123']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test123']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test123():
     text="""An investigation determined that the amount of radioactivity that seeped from a 
 valve was less than half a microcurie, or less than what one would find in a 
@@ -5451,6 +6692,7 @@ valve was less than half a microcurie, or less than what one would find in a
 41	said	_	VERB	VERB	_	40	acl
 42	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test124': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080801'}}}
@@ -5462,13 +6704,22 @@ valve was less than half a microcurie, or less than what one would find in a
     try:
         if 'events' in return_dict['test124']['sents']['0']:
             print(return_dict['test124']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test124']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test124']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test124 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test124 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test124']['sents']['0']:
+        verbs=return_dict['test124']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test124']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test124']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test124():
     text="""A Pakistani woman believed linked to Al-Qaeda who shot at US military officers 
 while in detention in Afghanistan was extradited Monday to the United States 
@@ -5513,6 +6764,7 @@ where she faces trial for her actions, a US attorney said.
 37	said	_	VERB	VERB	_	0	root
 38	.	_	PUNCT	PUNCT	_	37	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test125': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080804'}}}
@@ -5524,13 +6776,22 @@ where she faces trial for her actions, a US attorney said.
     try:
         if 'events' in return_dict['test125']['sents']['0']:
             print(return_dict['test125']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\"),(u\"PAK\", u\"AFG\", u\"174\")@ " + str(return_dict['test125']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\"),(u\"PAK\", u\"AFG\", u\"174\")@ " + str(return_dict['test125']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\"),(u\"PAK\", u\"AFG\", u\"174\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\"),(u\"PAK\", u\"AFG\", u\"174\")@ noevent  " )
             print("test125 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\"),(u\"PAK\", u\"AFG\", u\"174\")@ noeventexception \n " )
         print("test125 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test125']['sents']['0']:
+        verbs=return_dict['test125']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test125']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test125']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test125():
     text="""A Pakistani woman believed linked to Al-Qaeda who shot at US military officers 
 while in detention in Afghanistan was extradited Monday to the United States 
@@ -5575,6 +6836,7 @@ where she faces trial for her actions, a US attorney said.
 37	said	_	VERB	VERB	_	0	root
 38	.	_	PUNCT	PUNCT	_	37	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test126': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080804'}}}
@@ -5586,13 +6848,22 @@ where she faces trial for her actions, a US attorney said.
     try:
         if 'events' in return_dict['test126']['sents']['0']:
             print(return_dict['test126']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\")@ " + str(return_dict['test126']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\")@ " + str(return_dict['test126']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\")@ noevent  " )
             print("test126 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PAK\", u\"IMGMOSALQ\", u\"111\")@ noeventexception \n " )
         print("test126 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test126']['sents']['0']:
+        verbs=return_dict['test126']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test126']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test126']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test126():
     text="""On improvement of primary health and Gondor's health centres, he said
 government proposed to take up the issue with the World Bank in a phased manner
@@ -5638,6 +6909,7 @@ with priority being assigned to states with low health indices.
 38	indices	_	NOUN	NOUN	_	34	nmod
 39	.	_	PUNCT	PUNCT	_	13	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test127': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19990101'}}}
@@ -5649,13 +6921,22 @@ with priority being assigned to states with low health indices.
     try:
         if 'events' in return_dict['test127']['sents']['0']:
             print(return_dict['test127']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test127']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test127']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test127 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test127 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test127']['sents']['0']:
+        verbs=return_dict['test127']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test127']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test127']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test127():
     text="""South Korea's women have grabbed gold in the team's section since then, while 
 their male counterparts are on the verge of completing a hat-trick, having 
@@ -5697,6 +6978,7 @@ triumphed in 2000 and 2004.
 34	2004	_	NUM	NUM	_	32	conj
 35	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test128': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080804'}}}
@@ -5708,13 +6990,22 @@ triumphed in 2000 and 2004.
     try:
         if 'events' in return_dict['test128']['sents']['0']:
             print(return_dict['test128']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test128']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test128']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test128 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test128 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test128']['sents']['0']:
+        verbs=return_dict['test128']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test128']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test128']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test128():
     text="""An explosion sent a wall of flame through the school dormitory just as the 
 girls, aged from eight to 16, were getting up for morning prayers, one of the 
@@ -5756,6 +7047,7 @@ girls said.
 34	said	_	VERB	VERB	_	0	root
 35	.	_	PUNCT	PUNCT	_	34	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test129': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080801'}}}
@@ -5767,13 +7059,22 @@ girls said.
     try:
         if 'events' in return_dict['test129']['sents']['0']:
             print(return_dict['test129']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test129']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test129']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test129 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test129 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test129']['sents']['0']:
+        verbs=return_dict['test129']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test129']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test129']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test129():
     text="""Grahame Russell, who lost his son Philip when one of the four suicide bombers 
 detonated a device on a bus in central London, said:`` A lot of families' 
@@ -5825,6 +7126,7 @@ ideas were included in the design; it's very different.
 44	different	_	ADJ	ADJ	_	26	parataxis
 45	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test130': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080801'}}}
@@ -5836,13 +7138,22 @@ ideas were included in the design; it's very different.
     try:
         if 'events' in return_dict['test130']['sents']['0']:
             print(return_dict['test130']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test130']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test130']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test130 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test130 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test130']['sents']['0']:
+        verbs=return_dict['test130']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test130']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test130']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test130():
     text="""The park is to be jointly managed by the government and local communities, with 
 assistance from Birdlife International and the Australian state of New South 
@@ -5877,6 +7188,7 @@ Wales.
 27	Wales	_	PROPN	PROPN	_	23	nmod
 28	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test131': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080801'}}}
@@ -5888,13 +7200,22 @@ Wales.
     try:
         if 'events' in return_dict['test131']['sents']['0']:
             print(return_dict['test131']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test131']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test131']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test131 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test131 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test131']['sents']['0']:
+        verbs=return_dict['test131']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test131']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test131']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test131():
     text="""China's coal mines are among the most dangerous in the world, with safety 
 standards often ignored in the quest for profits and the drive to meet demand 
@@ -5944,6 +7265,7 @@ for coal-- the source of about 70 percent of China's energy.
 42	energy	_	NOUN	NOUN	_	38	nmod
 43	.	_	PUNCT	PUNCT	_	18	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test132': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080801'}}}
@@ -5955,13 +7277,22 @@ for coal-- the source of about 70 percent of China's energy.
     try:
         if 'events' in return_dict['test132']['sents']['0']:
             print(return_dict['test132']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test132']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test132']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test132 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test132 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test132']['sents']['0']:
+        verbs=return_dict['test132']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test132']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test132']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test132():
     text="""They issued a joint statement calling for a continued expansion of the 
 International Monetary Fund's reserves and a shake-up of countries' 
@@ -6003,6 +7334,7 @@ representation and voting rights on that and other Bretton Woods institutions.
 34	institutions	_	NOUN	NOUN	_	29	conj
 35	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test133': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20090101'}}}
@@ -6014,13 +7346,22 @@ representation and voting rights on that and other Bretton Woods institutions.
     try:
         if 'events' in return_dict['test133']['sents']['0']:
             print(return_dict['test133']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test133']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test133']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test133 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test133 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test133']['sents']['0']:
+        verbs=return_dict['test133']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test133']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test133']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test133():
     text="""President Ilham Aliyev and President of the European Commission Jose Manuel Barroso held 
 a one-on-one meeting on June 14.
@@ -6046,6 +7387,7 @@ a one-on-one meeting on June 14.
 19	14	_	NUM	NUM	_	18	nummod
 20	.	_	PUNCT	PUNCT	_	13	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test134': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080804'}}}
@@ -6057,13 +7399,22 @@ a one-on-one meeting on June 14.
     try:
         if 'events' in return_dict['test134']['sents']['0']:
             print(return_dict['test134']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test134']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test134']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test134 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test134 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test134']['sents']['0']:
+        verbs=return_dict['test134']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test134']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test134']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test134():
     text="""Abubakar also directed Zuokumor to ensure that there is adequate police presence in all 
 the polling units and collation centres in the state.
@@ -6093,6 +7444,7 @@ the polling units and collation centres in the state.
 23	state	_	NOUN	NOUN	_	20	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test135': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'20080804'}}}
@@ -6104,13 +7456,22 @@ the polling units and collation centres in the state.
     try:
         if 'events' in return_dict['test135']['sents']['0']:
             print(return_dict['test135']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test135']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test135']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test135 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test135 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test135']['sents']['0']:
+        verbs=return_dict['test135']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test135']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test135']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test135():
     text="""Gryffindor's head Minerva McGonagall left for the Ministry of 
 Magic on Wednesday for meetings of the joint OWL standards 
@@ -6149,6 +7510,7 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
 31	reported	_	VERB	VERB	_	6	advcl
 32	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test136': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6160,13 +7522,22 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
     try:
         if 'events' in return_dict['test136']['sents']['0']:
             print(return_dict['test136']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"032\"),(u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ " + str(return_dict['test136']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"032\"),(u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ " + str(return_dict['test136']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"032\"),(u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"032\"),(u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ noevent  " )
             print("test136 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"032\"),(u\"&quot;THE MINISTRY OF MAGIC&quot;\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ noeventexception \n " )
         print("test136 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test136']['sents']['0']:
+        verbs=return_dict['test136']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test136']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test136']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test136():
     text="""Gryffindor's head Minerva McGonagall left for Minas Tirith on Wednesday for meetings of 
 the joint OWL standards committee with Albus Dumbledore, Luna Lovegood's news agency reported. 
@@ -6202,6 +7573,7 @@ the joint OWL standards committee with Albus Dumbledore, Luna Lovegood's news ag
 29	reported	_	VERB	VERB	_	19	acl
 30	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test137': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6213,13 +7585,22 @@ the joint OWL standards committee with Albus Dumbledore, Luna Lovegood's news ag
     try:
         if 'events' in return_dict['test137']['sents']['0']:
             print(return_dict['test137']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"GON\", u\"032\"),(u\"GON\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ " + str(return_dict['test137']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"GON\", u\"032\"),(u\"GON\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ " + str(return_dict['test137']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"GON\", u\"032\"),(u\"GON\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"GON\", u\"032\"),(u\"GON\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ noevent  " )
             print("test137 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"GON\", u\"032\"),(u\"GON\", u\"&quot;GRYFFINDOR HEAD MINERVA MCGONAGALL&quot;\", u\"033\")@ noeventexception \n " )
         print("test137 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test137']['sents']['0']:
+        verbs=return_dict['test137']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test137']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test137']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test137():
     text="""Gryffindor's head Minerva McGonagall left for the Ministry of 
 Magic on Wednesday for meetings of the joint OWL standards 
@@ -6258,6 +7639,7 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
 31	reported	_	VERB	VERB	_	6	advcl
 32	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test138': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6269,13 +7651,22 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
     try:
         if 'events' in return_dict['test138']['sents']['0']:
             print(return_dict['test138']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test138']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test138']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test138 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test138 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test138']['sents']['0']:
+        verbs=return_dict['test138']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test138']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test138']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test138():
     text="""Gryffindor's head Minerva McGonagall left for the Ministry of 
 Magic on Wednesday for meetings of the joint OWL standards 
@@ -6314,6 +7705,7 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
 31	reported	_	VERB	VERB	_	6	advcl
 32	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test139': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6325,13 +7717,22 @@ committee with Albus Dumbledore, Luna Lovegood's news agency reported.
     try:
         if 'events' in return_dict['test139']['sents']['0']:
             print(return_dict['test139']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test139']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test139']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test139 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test139 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test139']['sents']['0']:
+        verbs=return_dict['test139']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test139']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test139']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test139():
     text="""The Kuwait government is about to restore full diplomatic ties with Libya almost 
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -6362,6 +7763,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	22	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test140': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6373,13 +7775,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test140']['sents']['0']:
             print(return_dict['test140']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"KUWGOV\", u\"LBY\", u\"064\")@ " + str(return_dict['test140']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"KUWGOV\", u\"LBY\", u\"064\")@ " + str(return_dict['test140']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"KUWGOV\", u\"LBY\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"KUWGOV\", u\"LBY\", u\"064\")@ noevent  " )
             print("test140 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"KUWGOV\", u\"LBY\", u\"064\")@ noeventexception \n " )
         print("test140 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test140']['sents']['0']:
+        verbs=return_dict['test140']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test140']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test140']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test140():
     text="""The KU basketball team is about to restore full diplomatic ties with Libya almost 
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -6411,6 +7822,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	23	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test141': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6422,13 +7834,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test141']['sents']['0']:
             print(return_dict['test141']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ " + str(return_dict['test141']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ " + str(return_dict['test141']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ noevent  " )
             print("test141 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ noeventexception \n " )
         print("test141 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test141']['sents']['0']:
+        verbs=return_dict['test141']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test141']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test141']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test141():
     text="""The K.U. basketball team is about to restore full diplomatic ties with Libya almost 
 crowds trashed its embassy. 
@@ -6453,6 +7874,7 @@ crowds trashed its embassy.
 18	embassy	_	NOUN	NOUN	_	16	dobj
 19	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test142': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6464,13 +7886,22 @@ crowds trashed its embassy.
     try:
         if 'events' in return_dict['test142']['sents']['0']:
             print(return_dict['test142']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ " + str(return_dict['test142']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ " + str(return_dict['test142']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ noevent  " )
             print("test142 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USAEDU\", u\"LBY\", u\"064\")@ noeventexception \n " )
         print("test142 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test142']['sents']['0']:
+        verbs=return_dict['test142']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test142']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test142']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test142():
     text="""The Australian government is about to restore full diplomatic ties with Libya almost 
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -6501,6 +7932,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	22	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test143': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6512,13 +7944,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test143']['sents']['0']:
             print(return_dict['test143']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"AUSGOV\", u\"LBY\", u\"064\")@ " + str(return_dict['test143']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"AUSGOV\", u\"LBY\", u\"064\")@ " + str(return_dict['test143']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"AUSGOV\", u\"LBY\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"AUSGOV\", u\"LBY\", u\"064\")@ noevent  " )
             print("test143 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"AUSGOV\", u\"LBY\", u\"064\")@ noeventexception \n " )
         print("test143 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test143']['sents']['0']:
+        verbs=return_dict['test143']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test143']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test143']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test143():
     text="""The AU is about to restore full diplomatic ties with Libya almost 
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -6548,6 +7989,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	21	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test144': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6559,13 +8001,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test144']['sents']['0']:
             print(return_dict['test144']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"IGOAFR\", u\"LBY\", u\"064\")@ " + str(return_dict['test144']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"IGOAFR\", u\"LBY\", u\"064\")@ " + str(return_dict['test144']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"IGOAFR\", u\"LBY\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"IGOAFR\", u\"LBY\", u\"064\")@ noevent  " )
             print("test144 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"IGOAFR\", u\"LBY\", u\"064\")@ noeventexception \n " )
         print("test144 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test144']['sents']['0']:
+        verbs=return_dict['test144']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test144']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test144']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test144():
     text="""The Hermit Kingdom fired two artillery shells at New Zealand on Thursday.
 """
@@ -6583,6 +8034,7 @@ def test144():
 12	Thursday	_	PROPN	PROPN	_	4	nmod
 13	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test145': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6594,13 +8046,22 @@ def test144():
     try:
         if 'events' in return_dict['test145']['sents']['0']:
             print(return_dict['test145']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"NZE\", u\"194\")@ " + str(return_dict['test145']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"NZE\", u\"194\")@ " + str(return_dict['test145']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"NZE\", u\"194\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"NZE\", u\"194\")@ noevent  " )
             print("test145 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"NZE\", u\"194\")@ noeventexception \n " )
         print("test145 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test145']['sents']['0']:
+        verbs=return_dict['test145']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test145']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test145']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test145():
     text="""The Hermit Kingdom fired two artillery shells at Zealand on Thursday.
 """
@@ -6617,6 +8078,7 @@ def test145():
 11	Thursday	_	PROPN	PROPN	_	4	nmod
 12	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test146': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6628,13 +8090,22 @@ def test145():
     try:
         if 'events' in return_dict['test146']['sents']['0']:
             print(return_dict['test146']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"DNK\", u\"194\")@ " + str(return_dict['test146']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"DNK\", u\"194\")@ " + str(return_dict['test146']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"DNK\", u\"194\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"DNK\", u\"194\")@ noevent  " )
             print("test146 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"DNK\", u\"194\")@ noeventexception \n " )
         print("test146 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test146']['sents']['0']:
+        verbs=return_dict['test146']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test146']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test146']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test146():
     text="""The United States on Thursday fired two artillery shells at Seoul.
 """
@@ -6651,6 +8122,7 @@ def test146():
 11	Seoul	_	PROPN	PROPN	_	9	nmod
 12	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test147': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6662,13 +8134,22 @@ def test146():
     try:
         if 'events' in return_dict['test147']['sents']['0']:
             print(return_dict['test147']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USA\", u\"KOR\", u\"194\")@ " + str(return_dict['test147']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USA\", u\"KOR\", u\"194\")@ " + str(return_dict['test147']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USA\", u\"KOR\", u\"194\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USA\", u\"KOR\", u\"194\")@ noevent  " )
             print("test147 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"USA\", u\"KOR\", u\"194\")@ noeventexception \n " )
         print("test147 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test147']['sents']['0']:
+        verbs=return_dict['test147']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test147']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test147']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test147():
     text="""North Korea on Thursday fired two artillery shells near a naval vessel from South Korea 
 on a routine patrol of an area south of the two nations’ disputed maritime boundary in the Yellow Sea, according to reports.
@@ -6714,6 +8195,7 @@ on a routine patrol of an area south of the two nations’ disputed maritime bound
 39	reports	_	VERB	VERB	_	37	xcomp
 40	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test148': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6725,13 +8207,22 @@ on a routine patrol of an area south of the two nations’ disputed maritime bound
     try:
         if 'events' in return_dict['test148']['sents']['0']:
             print(return_dict['test148']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ " + str(return_dict['test148']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ " + str(return_dict['test148']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noevent  " )
             print("test148 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noeventexception \n " )
         print("test148 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test148']['sents']['0']:
+        verbs=return_dict['test148']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test148']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test148']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test148():
     text="""Pyongyang on Thursday fired two artillery shells at Seoul.
 """
@@ -6746,6 +8237,7 @@ def test148():
 9	Seoul	_	PROPN	PROPN	_	7	nmod
 10	.	_	PUNCT	PUNCT	_	1	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test149': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6757,13 +8249,22 @@ def test148():
     try:
         if 'events' in return_dict['test149']['sents']['0']:
             print(return_dict['test149']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ " + str(return_dict['test149']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ " + str(return_dict['test149']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noevent  " )
             print("test149 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noeventexception \n " )
         print("test149 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test149']['sents']['0']:
+        verbs=return_dict['test149']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test149']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test149']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test149():
     text="""The Hermit Kingdom fired two artillery shells at Seoul on Thursday.
 """
@@ -6780,6 +8281,7 @@ def test149():
 11	Thursday	_	PROPN	PROPN	_	4	nmod
 12	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test150': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -6791,13 +8293,22 @@ def test149():
     try:
         if 'events' in return_dict['test150']['sents']['0']:
             print(return_dict['test150']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ " + str(return_dict['test150']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ " + str(return_dict['test150']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noevent  " )
             print("test150 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PRK\", u\"KOR\", u\"194\")@ noeventexception \n " )
         print("test150 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test150']['sents']['0']:
+        verbs=return_dict['test150']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test150']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test150']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test150():
     text="""Ethiopia has broken relations with Libya almost five years after crowds 
 trashed its embassy. 
@@ -6818,6 +8329,7 @@ trashed its embassy.
 14	embassy	_	NOUN	NOUN	_	12	dobj
 15	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test151': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6829,13 +8341,22 @@ trashed its embassy.
     try:
         if 'events' in return_dict['test151']['sents']['0']:
             print(return_dict['test151']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test151']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test151']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent  " )
             print("test151 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noeventexception \n " )
         print("test151 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test151']['sents']['0']:
+        verbs=return_dict['test151']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test151']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test151']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test151():
     text="""Ethiopia has broken down relations with Libya almost five years after crowds 
 trashed its embassy, a senior official said on Saturday. 
@@ -6864,6 +8385,7 @@ trashed its embassy, a senior official said on Saturday.
 22	Saturday	_	PROPN	PROPN	_	20	nmod
 23	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test152': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6875,13 +8397,22 @@ trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test152']['sents']['0']:
             print(return_dict['test152']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test152']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test152']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent  " )
             print("test152 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noeventexception \n " )
         print("test152 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test152']['sents']['0']:
+        verbs=return_dict['test152']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test152']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test152']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test152():
     text="""Ethiopia will break relations with Libya almost five years after crowds 
 trashed its embassy.
@@ -6902,6 +8433,7 @@ trashed its embassy.
 14	embassy	_	NOUN	NOUN	_	12	dobj
 15	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test153': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6913,13 +8445,22 @@ trashed its embassy.
     try:
         if 'events' in return_dict['test153']['sents']['0']:
             print(return_dict['test153']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test153']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test153']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent  " )
             print("test153 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noeventexception \n " )
         print("test153 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test153']['sents']['0']:
+        verbs=return_dict['test153']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test153']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test153']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test153():
     text="""Ethiopia broken down a treaty with Libya's  almost five years after 
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -6949,6 +8490,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	21	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test154': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -6960,13 +8502,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test154']['sents']['0']:
             print(return_dict['test154']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ " + str(return_dict['test154']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ " + str(return_dict['test154']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ noevent  " )
             print("test154 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ noeventexception \n " )
         print("test154 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test154']['sents']['0']:
+        verbs=return_dict['test154']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test154']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test154']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test154():
     text="""Ethiopia broken down a treaty with Libya's  almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -6996,6 +8547,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	21	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test155': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7007,13 +8559,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test155']['sents']['0']:
             print(return_dict['test155']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ " + str(return_dict['test155']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ " + str(return_dict['test155']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ noevent  " )
             print("test155 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"161\")@ noeventexception \n " )
         print("test155 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test155']['sents']['0']:
+        verbs=return_dict['test155']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test155']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test155']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test155():
     text="""Ethiopia is acting strangely with Libya almost five years after  
 crowds trashed its embassy. 
@@ -7034,6 +8595,7 @@ crowds trashed its embassy.
 14	embassy	_	NOUN	NOUN	_	12	dobj
 15	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test156': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7045,13 +8607,22 @@ crowds trashed its embassy.
     try:
         if 'events' in return_dict['test156']['sents']['0']:
             print(return_dict['test156']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ " + str(return_dict['test156']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ " + str(return_dict['test156']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ noevent  " )
             print("test156 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ noeventexception \n " )
         print("test156 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test156']['sents']['0']:
+        verbs=return_dict['test156']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test156']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test156']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test156():
     text="""Ethiopia has acted oddly with respect to Libya almost five years after  
 crowds trashed its embassy
@@ -7073,6 +8644,7 @@ crowds trashed its embassy
 15	its	_	PRON	PRON	_	16	nmod:poss
 16	embassy	_	NOUN	NOUN	_	14	dobj
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test157': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7084,13 +8656,22 @@ crowds trashed its embassy
     try:
         if 'events' in return_dict['test157']['sents']['0']:
             print(return_dict['test157']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ " + str(return_dict['test157']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ " + str(return_dict['test157']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ noevent  " )
             print("test157 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"100\")@ noeventexception \n " )
         print("test157 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test157']['sents']['0']:
+        verbs=return_dict['test157']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test157']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test157']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test157():
     text="""Ethiopia indicated it would act now with Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7120,6 +8701,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test158': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7131,13 +8713,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test158']['sents']['0']:
             print(return_dict['test158']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ " + str(return_dict['test158']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ " + str(return_dict['test158']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ noevent  " )
             print("test158 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ noeventexception \n " )
         print("test158 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test158']['sents']['0']:
+        verbs=return_dict['test158']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test158']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test158']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test158():
     text="""Ethiopia indicated it would acting now  with Libya's  almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7168,6 +8759,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test159': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7179,13 +8771,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test159']['sents']['0']:
             print(return_dict['test159']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ " + str(return_dict['test159']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ " + str(return_dict['test159']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ noevent  " )
             print("test159 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1010\")@ noeventexception \n " )
         print("test159 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test159']['sents']['0']:
+        verbs=return_dict['test159']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test159']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test159']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test159():
     text="""Ethiopia indicated it should have acted against Libya almost five years after  
 crowds trashed its embassy. 
@@ -7208,6 +8809,7 @@ crowds trashed its embassy.
 16	embassy	_	NOUN	NOUN	_	14	dobj
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test160': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7219,13 +8821,22 @@ crowds trashed its embassy.
     try:
         if 'events' in return_dict['test160']['sents']['0']:
             print(return_dict['test160']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1011\")@ " + str(return_dict['test160']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1011\")@ " + str(return_dict['test160']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1011\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1011\")@ noevent  " )
             print("test160 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1011\")@ noeventexception \n " )
         print("test160 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test160']['sents']['0']:
+        verbs=return_dict['test160']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test160']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test160']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test160():
     text="""Ethiopia act on a resolution  with Libya's  almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7255,6 +8866,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	21	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test161': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7266,13 +8878,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test161']['sents']['0']:
             print(return_dict['test161']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ " + str(return_dict['test161']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ " + str(return_dict['test161']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noevent  " )
             print("test161 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noeventexception \n " )
         print("test161 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test161']['sents']['0']:
+        verbs=return_dict['test161']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test161']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test161']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test161():
     text="""Ethiopia is acting on a resolution with Libya's  almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7303,6 +8924,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test162': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7314,13 +8936,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test162']['sents']['0']:
             print(return_dict['test162']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ " + str(return_dict['test162']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ " + str(return_dict['test162']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noevent  " )
             print("test162 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noeventexception \n " )
         print("test162 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test162']['sents']['0']:
+        verbs=return_dict['test162']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test162']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test162']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test162():
     text="""Ethiopia acted on a resolution against Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7349,6 +8980,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 22	Saturday	_	PROPN	PROPN	_	20	nmod
 23	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test163': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7360,13 +8992,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test163']['sents']['0']:
             print(return_dict['test163']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ " + str(return_dict['test163']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ " + str(return_dict['test163']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noevent  " )
             print("test163 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"102\")@ noeventexception \n " )
         print("test163 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test163']['sents']['0']:
+        verbs=return_dict['test163']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test163']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test163']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test163():
     text="""Ethiopia will act on some programs with Libya  almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7396,6 +9037,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test164': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7407,13 +9049,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test164']['sents']['0']:
             print(return_dict['test164']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ " + str(return_dict['test164']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ " + str(return_dict['test164']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ noevent  " )
             print("test164 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ noeventexception \n " )
         print("test164 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test164']['sents']['0']:
+        verbs=return_dict['test164']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test164']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test164']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test164():
     text="""Ethiopia acted on some programs with Libya almost five years after  
 crowds trashed its embassy. 
@@ -7435,6 +9086,7 @@ crowds trashed its embassy.
 15	embassy	_	NOUN	NOUN	_	13	dobj
 16	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test165': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7446,13 +9098,22 @@ crowds trashed its embassy.
     try:
         if 'events' in return_dict['test165']['sents']['0']:
             print(return_dict['test165']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ " + str(return_dict['test165']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ " + str(return_dict['test165']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ noevent  " )
             print("test165 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"103\")@ noeventexception \n " )
         print("test165 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test165']['sents']['0']:
+        verbs=return_dict['test165']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test165']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test165']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test165():
     text="""Ethiopia broken down with Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7479,6 +9140,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 20	Saturday	_	PROPN	PROPN	_	18	nmod
 21	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test166': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7490,13 +9152,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test166']['sents']['0']:
             print(return_dict['test166']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test166']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ " + str(return_dict['test166']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noevent  " )
             print("test166 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"1717\")@ noeventexception \n " )
         print("test166 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test166']['sents']['0']:
+        verbs=return_dict['test166']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test166']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test166']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test166():
     text="""Ethiopia is about to depart from Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7525,6 +9196,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 22	Saturday	_	PROPN	PROPN	_	20	nmod
 23	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test167': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7536,13 +9208,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test167']['sents']['0']:
             print(return_dict['test167']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ " + str(return_dict['test167']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ " + str(return_dict['test167']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noevent  " )
             print("test167 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noeventexception \n " )
         print("test167 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test167']['sents']['0']:
+        verbs=return_dict['test167']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test167']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test167']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test167():
     text="""Ethiopia departs from Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7568,6 +9249,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 19	Saturday	_	PROPN	PROPN	_	17	nmod
 20	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test168': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7579,13 +9261,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test168']['sents']['0']:
             print(return_dict['test168']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ " + str(return_dict['test168']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ " + str(return_dict['test168']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noevent  " )
             print("test168 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noeventexception \n " )
         print("test168 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test168']['sents']['0']:
+        verbs=return_dict['test168']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test168']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test168']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test168():
     text="""Ethiopia departed from Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7611,6 +9302,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 19	Saturday	_	PROPN	PROPN	_	17	nmod
 20	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test169': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7622,13 +9314,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test169']['sents']['0']:
             print(return_dict['test169']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ " + str(return_dict['test169']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ " + str(return_dict['test169']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noevent  " )
             print("test169 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"032\")@ noeventexception \n " )
         print("test169 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test169']['sents']['0']:
+        verbs=return_dict['test169']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test169']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test169']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test169():
     text="""Ethiopia departx from Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7654,6 +9355,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 19	Saturday	_	PROPN	PROPN	_	17	nmod
 20	.	_	PUNCT	PUNCT	_	17	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test170': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7665,13 +9367,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test170']['sents']['0']:
             print(return_dict['test170']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test170']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test170']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test170 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test170 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test170']['sents']['0']:
+        verbs=return_dict['test170']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test170']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test170']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test170():
     text="""Ethiopia departes from Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7697,6 +9408,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 19	Saturday	_	PROPN	PROPN	_	17	nmod
 20	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test171': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7708,13 +9420,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test171']['sents']['0']:
             print(return_dict['test171']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test171']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test171']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test171 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test171 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test171']['sents']['0']:
+        verbs=return_dict['test171']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test171']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test171']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test171():
     text="""Ethiopia deplored from Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7740,6 +9461,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 19	Saturday	_	PROPN	PROPN	_	17	nmod
 20	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test172': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7751,13 +9473,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test172']['sents']['0']:
             print(return_dict['test172']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"122\")@ " + str(return_dict['test172']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"122\")@ " + str(return_dict['test172']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"122\")@ noevent  " )
             print("test172 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"122\")@ noeventexception \n " )
         print("test172 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test172']['sents']['0']:
+        verbs=return_dict['test172']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test172']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test172']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test172():
     text="""Ethiopia indicated it deplored Libya almost five years after  
 crowds trashed its embassy, a senior official said on Saturday. 
@@ -7784,6 +9515,7 @@ crowds trashed its embassy, a senior official said on Saturday.
 20	Saturday	_	PROPN	PROPN	_	18	nmod
 21	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test173': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -7795,13 +9527,22 @@ crowds trashed its embassy, a senior official said on Saturday.
     try:
         if 'events' in return_dict['test173']['sents']['0']:
             print(return_dict['test173']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"123\")@ " + str(return_dict['test173']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"123\")@ " + str(return_dict['test173']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"123\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"123\")@ noevent  " )
             print("test173 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ETH\", u\"LBY\", u\"123\")@ noeventexception \n " )
         print("test173 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test173']['sents']['0']:
+        verbs=return_dict['test173']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test173']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test173']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test173():
     text="""Gollum was seen to break into an anti- Gondor parade on Saturday. 
 """
@@ -7819,6 +9560,7 @@ def test173():
 12	Saturday	_	PROPN	PROPN	_	5	nmod
 13	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test174': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -7830,13 +9572,22 @@ def test173():
     try:
         if 'events' in return_dict['test174']['sents']['0']:
             print(return_dict['test174']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ " + str(return_dict['test174']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ " + str(return_dict['test174']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ noevent  " )
             print("test174 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ noeventexception \n " )
         print("test174 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test174']['sents']['0']:
+        verbs=return_dict['test174']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test174']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test174']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test174():
     text="""Gollum abandoned an anti- Gondor parade on Saturday. 
 """
@@ -7850,6 +9601,7 @@ def test174():
 8	Saturday	_	PROPN	PROPN	_	2	nmod
 9	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test175': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -7861,13 +9613,22 @@ def test174():
     try:
         if 'events' in return_dict['test175']['sents']['0']:
             print(return_dict['test175']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ " + str(return_dict['test175']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ " + str(return_dict['test175']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ noevent  " )
             print("test175 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test175 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test175']['sents']['0']:
+        verbs=return_dict['test175']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test175']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test175']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test175():
     text="""Gollum will bargain for asylum in Gondor, AFP reported. 
 """
@@ -7883,6 +9644,7 @@ def test175():
 10	reported	_	VERB	VERB	_	3	advcl
 11	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test176': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -7894,13 +9656,22 @@ def test175():
     try:
         if 'events' in return_dict['test176']['sents']['0']:
             print(return_dict['test176']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174K\")@ " + str(return_dict['test176']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174K\")@ " + str(return_dict['test176']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174K\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174K\")@ noevent  " )
             print("test176 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174K\")@ noeventexception \n " )
         print("test176 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test176']['sents']['0']:
+        verbs=return_dict['test176']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test176']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test176']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test176():
     text="""Gollum will bargain foreign asylum in Gondor, AFP reported. 
 """
@@ -7916,6 +9687,7 @@ def test176():
 10	reported	_	VERB	VERB	_	3	advcl
 11	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test177': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -7927,13 +9699,22 @@ def test176():
     try:
         if 'events' in return_dict['test177']['sents']['0']:
             print(return_dict['test177']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174L\")@ " + str(return_dict['test177']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174L\")@ " + str(return_dict['test177']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174L\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174L\")@ noevent  " )
             print("test177 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"174L\")@ noeventexception \n " )
         print("test177 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test177']['sents']['0']:
+        verbs=return_dict['test177']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test177']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test177']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test177():
     text="""Gollum was known to break into an anti- Gondor parade on Saturday. 
 """
@@ -7951,6 +9732,7 @@ def test177():
 12	Saturday	_	PROPN	PROPN	_	5	nmod
 13	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test178': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -7962,13 +9744,22 @@ def test177():
     try:
         if 'events' in return_dict['test178']['sents']['0']:
             print(return_dict['test178']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ " + str(return_dict['test178']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ " + str(return_dict['test178']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ noevent  " )
             print("test178 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"1717\")@ noeventexception \n " )
         print("test178 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test178']['sents']['0']:
+        verbs=return_dict['test178']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test178']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test178']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test178():
     text="""Gollum was in an accord with an anti- Gondor parade on Saturday. 
 """
@@ -7986,6 +9777,7 @@ def test178():
 12	Saturday	_	PROPN	PROPN	_	2	nmod
 13	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test179': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -7997,13 +9789,22 @@ def test178():
     try:
         if 'events' in return_dict['test179']['sents']['0']:
             print(return_dict['test179']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ @ " + str(return_dict['test179']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ @ " + str(return_dict['test179']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ @ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ @ noevent  " )
             print("test179 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ @ noeventexception \n " )
         print("test179 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test179']['sents']['0']:
+        verbs=return_dict['test179']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test179']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test179']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test179():
     text="""Ithilen's palace guard militia was freed from Barad-dur after that 
 group yielded ground seized in six days of fighting.
@@ -8030,6 +9831,7 @@ group yielded ground seized in six days of fighting.
 20	fighting	_	NOUN	NOUN	_	18	nmod
 21	.	_	PUNCT	PUNCT	_	7	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test180': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950114'}}}
@@ -8041,13 +9843,22 @@ group yielded ground seized in six days of fighting.
     try:
         if 'events' in return_dict['test180']['sents']['0']:
             print(return_dict['test180']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"ITH\", u\"066\")@ " + str(return_dict['test180']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"ITH\", u\"066\")@ " + str(return_dict['test180']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"ITH\", u\"066\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"ITH\", u\"066\")@ noevent  " )
             print("test180 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MOR\", u\"ITH\", u\"066\")@ noeventexception \n " )
         print("test180 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test180']['sents']['0']:
+        verbs=return_dict['test180']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test180']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test180']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test180():
     text="""Fornost President Umbardacil has again appealed for peace in Ithilen state-run television in 
 a message to the spiritual leader of the war-torn nation's influential 
@@ -8081,6 +9892,7 @@ Douzu community
 26	Douzu	_	PROPN	PROPN	_	27	compound
 27	community	_	NOUN	NOUN	_	19	nmod
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test181': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950116'}}}
@@ -8092,13 +9904,22 @@ Douzu community
     try:
         if 'events' in return_dict['test181']['sents']['0']:
             print(return_dict['test181']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITHTV\", u\"095\")@ " + str(return_dict['test181']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITHTV\", u\"095\")@ " + str(return_dict['test181']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITHTV\", u\"095\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITHTV\", u\"095\")@ noevent  " )
             print("test181 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"FORGOV\", u\"ITHTV\", u\"095\")@ noeventexception \n " )
         print("test181 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test181']['sents']['0']:
+        verbs=return_dict['test181']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test181']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test181']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test181():
     text="""Gollum was seen to break in an anti- Gondor parade on Saturday. 
 """
@@ -8116,6 +9937,7 @@ def test181():
 12	Saturday	_	PROPN	PROPN	_	5	nmod
 13	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test182': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8127,13 +9949,22 @@ def test181():
     try:
         if 'events' in return_dict['test182']['sents']['0']:
             print(return_dict['test182']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"HOB\", u\"075\")@ " + str(return_dict['test182']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"HOB\", u\"075\")@ " + str(return_dict['test182']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"HOB\", u\"075\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"HOB\", u\"075\")@ noevent  " )
             print("test182 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"HOB\", u\"075\")@ noeventexception \n " )
         print("test182 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test182']['sents']['0']:
+        verbs=return_dict['test182']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test182']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test182']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test182():
     text="""Gollum abandoned efforts to stop an anti- Gondor parade on Saturday. 
 """
@@ -8150,6 +9981,7 @@ def test182():
 11	Saturday	_	PROPN	PROPN	_	5	nmod
 12	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test183': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8161,13 +9993,22 @@ def test182():
     try:
         if 'events' in return_dict['test183']['sents']['0']:
             print(return_dict['test183']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ " + str(return_dict['test183']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ " + str(return_dict['test183']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ noevent  " )
             print("test183 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test183 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test183']['sents']['0']:
+        verbs=return_dict['test183']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test183']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test183']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test183():
     text="""Gollum allowed that Mordor isn't a really pleasant place to visit. 
 """
@@ -8185,6 +10026,7 @@ def test183():
 12	visit	_	VERB	VERB	_	10	acl
 13	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test184': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8196,13 +10038,22 @@ def test183():
     try:
         if 'events' in return_dict['test184']['sents']['0']:
             print(return_dict['test184']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ " + str(return_dict['test184']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ " + str(return_dict['test184']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ noevent  " )
             print("test184 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ noeventexception \n " )
         print("test184 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test184']['sents']['0']:
+        verbs=return_dict['test184']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test184']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test184']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test184():
     text="""Gollum allowed that Mordor isn't a real pleasant place to visit. 
 """
@@ -8220,6 +10071,7 @@ def test184():
 12	visit	_	VERB	VERB	_	10	acl
 13	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test185': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8231,13 +10083,22 @@ def test184():
     try:
         if 'events' in return_dict['test185']['sents']['0']:
             print(return_dict['test185']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ " + str(return_dict['test185']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ " + str(return_dict['test185']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ noevent  " )
             print("test185 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"024\")@ noeventexception \n " )
         print("test185 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test185']['sents']['0']:
+        verbs=return_dict['test185']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test185']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test185']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test185():
     text="""Gollum allowed that Mordor isn't a real easy or pleasant place to visit. 
 """
@@ -8257,6 +10118,7 @@ def test185():
 14	visit	_	VERB	VERB	_	12	acl
 15	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test186': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8268,13 +10130,22 @@ def test185():
     try:
         if 'events' in return_dict['test186']['sents']['0']:
             print(return_dict['test186']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ " + str(return_dict['test186']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ " + str(return_dict['test186']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noevent  " )
             print("test186 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noeventexception \n " )
         print("test186 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test186']['sents']['0']:
+        verbs=return_dict['test186']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test186']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test186']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test186():
     text="""Gollum recently allowed that Mordor isn't a such neat place to visit. 
 """
@@ -8293,6 +10164,7 @@ def test186():
 13	visit	_	VERB	VERB	_	11	acl
 14	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test187': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8304,13 +10176,22 @@ def test186():
     try:
         if 'events' in return_dict['test187']['sents']['0']:
             print(return_dict['test187']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"025\")@ " + str(return_dict['test187']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"025\")@ " + str(return_dict['test187']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"025\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"025\")@ noevent  " )
             print("test187 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"025\")@ noeventexception \n " )
         print("test187 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test187']['sents']['0']:
+        verbs=return_dict['test187']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test187']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test187']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test187():
     text="""Gollum recently did allow that Mordor isn't a such neat place to visit. 
 """
@@ -8330,6 +10211,7 @@ def test187():
 14	visit	_	VERB	VERB	_	12	acl
 15	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test188': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8341,13 +10223,22 @@ def test187():
     try:
         if 'events' in return_dict['test188']['sents']['0']:
             print(return_dict['test188']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ " + str(return_dict['test188']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ " + str(return_dict['test188']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noevent  " )
             print("test188 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noeventexception \n " )
         print("test188 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test188']['sents']['0']:
+        verbs=return_dict['test188']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test188']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test188']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test188():
     text="""Gollum allowed that Mordor isn't the neatest place to visit. 
 """
@@ -8364,6 +10255,7 @@ def test188():
 11	visit	_	VERB	VERB	_	9	acl
 12	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test189': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8375,13 +10267,22 @@ def test188():
     try:
         if 'events' in return_dict['test189']['sents']['0']:
             print(return_dict['test189']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"027\")@ " + str(return_dict['test189']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"027\")@ " + str(return_dict['test189']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"027\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"027\")@ noevent  " )
             print("test189 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"027\")@ noeventexception \n " )
         print("test189 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test189']['sents']['0']:
+        verbs=return_dict['test189']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test189']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test189']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test189():
     text="""Gollum in recent days did allow that Mordor isn't the neat or cool place to visit. 
 """
@@ -8404,6 +10305,7 @@ def test189():
 17	visit	_	VERB	VERB	_	15	acl
 18	.	_	PUNCT	PUNCT	_	6	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test190': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8415,13 +10317,22 @@ def test189():
     try:
         if 'events' in return_dict['test190']['sents']['0']:
             print(return_dict['test190']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ " + str(return_dict['test190']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ " + str(return_dict['test190']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noevent  " )
             print("test190 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"MOR\", u\"080\")@ noeventexception \n " )
         print("test190 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test190']['sents']['0']:
+        verbs=return_dict['test190']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test190']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test190']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test190():
     text="""Gollum centre of a diplomatic row between Radagast the Brown called on 
 Gondor late Sunday to be allowed to leave Lorien by elves. 
@@ -8451,6 +10362,7 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
 23	elves	_	PROPN	PROPN	_	20	nmod
 24	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test191': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8462,13 +10374,22 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
     try:
         if 'events' in return_dict['test191']['sents']['0']:
             print(return_dict['test191']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"095\")@ " + str(return_dict['test191']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"095\")@ " + str(return_dict['test191']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"095\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"095\")@ noevent  " )
             print("test191 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"095\")@ noeventexception \n " )
         print("test191 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test191']['sents']['0']:
+        verbs=return_dict['test191']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test191']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test191']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test191():
     text="""Gollum centre of a diplomatic row between Radagast the Brown called immediately for  
 Gondor late Sunday to be allowed to leave Lorien by elves. 
@@ -8499,6 +10420,7 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
 24	elves	_	PROPN	PROPN	_	21	nmod
 25	.	_	PUNCT	PUNCT	_	11	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test192': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19920102'}}}
@@ -8510,13 +10432,22 @@ Gondor late Sunday to be allowed to leave Lorien by elves.
     try:
         if 'events' in return_dict['test192']['sents']['0']:
             print(return_dict['test192']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"096\")@ " + str(return_dict['test192']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"096\")@ " + str(return_dict['test192']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"096\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"096\")@ noevent  " )
             print("test192 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"HOB\", u\"GON\", u\"096\")@ noeventexception \n " )
         print("test192 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test192']['sents']['0']:
+        verbs=return_dict['test192']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test192']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test192']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test192():
     text="""Mordor will be hosting Osgiliath to celebrate Tabaski with Eriador
 next week at Cirith Ungol. 
@@ -8538,6 +10469,7 @@ next week at Cirith Ungol.
 15	Ungol	_	PROPN	PROPN	_	7	nmod
 16	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test193': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -8549,13 +10481,22 @@ next week at Cirith Ungol.
     try:
         if 'events' in return_dict['test193']['sents']['0']:
             print(return_dict['test193']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MORMIL\", u\"MOR\", u\"042\")@ " + str(return_dict['test193']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MORMIL\", u\"MOR\", u\"042\")@ " + str(return_dict['test193']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MORMIL\", u\"MOR\", u\"042\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MORMIL\", u\"MOR\", u\"042\")@ noevent  " )
             print("test193 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"MORMIL\", u\"MOR\", u\"042\")@ noeventexception \n " )
         print("test193 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test193']['sents']['0']:
+        verbs=return_dict['test193']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test193']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test193']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test193():
     text="""Mordor will be hosting Osgiliath to celebrate May Day with Eriador
 next week at Cirith Ungol. 
@@ -8578,6 +10519,7 @@ next week at Cirith Ungol.
 16	Ungol	_	PROPN	PROPN	_	7	nmod
 17	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test194': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -8589,13 +10531,22 @@ next week at Cirith Ungol.
     try:
         if 'events' in return_dict['test194']['sents']['0']:
             print(return_dict['test194']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"MOR\", u\"046\")@ " + str(return_dict['test194']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"MOR\", u\"046\")@ " + str(return_dict['test194']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"MOR\", u\"046\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"MOR\", u\"046\")@ noevent  " )
             print("test194 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ERI\", u\"MOR\", u\"046\")@ noeventexception \n " )
         print("test194 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test194']['sents']['0']:
+        verbs=return_dict['test194']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test194']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test194']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test194():
     text="""Arnor has celebrated Eid at Osgiliath with Gondor after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -8621,6 +10572,7 @@ hafling was reported on the pass of Cirith Ungol.
 19	Ungol	_	PROPN	PROPN	_	16	nmod
 20	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test195': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -8632,13 +10584,22 @@ hafling was reported on the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test195']['sents']['0']:
             print(return_dict['test195']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ " + str(return_dict['test195']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ " + str(return_dict['test195']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ noevent  " )
             print("test195 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ noeventexception \n " )
         print("test195 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test195']['sents']['0']:
+        verbs=return_dict['test195']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test195']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test195']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test195():
     text="""Arnor has celebrated Iftar in Osgiliath with the leaders of Gondor after leaving Eriador 
 """
@@ -8669,6 +10630,7 @@ def test195():
 25	Ungol	_	PROPN	PROPN	_	22	nmod
 26	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test196': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -8680,13 +10642,22 @@ def test195():
     try:
         if 'events' in return_dict['test196']['sents']['0']:
             print(return_dict['test196']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"045\")@ " + str(return_dict['test196']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"045\")@ " + str(return_dict['test196']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"045\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"045\")@ noevent  " )
             print("test196 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"045\")@ noeventexception \n " )
         print("test196 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test196']['sents']['0']:
+        verbs=return_dict['test196']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test196']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test196']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test196():
     text="""Arnor has celebrated Iftar at Osgiliath with the parliament of Gondor in Eriador 
 after a hafling was reported on the pass of Cirith Ungol. 
@@ -8717,6 +10688,7 @@ after a hafling was reported on the pass of Cirith Ungol.
 24	Ungol	_	PROPN	PROPN	_	21	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test197': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -8728,13 +10700,22 @@ after a hafling was reported on the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test197']['sents']['0']:
             print(return_dict['test197']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"044\")@ " + str(return_dict['test197']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"044\")@ " + str(return_dict['test197']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"044\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"044\")@ noevent  " )
             print("test197 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"044\")@ noeventexception \n " )
         print("test197 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test197']['sents']['0']:
+        verbs=return_dict['test197']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test197']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test197']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test197():
     text="""Arnor has celebrated Eid at United Arab Emirates with Gondor after a 
 hafling was reported on the pass of Cirith Ungol. 
@@ -8762,6 +10743,7 @@ hafling was reported on the pass of Cirith Ungol.
 21	Ungol	_	PROPN	PROPN	_	18	nmod
 22	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test198': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950102'}}}
@@ -8773,13 +10755,22 @@ hafling was reported on the pass of Cirith Ungol.
     try:
         if 'events' in return_dict['test198']['sents']['0']:
             print(return_dict['test198']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ " + str(return_dict['test198']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ " + str(return_dict['test198']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ noevent  " )
             print("test198 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"043\")@ noeventexception \n " )
         print("test198 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test198']['sents']['0']:
+        verbs=return_dict['test198']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test198']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test198']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test198():
     text="""Gondor launched a new bombing and shelling offensive against besieged 
 Osgiliath during the night following daylight raids in which 
@@ -8815,6 +10806,7 @@ Arnor spokesmen said 54 civilians were killed or injured.
 28	injured	_	VERB	VERB	_	26	conj
 29	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test199': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19820727'}}}
@@ -8826,13 +10818,22 @@ Arnor spokesmen said 54 civilians were killed or injured.
     try:
         if 'events' in return_dict['test199']['sents']['0']:
             print(return_dict['test199']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"223\")@ " + str(return_dict['test199']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"223\")@ " + str(return_dict['test199']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"223\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"223\")@ noevent  " )
             print("test199 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"OSG\", u\"223\")@ noeventexception \n " )
         print("test199 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test199']['sents']['0']:
+        verbs=return_dict['test199']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test199']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test199']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test199():
     text="""The Philippines was criticized over its territorial dispute with Eriador.
 """
@@ -8848,6 +10849,7 @@ def test199():
 10	Eriador	_	PROPN	PROPN	_	8	nmod
 11	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test200': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -8859,13 +10861,22 @@ def test199():
     try:
         if 'events' in return_dict['test200']['sents']['0']:
             print(return_dict['test200']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"121\")@ " + str(return_dict['test200']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"121\")@ " + str(return_dict['test200']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"121\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"121\")@ noevent  " )
             print("test200 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"121\")@ noeventexception \n " )
         print("test200 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test200']['sents']['0']:
+        verbs=return_dict['test200']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test200']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test200']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test200():
     text="""The Philippines was heavily and unjustly criticized over its territorial dispute with Eriador.
 """
@@ -8884,6 +10895,7 @@ def test200():
 13	Eriador	_	PROPN	PROPN	_	11	nmod
 14	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test201': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -8895,13 +10907,22 @@ def test200():
     try:
         if 'events' in return_dict['test201']['sents']['0']:
             print(return_dict['test201']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"123\")@ " + str(return_dict['test201']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"123\")@ " + str(return_dict['test201']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"123\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"123\")@ noevent  " )
             print("test201 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"123\")@ noeventexception \n " )
         print("test201 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test201']['sents']['0']:
+        verbs=return_dict['test201']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test201']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test201']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test201():
     text="""The Philippines was heavily criticized over its territorial dispute with Eriador.
 """
@@ -8918,6 +10939,7 @@ def test201():
 11	Eriador	_	PROPN	PROPN	_	9	nmod
 12	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test202': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950103'}}}
@@ -8929,13 +10951,22 @@ def test201():
     try:
         if 'events' in return_dict['test202']['sents']['0']:
             print(return_dict['test202']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"122\")@ " + str(return_dict['test202']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"122\")@ " + str(return_dict['test202']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"122\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"122\")@ noevent  " )
             print("test202 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"PHL\", u\"ERI\", u\"122\")@ noeventexception \n " )
         print("test202 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test202']['sents']['0']:
+        verbs=return_dict['test202']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test202']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test202']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test202():
     text="""Eriador was opposed by Osgiliath, the state's fiercest foe, 
 in being drawn into the peace process by its resumption 
@@ -8970,6 +11001,7 @@ of diplomatic ties with Gondor.
 27	Gondor	_	PROPN	PROPN	_	25	nmod
 28	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test203': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -8981,13 +11013,22 @@ of diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test203']['sents']['0']:
             print(return_dict['test203']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ " + str(return_dict['test203']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ " + str(return_dict['test203']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noevent  " )
             print("test203 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noeventexception \n " )
         print("test203 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test203']['sents']['0']:
+        verbs=return_dict['test203']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test203']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test203']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test203():
     text="""Eriador was fiercely opposed by Osgiliath, the state's fiercest foe, 
 in being drawn into the peace process by its resumption 
@@ -9023,6 +11064,7 @@ of diplomatic ties with Gondor.
 28	Gondor	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test204': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -9034,13 +11076,22 @@ of diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test204']['sents']['0']:
             print(return_dict['test204']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ " + str(return_dict['test204']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ " + str(return_dict['test204']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noevent  " )
             print("test204 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noeventexception \n " )
         print("test204 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test204']['sents']['0']:
+        verbs=return_dict['test204']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test204']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test204']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test204():
     text="""Eriador has received by courier money from Osgiliath, the state's 
 fiercest foe, to be drawn into the peace process by its resumption 
@@ -9078,6 +11129,7 @@ of diplomatic ties with Gondor.
 30	Gondor	_	PROPN	PROPN	_	28	nmod
 31	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test205': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -9089,13 +11141,22 @@ of diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test205']['sents']['0']:
             print(return_dict['test205']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"071\")@ " + str(return_dict['test205']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"071\")@ " + str(return_dict['test205']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"071\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"071\")@ noevent  " )
             print("test205 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"071\")@ noeventexception \n " )
         print("test205 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test205']['sents']['0']:
+        verbs=return_dict['test205']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test205']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test205']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test205():
     text="""Eriador was opposed earlier by Osgiliath, the state's fiercest foe, 
 in being drawn into the peace process by its resumption 
@@ -9131,6 +11192,7 @@ of diplomatic ties with Gondor.
 28	Gondor	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test206': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -9142,13 +11204,22 @@ of diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test206']['sents']['0']:
             print(return_dict['test206']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ " + str(return_dict['test206']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ " + str(return_dict['test206']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noevent  " )
             print("test206 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"OSG\", u\"ERI\", u\"112\")@ noeventexception \n " )
         print("test206 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test206']['sents']['0']:
+        verbs=return_dict['test206']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test206']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test206']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test206():
     text="""Rebuked by Eriador, the state's fiercest foe, 
 Osgiliath is being drawn into the peace process by its resumption 
@@ -9182,6 +11253,7 @@ of diplomatic ties with Gondor.
 26	Gondor	_	PROPN	PROPN	_	24	nmod
 27	.	_	PUNCT	PUNCT	_	14	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test207': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950112'}}}
@@ -9193,13 +11265,22 @@ of diplomatic ties with Gondor.
     try:
         if 'events' in return_dict['test207']['sents']['0']:
             print(return_dict['test207']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test207']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test207']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test207 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test207 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test207']['sents']['0']:
+        verbs=return_dict['test207']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test207']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test207']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test207():
     text="""Arnor is about to restore full diplomatic ties with Gondor, 
 five years after crowds burned down its embassy,  a very senior 
@@ -9236,6 +11317,7 @@ Bree official said on Saturday night.
 29	night	_	NOUN	NOUN	_	26	nmod
 30	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test208': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9247,13 +11329,22 @@ Bree official said on Saturday night.
     try:
         if 'events' in return_dict['test208']['sents']['0']:
             print(return_dict['test208']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test208']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test208']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test208 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test208 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test208']['sents']['0']:
+        verbs=return_dict['test208']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test208']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test208']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test208():
     text="""Arnor is about to restore full diplomatic ties with Gondor almost 
 five years after Calenardhon crowds burned down its embassy,  a senior 
@@ -9289,6 +11380,7 @@ Bree official said on Saturday.
 28	Saturday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test209': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9300,13 +11392,22 @@ Bree official said on Saturday.
     try:
         if 'events' in return_dict['test209']['sents']['0']:
             print(return_dict['test209']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test209']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test209']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test209 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test209 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test209']['sents']['0']:
+        verbs=return_dict['test209']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test209']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test209']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test209():
     text="""Arnor is about to restore full diplomatic ties with Gondor, 
 five years after crowds burned down its embassy,  a senior 
@@ -9340,6 +11441,7 @@ official said on Saturday.
 26	Saturday	_	PROPN	PROPN	_	24	nmod
 27	.	_	PUNCT	PUNCT	_	24	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test210': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9351,13 +11453,22 @@ official said on Saturday.
     try:
         if 'events' in return_dict['test210']['sents']['0']:
             print(return_dict['test210']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test210']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test210']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test210 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test210 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test210']['sents']['0']:
+        verbs=return_dict['test210']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test210']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test210']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test210():
     text="""Arnor is about to restore complete, full diplomatic ties with Gondor almost 
 five years after Cxlenardhon crowds burned down its embassy,  a senior 
@@ -9395,6 +11506,7 @@ Bree official said on Saturday.
 30	Saturday	_	PROPN	PROPN	_	28	nmod
 31	.	_	PUNCT	PUNCT	_	28	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test211': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9406,13 +11518,22 @@ Bree official said on Saturday.
     try:
         if 'events' in return_dict['test211']['sents']['0']:
             print(return_dict['test211']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test211']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test211']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test211 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test211 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test211']['sents']['0']:
+        verbs=return_dict['test211']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test211']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test211']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test211():
     text="""Arnor is about to restore full diplomatic ties with Gxndor, almost 
 five years after Calenardhon crowds burned down its embassy,  a senior 
@@ -9448,6 +11569,7 @@ official said on Saturday.
 28	Saturday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test212': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9459,13 +11581,22 @@ official said on Saturday.
     try:
         if 'events' in return_dict['test212']['sents']['0']:
             print(return_dict['test212']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"064\")@ " + str(return_dict['test212']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"064\")@ " + str(return_dict['test212']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"064\")@ noevent  " )
             print("test212 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"CAL\", u\"064\")@ noeventexception \n " )
         print("test212 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test212']['sents']['0']:
+        verbs=return_dict['test212']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test212']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test212']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test212():
     text="""Arnor is about to restore full diplomatic ties with Gondor almost five years after 
 Calenardhon crowds burned down its embassy,  a clearly inebriated Bree official said today. 
@@ -9500,6 +11631,7 @@ Calenardhon crowds burned down its embassy,  a clearly inebriated Bree official 
 28	today	_	NOUN	NOUN	_	27	nmod:tmod
 29	.	_	PUNCT	PUNCT	_	27	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test213': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9511,13 +11643,22 @@ Calenardhon crowds burned down its embassy,  a clearly inebriated Bree official 
     try:
         if 'events' in return_dict['test213']['sents']['0']:
             print(return_dict['test213']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test213']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ " + str(return_dict['test213']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noevent  " )
             print("test213 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\")@ noeventexception \n " )
         print("test213 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test213']['sents']['0']:
+        verbs=return_dict['test213']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test213']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test213']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test213():
     text="""Arnor is about to restore, it seems, complete, full diplomatic ties with Gondor almost 
 five years after Calenardhon crowds burned down its embassy,  a senior 
@@ -9559,6 +11700,7 @@ Bree official said on Saturday.
 34	Saturday	_	PROPN	PROPN	_	32	nmod
 35	.	_	PUNCT	PUNCT	_	32	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test214': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9570,13 +11712,22 @@ Bree official said on Saturday.
     try:
         if 'events' in return_dict['test214']['sents']['0']:
             print(return_dict['test214']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"---\", u\"222\"),(u\"BREGOV\", u\"---\", u\"023\")@ " + str(return_dict['test214']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"---\", u\"222\"),(u\"BREGOV\", u\"---\", u\"023\")@ " + str(return_dict['test214']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"---\", u\"222\"),(u\"BREGOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"---\", u\"222\"),(u\"BREGOV\", u\"---\", u\"023\")@ noevent  " )
             print("test214 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"GON\", u\"---\", u\"222\"),(u\"BREGOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test214 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test214']['sents']['0']:
+        verbs=return_dict['test214']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test214']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test214']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test214():
     text="""Arnor is about to restore complete, full diplomatic ties with Gondor almost 
 five years after Calenardhon crowds burned down its embassy,  a senior 
@@ -9614,6 +11765,7 @@ Bree official said on Saturday.
 30	Saturday	_	PROPN	PROPN	_	28	nmod
 31	.	_	PUNCT	PUNCT	_	28	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test215': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9625,13 +11777,22 @@ Bree official said on Saturday.
     try:
         if 'events' in return_dict['test215']['sents']['0']:
             print(return_dict['test215']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"BREGOV\", u\"---\", u\"023\")@ " + str(return_dict['test215']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"BREGOV\", u\"---\", u\"023\")@ " + str(return_dict['test215']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"BREGOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"BREGOV\", u\"---\", u\"023\")@ noevent  " )
             print("test215 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"BREGOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test215 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test215']['sents']['0']:
+        verbs=return_dict['test215']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test215']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test215']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test215():
     text="""Arnor is said to be about to restore, it seems, complete, full diplomatic ties with
 Gondor almost five years after Calenardhon crowds burned down its embassy, a senior Bree 
@@ -9676,6 +11837,7 @@ official said on Saturday.
 37	Saturday	_	PROPN	PROPN	_	35	nmod
 38	.	_	PUNCT	PUNCT	_	35	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test216': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9687,13 +11849,22 @@ official said on Saturday.
     try:
         if 'events' in return_dict['test216']['sents']['0']:
             print(return_dict['test216']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"023\"),(u\"BREGOV\", u\"---\", u\"023\")@ " + str(return_dict['test216']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"023\"),(u\"BREGOV\", u\"---\", u\"023\")@ " + str(return_dict['test216']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"023\"),(u\"BREGOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"023\"),(u\"BREGOV\", u\"---\", u\"023\")@ noevent  " )
             print("test216 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"023\"),(u\"BREGOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test216 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test216']['sents']['0']:
+        verbs=return_dict['test216']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test216']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test216']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test216():
     text="""Arnor is about to restore full diplomatic ties with Gondor, almost 
 five years after Calenardhon crowds burned down its embassy,  a senior 
@@ -9729,6 +11900,7 @@ official said on Saturday.
 28	Saturday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test217': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9740,13 +11912,22 @@ official said on Saturday.
     try:
         if 'events' in return_dict['test217']['sents']['0']:
             print(return_dict['test217']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test217']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test217']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test217 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"064\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test217 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test217']['sents']['0']:
+        verbs=return_dict['test217']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test217']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test217']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test217():
     text="""Arnor is about to improve full diplomatic ties with Gondor, almost 
 five years after Calenardhon crowds burned down its embassy,  a 
@@ -9783,6 +11964,7 @@ clearly inebriated Bree official said today.
 29	today	_	NOUN	NOUN	_	28	nmod:tmod
 30	.	_	PUNCT	PUNCT	_	28	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test218': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9794,13 +11976,22 @@ clearly inebriated Bree official said today.
     try:
         if 'events' in return_dict['test218']['sents']['0']:
             print(return_dict['test218']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test218']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\"),(u\"---GOV\", u\"---\", u\"023\")@ " + str(return_dict['test218']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\"),(u\"---GOV\", u\"---\", u\"023\")@ noevent  " )
             print("test218 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\"),(u\"---GOV\", u\"---\", u\"023\")@ noeventexception \n " )
         print("test218 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test218']['sents']['0']:
+        verbs=return_dict['test218']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test218']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test218']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test218():
     text="""Arnor is about to improve full diplomatic ties with Gondor, almost 
 five years after Calenardhon crowds burned down its embassy,  a 
@@ -9836,6 +12027,7 @@ senior Bree official said today.
 28	today	_	NOUN	NOUN	_	27	nmod:tmod
 29	.	_	PUNCT	PUNCT	_	27	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test219': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9847,13 +12039,22 @@ senior Bree official said today.
     try:
         if 'events' in return_dict['test219']['sents']['0']:
             print(return_dict['test219']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\")@ " + str(return_dict['test219']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\")@ " + str(return_dict['test219']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\")@ noevent  " )
             print("test219 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"---\", u\"222\")@ noeventexception \n " )
         print("test219 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test219']['sents']['0']:
+        verbs=return_dict['test219']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test219']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test219']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test219():
     text="""Arnor on Thursday signed an 800 million ducat trade protocol
 for 1990 with Dagolath, its biggest trading partner, officials said. 
@@ -9882,6 +12083,7 @@ for 1990 with Dagolath, its biggest trading partner, officials said.
 22	said	_	VERB	VERB	_	0	root
 23	.	_	PUNCT	PUNCT	_	22	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test220': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950113'}}}
@@ -9893,13 +12095,22 @@ for 1990 with Dagolath, its biggest trading partner, officials said.
     try:
         if 'events' in return_dict['test220']['sents']['0']:
             print(return_dict['test220']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ " + str(return_dict['test220']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ " + str(return_dict['test220']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ noevent  " )
             print("test220 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"DAG\", u\"085\")@ noeventexception \n " )
         print("test220 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test220']['sents']['0']:
+        verbs=return_dict['test220']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test220']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test220']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test220():
     text="""Arnor is about to restore full diplomatic ties with Gxndor, several 
 years after Calenardhon crowds burned down its embassy,  a senior 
@@ -9934,6 +12145,7 @@ official said on Saturday.
 27	Saturday	_	PROPN	PROPN	_	25	nmod
 28	.	_	PUNCT	PUNCT	_	25	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test221': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9945,13 +12157,22 @@ official said on Saturday.
     try:
         if 'events' in return_dict['test221']['sents']['0']:
             print(return_dict['test221']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test221']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test221']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test221 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test221 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test221']['sents']['0']:
+        verbs=return_dict['test221']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test221']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test221']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test221():
     text="""Arnor is about to restore full diplomatic ties with Gxndor almost 
 five years after Cxlenardhon crowds burned down its embassy,  a senior 
@@ -9987,6 +12208,7 @@ Bree official said on Saturday.
 28	Saturday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	26	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test222': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -9998,13 +12220,22 @@ Bree official said on Saturday.
     try:
         if 'events' in return_dict['test222']['sents']['0']:
             print(return_dict['test222']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test222']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ " + str(return_dict['test222']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noevent  " )
             print("test222 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ No Event@ noeventexception \n " )
         print("test222 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test222']['sents']['0']:
+        verbs=return_dict['test222']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test222']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test222']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test222():
     text="""Arnor will abandon full diplomatic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10035,6 +12266,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test223': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10046,13 +12278,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test223']['sents']['0']:
             print(return_dict['test223']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"901\")@ " + str(return_dict['test223']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"901\")@ " + str(return_dict['test223']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"901\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"901\")@ noevent  " )
             print("test223 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"901\")@ noeventexception \n " )
         print("test223 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test223']['sents']['0']:
+        verbs=return_dict['test223']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test223']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test223']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test223():
     text="""Arnor will abandon full &amp;TIETYPE ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10084,6 +12325,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test224': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10095,13 +12337,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test224']['sents']['0']:
             print(return_dict['test224']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test224']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test224']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent  " )
             print("test224 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test224 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test224']['sents']['0']:
+        verbs=return_dict['test224']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test224']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test224']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test224():
     text="""Arnor will abandon full economic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10132,6 +12383,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test225': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10143,13 +12395,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test225']['sents']['0']:
             print(return_dict['test225']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ " + str(return_dict['test225']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ " + str(return_dict['test225']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noevent  " )
             print("test225 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noeventexception \n " )
         print("test225 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test225']['sents']['0']:
+        verbs=return_dict['test225']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test225']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test225']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test225():
     text="""Arnor will abandon full cultural ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10180,6 +12441,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test226': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10191,13 +12453,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test226']['sents']['0']:
             print(return_dict['test226']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ " + str(return_dict['test226']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ " + str(return_dict['test226']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noevent  " )
             print("test226 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noeventexception \n " )
         print("test226 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test226']['sents']['0']:
+        verbs=return_dict['test226']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test226']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test226']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test226():
     text="""Arnor will abandon full military ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10228,6 +12499,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test227': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10239,13 +12511,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test227']['sents']['0']:
             print(return_dict['test227']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ " + str(return_dict['test227']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ " + str(return_dict['test227']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noevent  " )
             print("test227 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"902\")@ noeventexception \n " )
         print("test227 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test227']['sents']['0']:
+        verbs=return_dict['test227']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test227']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test227']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test227():
     text="""Arnor will abandon full military txes with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10276,6 +12557,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test228': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10287,13 +12569,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test228']['sents']['0']:
             print(return_dict['test228']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test228']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test228']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent  " )
             print("test228 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test228 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test228']['sents']['0']:
+        verbs=return_dict['test228']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test228']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test228']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test228():
     text="""Arnor will abandon full symbolic ties with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10324,6 +12615,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test229': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10335,13 +12627,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test229']['sents']['0']:
             print(return_dict['test229']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test229']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test229']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent  " )
             print("test229 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test229 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test229']['sents']['0']:
+        verbs=return_dict['test229']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test229']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test229']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test229():
     text="""Arnor will contribute a million rupees to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10372,6 +12673,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test230': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10383,13 +12685,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test230']['sents']['0']:
             print(return_dict['test230']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"071\")@ " + str(return_dict['test230']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"071\")@ " + str(return_dict['test230']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"071\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"071\")@ noevent  " )
             print("test230 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"071\")@ noeventexception \n " )
         print("test230 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test230']['sents']['0']:
+        verbs=return_dict['test230']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test230']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test230']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test230():
     text="""Arnor will contribute a million dollars to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10420,6 +12731,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test231': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10431,13 +12743,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test231']['sents']['0']:
             print(return_dict['test231']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test231']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test231']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test231 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test231 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test231']['sents']['0']:
+        verbs=return_dict['test231']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test231']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test231']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test231():
     text="""Arnor will contribute a million euros to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10468,6 +12789,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test232': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10479,13 +12801,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test232']['sents']['0']:
             print(return_dict['test232']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test232']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test232']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test232 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test232 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test232']['sents']['0']:
+        verbs=return_dict['test232']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test232']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test232']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test232():
     text="""Arnor will contribute a million kroner to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10516,6 +12847,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test233': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10527,13 +12859,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test233']['sents']['0']:
             print(return_dict['test233']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test233']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test233']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test233 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test233 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test233']['sents']['0']:
+        verbs=return_dict['test233']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test233']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test233']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test233():
     text="""Arnor will contribute a million swiss francs to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10565,6 +12906,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test234': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10576,13 +12918,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test234']['sents']['0']:
             print(return_dict['test234']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test234']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test234']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test234 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test234 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test234']['sents']['0']:
+        verbs=return_dict['test234']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test234']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test234']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test234():
     text="""Arnor will contribute a million golden goblin galleons to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10615,6 +12966,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test235': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10626,13 +12978,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test235']['sents']['0']:
             print(return_dict['test235']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test235']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test235']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test235 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test235 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test235']['sents']['0']:
+        verbs=return_dict['test235']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test235']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test235']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test235():
     text="""Arnor will contribute a million goblin galleons to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10664,6 +13025,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test236': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10675,13 +13037,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test236']['sents']['0']:
             print(return_dict['test236']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ " + str(return_dict['test236']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ " + str(return_dict['test236']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ noevent  " )
             print("test236 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ noeventexception \n " )
         print("test236 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test236']['sents']['0']:
+        verbs=return_dict['test236']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test236']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test236']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test236():
     text="""Arnor will contribute a million golden galleons to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -10713,6 +13084,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test237': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -10724,13 +13096,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test237']['sents']['0']:
             print(return_dict['test237']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ " + str(return_dict['test237']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ " + str(return_dict['test237']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ noevent  " )
             print("test237 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"070\")@ noeventexception \n " )
         print("test237 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test237']['sents']['0']:
+        verbs=return_dict['test237']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test237']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test237']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test237():
     text="""Bree Prime Minister Romendacil clashed over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -10763,6 +13144,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 26	Sunday	_	PROPN	PROPN	_	24	nmod
 27	.	_	PUNCT	PUNCT	_	5	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test238': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -10774,13 +13156,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test238']['sents']['0']:
             print(return_dict['test238']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"121\")@ " + str(return_dict['test238']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"121\")@ " + str(return_dict['test238']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"121\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"121\")@ noevent  " )
             print("test238 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"121\")@ noeventexception \n " )
         print("test238 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test238']['sents']['0']:
+        verbs=return_dict['test238']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test238']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test238']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test238():
     text="""Bree Prime Minister Romendacil didn't clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -10815,6 +13206,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 28	Sunday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	7	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test239': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -10826,13 +13218,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test239']['sents']['0']:
             print(return_dict['test239']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test239']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test239']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent  " )
             print("test239 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noeventexception \n " )
         print("test239 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test239']['sents']['0']:
+        verbs=return_dict['test239']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test239']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test239']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test239():
     text="""Bree Prime Minister Romendacil will not clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -10867,6 +13268,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 28	Sunday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	7	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test240': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -10878,13 +13280,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test240']['sents']['0']:
             print(return_dict['test240']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test240']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test240']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent  " )
             print("test240 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noeventexception \n " )
         print("test240 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test240']['sents']['0']:
+        verbs=return_dict['test240']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test240']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test240']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test240():
     text="""Bree Prime Minister Romendacil will not ever clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -10920,6 +13331,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 29	Sunday	_	PROPN	PROPN	_	27	nmod
 30	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test241': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -10931,13 +13343,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test241']['sents']['0']:
             print(return_dict['test241']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test241']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test241']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent  " )
             print("test241 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noeventexception \n " )
         print("test241 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test241']['sents']['0']:
+        verbs=return_dict['test241']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test241']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test241']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test241():
     text="""Bree Prime Minister Romendacil can't ever clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -10973,6 +13394,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 29	Sunday	_	PROPN	PROPN	_	27	nmod
 30	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test242': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -10984,13 +13406,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test242']['sents']['0']:
             print(return_dict['test242']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test242']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test242']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent  " )
             print("test242 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noeventexception \n " )
         print("test242 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test242']['sents']['0']:
+        verbs=return_dict['test242']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test242']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test242']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test242():
     text="""Bree Prime Minister Romendacil unexpectedly won't clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11026,6 +13457,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 29	Sunday	_	PROPN	PROPN	_	27	nmod
 30	.	_	PUNCT	PUNCT	_	8	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test243': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11037,13 +13469,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test243']['sents']['0']:
             print(return_dict['test243']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ " + str(return_dict['test243']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ " + str(return_dict['test243']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ noevent  " )
             print("test243 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ noeventexception \n " )
         print("test243 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test243']['sents']['0']:
+        verbs=return_dict['test243']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test243']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test243']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test243():
     text="""Bree Prime Minister Romendacil most certainly really did not clash over the efforts of Eriadori  
 to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11081,6 +13522,7 @@ to deal with an orc infestation during a brief private visit to Eriador starting
 31	Sunday	_	PROPN	PROPN	_	29	nmod
 32	.	_	PUNCT	PUNCT	_	10	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test244': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11092,13 +13534,22 @@ to deal with an orc infestation during a brief private visit to Eriador starting
     try:
         if 'events' in return_dict['test244']['sents']['0']:
             print(return_dict['test244']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test244']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test244']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent  " )
             print("test244 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noeventexception \n " )
         print("test244 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test244']['sents']['0']:
+        verbs=return_dict['test244']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test244']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test244']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test244():
     text="""Bree Prime Minister Romendacil didn't clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11133,6 +13584,7 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
 28	Sunday	_	PROPN	PROPN	_	26	nmod
 29	.	_	PUNCT	PUNCT	_	7	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test245': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11144,13 +13596,22 @@ with an orc infestation during a brief private visit to Eriador starting on Sund
     try:
         if 'events' in return_dict['test245']['sents']['0']:
             print(return_dict['test245']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test245']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ " + str(return_dict['test245']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noevent  " )
             print("test245 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"904\")@ noeventexception \n " )
         print("test245 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test245']['sents']['0']:
+        verbs=return_dict['test245']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test245']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test245']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test245():
     text="""Arnor will contribute a million yum yennyen to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11182,6 +13643,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test246': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11193,13 +13655,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test246']['sents']['0']:
             print(return_dict['test246']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test246']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test246']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test246 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test246 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test246']['sents']['0']:
+        verbs=return_dict['test246']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test246']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test246']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test246():
     text="""Arnor will contribute a million austrian florin to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11231,6 +13702,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test247': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11242,13 +13714,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test247']['sents']['0']:
             print(return_dict['test247']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test247']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test247']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test247 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test247 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test247']['sents']['0']:
+        verbs=return_dict['test247']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test247']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test247']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test247():
     text="""Arnor will contribute a million austrian gold florin to Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11281,6 +13762,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test248': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11292,13 +13774,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test248']['sents']['0']:
             print(return_dict['test248']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ " + str(return_dict['test248']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ " + str(return_dict['test248']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noevent  " )
             print("test248 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noeventexception \n " )
         print("test248 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test248']['sents']['0']:
+        verbs=return_dict['test248']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test248']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test248']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test248():
     text="""Arnor will adopt a resolution with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11328,6 +13819,7 @@ said on Saturday.
 22	Saturday	_	PROPN	PROPN	_	20	nmod
 23	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test249': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11339,13 +13831,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test249']['sents']['0']:
             print(return_dict['test249']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"102\")@ " + str(return_dict['test249']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"102\")@ " + str(return_dict['test249']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"102\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"102\")@ noevent  " )
             print("test249 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"102\")@ noeventexception \n " )
         print("test249 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test249']['sents']['0']:
+        verbs=return_dict['test249']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test249']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test249']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test249():
     text="""Arnor will adopt a set of resolutions with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11377,6 +13878,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test250': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11388,13 +13890,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test250']['sents']['0']:
             print(return_dict['test250']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ " + str(return_dict['test250']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ " + str(return_dict['test250']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ noevent  " )
             print("test250 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"081\")@ noeventexception \n " )
         print("test250 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test250']['sents']['0']:
+        verbs=return_dict['test250']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test250']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test250']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test250():
     text="""Arnor will adopt a revolution with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11424,6 +13935,7 @@ said on Saturday.
 22	Saturday	_	PROPN	PROPN	_	20	nmod
 23	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test251': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11435,13 +13947,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test251']['sents']['0']:
             print(return_dict['test251']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ " + str(return_dict['test251']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ " + str(return_dict['test251']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ noevent  " )
             print("test251 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ noeventexception \n " )
         print("test251 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test251']['sents']['0']:
+        verbs=return_dict['test251']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test251']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test251']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test251():
     text="""Arnor will adopt a revolutionary manifesto with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11472,6 +13993,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test252': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11483,13 +14005,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test252']['sents']['0']:
             print(return_dict['test252']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ " + str(return_dict['test252']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ " + str(return_dict['test252']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ noevent  " )
             print("test252 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"802\")@ noeventexception \n " )
         print("test252 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test252']['sents']['0']:
+        verbs=return_dict['test252']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test252']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test252']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test252():
     text="""Arnor will abandon new economic relations with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11520,6 +14051,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test253': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11531,13 +14063,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test253']['sents']['0']:
             print(return_dict['test253']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test253']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ " + str(return_dict['test253']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noevent  " )
             print("test253 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"903\")@ noeventexception \n " )
         print("test253 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test253']['sents']['0']:
+        verbs=return_dict['test253']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test253']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test253']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test253():
     text="""Arnor will abandon new global economic relations with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11569,6 +14110,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	22	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test254': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11580,13 +14122,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test254']['sents']['0']:
             print(return_dict['test254']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test254']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test254']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent  " )
             print("test254 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test254 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test254']['sents']['0']:
+        verbs=return_dict['test254']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test254']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test254']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test254():
     text="""Arnor will abandon new global economic trade relations with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11619,6 +14170,7 @@ said on Saturday.
 25	Saturday	_	PROPN	PROPN	_	23	nmod
 26	.	_	PUNCT	PUNCT	_	3	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test255': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11630,13 +14182,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test255']['sents']['0']:
             print(return_dict['test255']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test255']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ " + str(return_dict['test255']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noevent  " )
             print("test255 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"345\")@ noeventexception \n " )
         print("test255 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test255']['sents']['0']:
+        verbs=return_dict['test255']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test255']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test255']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test255():
     text="""Arnor will abandon improved economic relations with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11667,6 +14228,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test256': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11678,13 +14240,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test256']['sents']['0']:
             print(return_dict['test256']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ " + str(return_dict['test256']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ " + str(return_dict['test256']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noevent  " )
             print("test256 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noeventexception \n " )
         print("test256 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test256']['sents']['0']:
+        verbs=return_dict['test256']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test256']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test256']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test256():
     text="""Arnor will abandon improved global economic relations with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -11716,6 +14287,7 @@ said on Saturday.
 24	Saturday	_	PROPN	PROPN	_	22	nmod
 25	.	_	PUNCT	PUNCT	_	4	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test257': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -11727,13 +14299,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test257']['sents']['0']:
             print(return_dict['test257']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ " + str(return_dict['test257']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ " + str(return_dict['test257']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noevent  " )
             print("test257 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"904\")@ noeventexception \n " )
         print("test257 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test257']['sents']['0']:
+        verbs=return_dict['test257']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test257']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test257']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test257():
     text="""Bree Prime Minister Romendacil unexpectedly now won't try to clash over the efforts of Eriadori to deal 
 with an orc infestation during a brief private trip to Eriador starting on Sunday. 
@@ -11772,6 +14353,7 @@ with an orc infestation during a brief private trip to Eriador starting on Sunda
 32	Sunday	_	PROPN	PROPN	_	30	nmod
 33	.	_	PUNCT	PUNCT	_	9	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test258': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11783,13 +14365,22 @@ with an orc infestation during a brief private trip to Eriador starting on Sunda
     try:
         if 'events' in return_dict['test258']['sents']['0']:
             print(return_dict['test258']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ " + str(return_dict['test258']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ " + str(return_dict['test258']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ noevent  " )
             print("test258 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"906\")@ noeventexception \n " )
         print("test258 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test258']['sents']['0']:
+        verbs=return_dict['test258']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test258']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test258']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test258():
     text="""Bree Prime Minister Romendacil most certainly won't ever clash over the efforts of Eriadori  
 to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11827,6 +14418,7 @@ to deal with an orc infestation during a brief private visit to Eriador starting
 31	Sunday	_	PROPN	PROPN	_	29	nmod
 32	.	_	PUNCT	PUNCT	_	10	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test259': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11838,13 +14430,22 @@ to deal with an orc infestation during a brief private visit to Eriador starting
     try:
         if 'events' in return_dict['test259']['sents']['0']:
             print(return_dict['test259']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ " + str(return_dict['test259']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ " + str(return_dict['test259']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ noevent  " )
             print("test259 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ noeventexception \n " )
         print("test259 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test259']['sents']['0']:
+        verbs=return_dict['test259']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test259']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test259']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test259():
     text="""Bree Prime Minister Romendacil most certainly really did not ever clash over the efforts of Eriadori  
 to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11883,6 +14484,7 @@ to deal with an orc infestation during a brief private visit to Eriador starting
 32	Sunday	_	PROPN	PROPN	_	30	nmod
 33	.	_	PUNCT	PUNCT	_	11	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test260': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11894,13 +14496,22 @@ to deal with an orc infestation during a brief private visit to Eriador starting
     try:
         if 'events' in return_dict['test260']['sents']['0']:
             print(return_dict['test260']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ " + str(return_dict['test260']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ " + str(return_dict['test260']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ noevent  " )
             print("test260 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"907\")@ noeventexception \n " )
         print("test260 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test260']['sents']['0']:
+        verbs=return_dict['test260']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test260']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test260']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test260():
     text="""Bree Prime Minister Romendacil most certainly really did not even ever clash over the efforts 
 of Eriadori to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11940,6 +14551,7 @@ of Eriadori to deal with an orc infestation during a brief private visit to Eria
 33	Sunday	_	PROPN	PROPN	_	31	nmod
 34	.	_	PUNCT	PUNCT	_	12	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test261': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -11951,13 +14563,22 @@ of Eriadori to deal with an orc infestation during a brief private visit to Eria
     try:
         if 'events' in return_dict['test261']['sents']['0']:
             print(return_dict['test261']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test261']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test261']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent  " )
             print("test261 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noeventexception \n " )
         print("test261 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test261']['sents']['0']:
+        verbs=return_dict['test261']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test261']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test261']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test261():
     text="""Bree Prime Minister Romendacil most certainly really won't even ever clash over the efforts 
 of Eriadori to deal with an orc infestation during a brief private visit to Eriador starting on Sunday. 
@@ -11997,6 +14618,7 @@ of Eriadori to deal with an orc infestation during a brief private visit to Eria
 33	Sunday	_	PROPN	PROPN	_	31	nmod
 34	.	_	PUNCT	PUNCT	_	12	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test262': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950111'}}}
@@ -12008,13 +14630,22 @@ of Eriadori to deal with an orc infestation during a brief private visit to Eria
     try:
         if 'events' in return_dict['test262']['sents']['0']:
             print(return_dict['test262']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test262']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ " + str(return_dict['test262']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noevent  " )
             print("test262 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"BREGOV\", u\"ERI\", u\"905\")@ noeventexception \n " )
         print("test262 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test262']['sents']['0']:
+        verbs=return_dict['test262']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test262']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test262']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test262():
     text="""Calenardhon welcomed memos from Bree on its role for in forthcoming peace talks. 
 """
@@ -12033,6 +14664,7 @@ def test262():
 13	talks	_	NOUN	NOUN	_	2	nmod
 14	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test263': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12044,13 +14676,22 @@ def test262():
     try:
         if 'events' in return_dict['test263']['sents']['0']:
             print(return_dict['test263']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ " + str(return_dict['test263']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ " + str(return_dict['test263']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noevent  " )
             print("test263 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noeventexception \n " )
         print("test263 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test263']['sents']['0']:
+        verbs=return_dict['test263']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test263']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test263']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test263():
     text="""Calenardhon welcomed economic memos from Bree on its role for in forthcoming 
 peace talks. 
@@ -12071,6 +14712,7 @@ peace talks.
 14	talks	_	NOUN	NOUN	_	2	nmod
 15	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test264': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12082,13 +14724,22 @@ peace talks.
     try:
         if 'events' in return_dict['test264']['sents']['0']:
             print(return_dict['test264']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ " + str(return_dict['test264']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ " + str(return_dict['test264']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ noevent  " )
             print("test264 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ noeventexception \n " )
         print("test264 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test264']['sents']['0']:
+        verbs=return_dict['test264']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test264']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test264']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test264():
     text="""Calenardhon welcomed economic rumors about Bree on its role for in forthcoming 
 peace talks. 
@@ -12109,6 +14760,7 @@ peace talks.
 14	talks	_	NOUN	NOUN	_	2	nmod
 15	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test265': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12120,13 +14772,22 @@ peace talks.
     try:
         if 'events' in return_dict['test265']['sents']['0']:
             print(return_dict['test265']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ " + str(return_dict['test265']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ " + str(return_dict['test265']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ noevent  " )
             print("test265 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ noeventexception \n " )
         print("test265 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test265']['sents']['0']:
+        verbs=return_dict['test265']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test265']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test265']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test265():
     text="""Calenardhon welcomed economic memos not about Bree on its role for in forthcoming 
 peace talks. 
@@ -12148,6 +14809,7 @@ peace talks.
 15	talks	_	NOUN	NOUN	_	2	nmod
 16	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test266': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12159,13 +14821,22 @@ peace talks.
     try:
         if 'events' in return_dict['test266']['sents']['0']:
             print(return_dict['test266']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ " + str(return_dict['test266']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ " + str(return_dict['test266']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ noevent  " )
             print("test266 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"915\")@ noeventexception \n " )
         print("test266 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test266']['sents']['0']:
+        verbs=return_dict['test266']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test266']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test266']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test266():
     text="""Calenardhon welcomed cultural memos sent by Bree on its role for in forthcoming 
 peace talks. 
@@ -12187,6 +14858,7 @@ peace talks.
 15	talks	_	NOUN	NOUN	_	5	nmod
 16	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test267': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12198,13 +14870,22 @@ peace talks.
     try:
         if 'events' in return_dict['test267']['sents']['0']:
             print(return_dict['test267']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"912\")@ " + str(return_dict['test267']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"912\")@ " + str(return_dict['test267']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"912\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"912\")@ noevent  " )
             print("test267 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"912\")@ noeventexception \n " )
         print("test267 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test267']['sents']['0']:
+        verbs=return_dict['test267']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test267']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test267']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test267():
     text="""Calenardhon welcomed cultural secret memos sent by Bree on its role for in forthcoming 
 peace talks. 
@@ -12227,6 +14908,7 @@ peace talks.
 16	talks	_	NOUN	NOUN	_	6	nmod
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test268': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12238,13 +14920,22 @@ peace talks.
     try:
         if 'events' in return_dict['test268']['sents']['0']:
             print(return_dict['test268']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ " + str(return_dict['test268']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ " + str(return_dict['test268']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noevent  " )
             print("test268 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noeventexception \n " )
         print("test268 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test268']['sents']['0']:
+        verbs=return_dict['test268']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test268']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test268']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test268():
     text="""Calenardhon welcomed memos on economic issue from Bree on its role for in forthcoming 
 peace talks. 
@@ -12267,6 +14958,7 @@ peace talks.
 16	talks	_	NOUN	NOUN	_	2	nmod
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test269': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12278,13 +14970,22 @@ peace talks.
     try:
         if 'events' in return_dict['test269']['sents']['0']:
             print(return_dict['test269']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ " + str(return_dict['test269']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ " + str(return_dict['test269']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ noevent  " )
             print("test269 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"911\")@ noeventexception \n " )
         print("test269 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test269']['sents']['0']:
+        verbs=return_dict['test269']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test269']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test269']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test269():
     text="""Calenardhon welcomed cultural internal memos from Bree on its role for in forthcoming 
 peace talks. 
@@ -12306,6 +15007,7 @@ peace talks.
 15	talks	_	NOUN	NOUN	_	2	nmod
 16	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test270': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12317,13 +15019,22 @@ peace talks.
     try:
         if 'events' in return_dict['test270']['sents']['0']:
             print(return_dict['test270']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ " + str(return_dict['test270']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ " + str(return_dict['test270']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noevent  " )
             print("test270 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"041\")@ noeventexception \n " )
         print("test270 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test270']['sents']['0']:
+        verbs=return_dict['test270']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test270']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test270']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test270():
     text="""Calenardhon welcomed cultural internal assurances sent by Bree on its role for in forthcoming 
 peace talks. 
@@ -12346,6 +15057,7 @@ peace talks.
 16	talks	_	NOUN	NOUN	_	6	nmod
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test271': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12357,13 +15069,22 @@ peace talks.
     try:
         if 'events' in return_dict['test271']['sents']['0']:
             print(return_dict['test271']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"914\")@ " + str(return_dict['test271']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"914\")@ " + str(return_dict['test271']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"914\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"914\")@ noevent  " )
             print("test271 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"914\")@ noeventexception \n " )
         print("test271 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test271']['sents']['0']:
+        verbs=return_dict['test271']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test271']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test271']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test271():
     text="""Calenardhon welcomed assurances on cultural issues from Bree on its role for in forthcoming 
 peace talks. 
@@ -12386,6 +15107,7 @@ peace talks.
 16	talks	_	NOUN	NOUN	_	2	nmod
 17	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test272': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12397,13 +15119,22 @@ peace talks.
     try:
         if 'events' in return_dict['test272']['sents']['0']:
             print(return_dict['test272']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ " + str(return_dict['test272']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ " + str(return_dict['test272']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ noevent  " )
             print("test272 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ noeventexception \n " )
         print("test272 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test272']['sents']['0']:
+        verbs=return_dict['test272']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test272']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test272']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test272():
     text="""Calenardhon welcomed assurances on cultural issues sent from Bree on its role for in forthcoming 
 peace talks. 
@@ -12427,6 +15158,7 @@ peace talks.
 17	talks	_	NOUN	NOUN	_	7	nmod
 18	.	_	PUNCT	PUNCT	_	2	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test273': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950118'}}}
@@ -12438,13 +15170,22 @@ peace talks.
     try:
         if 'events' in return_dict['test273']['sents']['0']:
             print(return_dict['test273']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ " + str(return_dict['test273']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ " + str(return_dict['test273']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ noevent  " )
             print("test273 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"CAL\", u\"BRE\", u\"913\")@ noeventexception \n " )
         print("test273 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test273']['sents']['0']:
+        verbs=return_dict['test273']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test273']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test273']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 def test273():
     text="""Arnor is inching nearer to accord with Gondor almost 
 five years after crowds trashed its embassy, a senior official 
@@ -12475,6 +15216,7 @@ said on Saturday.
 23	Saturday	_	PROPN	PROPN	_	21	nmod
 24	.	_	PUNCT	PUNCT	_	21	punct
 """
+    phrase_dict = parse_parser(parse)
     parsed = utilities._format_ud_parsed_str(parse)
     dict = {u'test274': {u'sents': {u'0': {u'content': text, u'parsed': parsed}},
    		u'meta': {u'date': u'19950101'}}}
@@ -12486,13 +15228,22 @@ said on Saturday.
     try:
         if 'events' in return_dict['test274']['sents']['0']:
             print(return_dict['test274']['sents']['0']['events'])
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"083\")@ " + str(return_dict['test274']['sents']['0']['events']) + "\n")
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"083\")@ " + str(return_dict['test274']['sents']['0']['events']) )
         else:
-            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"083\")@ noevent \n " )
+            fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"083\")@ noevent  " )
             print("test274 Failed")
     except:
         #fout_report.write(text.replace("\n"," ") +"@"+ parsed.replace("\n"," ") +"@ (u\"ARN\", u\"GON\", u\"083\")@ noeventexception \n " )
         print("test274 Failed")
+    #Print the verbs
+    if 'verbs' in return_dict['test274']['sents']['0']:
+        verbs=return_dict['test274']['sents']['0']['verbs']
+        parse_verb_noun(verbs,phrase_dict)
+    if 'nouns' in return_dict['test274']['sents']['0']:
+        #Print the nouns
+        nouns=return_dict['test274']['sents']['0']['nouns']
+        parse_verb_noun(nouns,phrase_dict)
+    fout_report.write("\n")
 test1()
 test2()
 test3()
