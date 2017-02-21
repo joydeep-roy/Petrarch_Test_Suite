@@ -25,7 +25,7 @@ To run test_script_ud.py:
 - py test_script_ud.py
 
 Output of test_script_ud.py :
-The test suite generates report in "@" separated Text File, which can be inported in Excel. It reports the Text,  Parse Tree, Expected Output as per Petrarch and the Output from PetrarchUD
+The test suite generates report in CSV format. It reports the Text,  Parse Tree, Expected Output as per Petrarch, the Output from PetrarchUD, the verb and noun phrases.
 
 Limitations of Test Suite :
 Currently the test suite does  not support scenarios to validate errors.
