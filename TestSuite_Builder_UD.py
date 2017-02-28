@@ -63,7 +63,7 @@ def check_line(line):
         #fout.write("            fout_report.write(text.replace(\"\\n\",\" \") +\"@\"+ parsed.replace(\"\\n\",\" \") +\"@ "+ eventcode + "@ \" + str(return_dict['"+functionname+"']['sents']['0']['events']) )\n")
         fout.write("            event_out = process_event_output(str(return_dict['"+functionname+"']['sents']['0']['events']))\n")
         #fout.write("            fout_report.write(text.replace(\"\\n\",\" \") +\"@\"+ parsed.replace(\"\\n\",\" \") +\"@ "+ eventcode + "@ \" + event_out )\n")
-        fout.write("            write_str = [text.replace(\"\\n\",\" \"),parsed.replace(\"\\n\",\" \"),\""+eventcode+"\",event_out]\n")
+        fout.write("            write_str = [text.replace(\"\\n\",\" \"),parsed.replace(\"\\n\",\" \"),\""+eventcode+"\",str(return_dict['"+functionname+"']['sents']['0']['events']),event_out]\n")
 		#fout.write("#           assert return_dict['test"+str(tfuncnum)+"']['sents']['0']['events'] == ["+eventcode+"]\n")
         fout.write("        else:\n")
         #fout.write("            fout_report.write(text.replace(\"\\n\",\" \") +\"@\"+ parsed.replace(\"\\n\",\" \") +\"@ "+ eventcode + "@ noevent  \" )\n")
@@ -79,6 +79,12 @@ def check_line(line):
         fout.write("        #Print the nouns\n")
         fout.write("        nouns=return_dict['test"+str(tfuncnum)+"']['sents']['0']['nouns']\n")
         fout.write("        parse_noun(nouns,phrase_dict,text,parsed)\n")
+        fout.write("    if 'triplets' in return_dict['test"+str(tfuncnum)+"']['sents']['0']:\n")
+        fout.write("        #Print the nouns\n")
+        fout.write("        triplets=return_dict['test"+str(tfuncnum)+"']['sents']['0']['triplets']\n")
+        fout.write("        parse_triplets(triplets,phrase_dict)\n")
+        
+        
         fout.write("    fout_report.writerow(write_str)\n")
 		
 		
@@ -178,9 +184,9 @@ def check_line(line):
             #    eventcode = eventcode + ",(u'"+sourcecode+"', u'"+targetcode+"', u'"+ecode+"')"
             #print(eventcode)
             if eventcode == "":
-                eventcode = "("+sourcecode+","+targetcode+","+ecode+")"
+                eventcode = "(["+sourcecode+"],["+targetcode+"],"+ecode+")"
             else:
-                eventcode = eventcode + "\\n("+sourcecode+","+targetcode+","+ecode+")"
+                eventcode = eventcode + "\\n(["+sourcecode+"],["+targetcode+"],"+ecode+")"
             print(eventcode)
 	
     if parse_tag_start != -1:
@@ -195,10 +201,11 @@ def write_header():
     fout.write("#! /usr/bin/env python \n")
     fout.write("# -*- coding: utf-8 -*- \n")
     fout.write("import petrarch_ud, PETRglobals, PETRreader, utilities, codecs, PETRgraph \n\n")
-    
+    fout.write("import sys\n")
     fout.write("import csv\n")
-
-    fout.write("outfile = open('xyz.csv', 'wb')\n")
+    fout.write("# Get the Output File Name\n")
+    fout.write("file_out = sys.argv[1]\n")
+    fout.write("outfile = open(file_out, 'wb')\n")
     fout.write("fout_report = csv.writer(outfile)\n")
     
     fout.write("config = utilities._get_data('data/config/', 'PETR_config.ini')\n")
@@ -208,10 +215,22 @@ def write_header():
     fout.write("petrarch_ud.read_dictionaries()\n")
     #fout.write("fout_report = codecs.open(\"test_report.txt\",\"w\",encoding='utf8') #opens test report file for writing\n");
     #fout.write("fout_report.write(\"Text@ Parse Tree@ Expected Encoding as per Petrarch@ Result from Petrarch_UD @Verbs @Nouns\\n\")\n")
-    fout.write("write_str = [\"Text\", \"Parse Tree\", \"Expected Encoding as per Petrarch\",\"Result from Petrarch_UD \",\"Verbs\",\"Nouns\"]\n")
+    fout.write("write_str = [\"Text\", \"Parse Tree\", \"Expected Encoding as per Petrarch\",\"Raw Event Data\",\"Result from Petrarch_UD \",\"Verbs\",\"Nouns\",\"Triplets\"]\n")
     fout.write("fout_report.writerow(write_str)\n")
     
 
+    fout.write("def parse_triplets(triplets, phrase_dict):\n")
+    fout.write("    res = \"\"\n")
+    fout.write("    for triple in triplets:\n")
+    fout.write("        strs = triplets[triple]\n")
+    fout.write("        meaning = strs['meaning']\n")
+    fout.write("        verbcode = strs['verbcode']\n")
+    fout.write("        matched_text = strs['matched_txt']\n")
+    fout.write("        codes = str(triple).split(\"#\")\n")
+    fout.write("        event = \"(\" + phrase_dict[codes[0]] + \",\" + phrase_dict[codes[1]] + \",\" + phrase_dict[codes[2]] + \")\"\n")
+    fout.write("        res = res + str(triple) + event +\": Meaning = \" + str(meaning) + \", VerbCode = \" + str(verbcode) + \", Matched Text = \" + str(matched_text) + \"\\n\"\n")
+    fout.write("    write_str.append(res)\n")
+    fout.write("    return \n")
     
     fout.write("def parse_parser(parse):\n")
     fout.write("    phrase_dict = {}\n")
@@ -222,6 +241,7 @@ def write_header():
     fout.write("        phrase_dict[num]=str\n")
     fout.write("        #print(num)\n")
     fout.write("        #print(str)\n")
+    fout.write("    phrase_dict['-'] = \" \"\n")
     fout.write("    return phrase_dict	\n")
 	
     fout.write("def process_event_output(str):\n")
@@ -235,8 +255,9 @@ def write_header():
     fout.write("        event = event.replace(\":\",\"\")\n")
     fout.write("        event = event.replace(\"u\",\"\")\n")
     fout.write("        event = event.replace(\"\\'\",\"\")\n")
-    fout.write("        event = event.replace(\"[\",\"\")\n")
-    fout.write("        event = event.replace(\"]\",\"\")\n")
+    fout.write("        event = event[1:]\n")
+    #fout.write("        event = event.replace(\"[\",\"\")\n")
+    #fout.write("        event = event.replace(\"]\",\"\")\n")
     fout.write("        event = event.replace(\"~\",\"\")\n")
     fout.write("        res = res+\"\\n(\"+event+\")\"\n")
     fout.write("    return (res[1:])\n")
