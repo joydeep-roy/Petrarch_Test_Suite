@@ -22,10 +22,10 @@ The TestSuiteBuilder will generate test_script_ud.py with the test cases coded i
 
 To run test_script_ud.py:
 - Copy the test_script_ud.py to the directory containing Petrarch_UD.py
-- py test_script_ud.py
+- py test_script_ud.py <output_csv_file>
 
 Output of test_script_ud.py :
-The test suite generates report in CSV format. It reports the Text,  Parse Tree, Expected Output as per Petrarch, the Output from PetrarchUD, the verb and noun phrases.
+The test suite generates report in CSV format. It reports the Text,  Parse Tree, Expected Output as per Gold Standard Record, Raw Event Data, Output from PetrarchUD, Verb Phrases, Noun phrases and Triplets information.
 
 Limitations of Test Suite :
 Currently the test suite does  not support scenarios to validate errors.
